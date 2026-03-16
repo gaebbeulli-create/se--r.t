@@ -6,409 +6,443 @@
 <title>관리자 - SE글로벌 렌탈</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-* { box-sizing:border-box; margin:0; padding:0; }
-:root { --primary:#2563EB; --primary-dark:#1D4ED8; --text:#1E293B; --text-sub:#64748B; --bg:#F1F5F9; --card:#fff; --border:#E2E8F0; --green:#10B981; --red:#EF4444; --sidebar-w:220px; }
-body { font-family:-apple-system,'Pretendard',sans-serif; background:var(--bg); color:var(--text); }
-
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#2563EB;--pd:#1D4ED8;--text:#1E293B;--sub:#64748B;--bg:#F1F5F9;--card:#fff;--border:#E2E8F0;--green:#10B981;--red:#EF4444;--sw:220px}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text)}
 /* Login */
-.login-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; }
-.login-card { background:var(--card); border-radius:20px; padding:40px; width:360px; box-shadow:0 4px 24px rgba(0,0,0,.08); }
-.login-logo { font-size:24px; font-weight:900; color:var(--primary); text-align:center; margin-bottom:8px; }
-.login-sub { text-align:center; color:var(--text-sub); font-size:14px; margin-bottom:32px; }
-.login-input { width:100%; border:1.5px solid var(--border); border-radius:10px; padding:12px 16px; font-size:15px; margin-bottom:12px; outline:none; }
-.login-input:focus { border-color:var(--primary); }
-.login-btn { width:100%; background:var(--primary); color:#fff; padding:13px; border-radius:10px; font-size:15px; font-weight:800; border:none; cursor:pointer; }
-.login-error { color:var(--red); font-size:13px; text-align:center; margin-top:8px; }
-
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.lcard{background:var(--card);border-radius:20px;padding:40px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.llogo{font-size:24px;font-weight:900;color:var(--primary);text-align:center;margin-bottom:8px}
+.lsub{text-align:center;color:var(--sub);font-size:14px;margin-bottom:32px}
+.linput{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-size:15px;margin-bottom:12px;outline:none}
+.linput:focus{border-color:var(--primary)}
+.lbtn{width:100%;background:var(--primary);color:#fff;padding:13px;border-radius:10px;font-size:15px;font-weight:800;border:none;cursor:pointer}
+.lerr{color:var(--red);font-size:13px;text-align:center;margin-top:8px}
 /* Layout */
-.admin-layout { display:flex; min-height:100vh; }
-.sidebar { width:var(--sidebar-w); background:var(--primary-dark); color:#fff; position:fixed; top:0; bottom:0; left:0; display:flex; flex-direction:column; z-index:50; transition:transform .3s; }
-.sidebar-logo { padding:24px 20px; font-size:18px; font-weight:800; border-bottom:1px solid rgba(255,255,255,.1); }
-.sidebar-logo span { opacity:.7; font-size:12px; display:block; margin-top:2px; }
-.sidebar-menu { flex:1; padding:12px 0; }
-.menu-item { display:flex; align-items:center; gap:10px; padding:12px 20px; cursor:pointer; font-size:14px; font-weight:600; transition:background .15s; border-left:3px solid transparent; }
-.menu-item:hover { background:rgba(255,255,255,.1); }
-.menu-item.active { background:rgba(255,255,255,.15); border-left-color:#fff; }
-.menu-icon { font-size:18px; }
-.sidebar-footer { padding:16px 20px; border-top:1px solid rgba(255,255,255,.1); }
-.logout-btn { width:100%; background:rgba(255,255,255,.1); color:#fff; border:none; border-radius:8px; padding:10px; cursor:pointer; font-size:13px; font-weight:700; }
-.main-content { margin-left:var(--sidebar-w); flex:1; padding:24px; min-width:0; }
-.page-header { margin-bottom:24px; }
-.page-title { font-size:22px; font-weight:800; margin-bottom:4px; }
-.page-sub { font-size:13px; color:var(--text-sub); }
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:24px; }
-.stat-card { background:var(--card); border-radius:14px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
-.stat-label { font-size:12px; color:var(--text-sub); margin-bottom:6px; }
-.stat-value { font-size:28px; font-weight:900; color:var(--primary); }
-.section-card { background:var(--card); border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
-.section-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-.section-card-title { font-size:16px; font-weight:800; }
-.btn-primary { background:var(--primary); color:#fff; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:700; border:none; cursor:pointer; }
-.btn-sm { padding:6px 12px; border-radius:6px; font-size:12px; font-weight:700; border:none; cursor:pointer; }
-.btn-edit { background:#EFF6FF; color:var(--primary); }
-.btn-delete { background:#FEF2F2; color:var(--red); }
-.data-table { width:100%; border-collapse:collapse; }
-.data-table th { text-align:left; padding:10px 12px; font-size:12px; font-weight:700; color:var(--text-sub); background:var(--bg); border-bottom:1px solid var(--border); }
-.data-table td { padding:12px; font-size:13px; border-bottom:1px solid var(--border); vertical-align:middle; }
-.data-table tr:last-child td { border-bottom:none; }
-.status-badge { display:inline-block; padding:3px 8px; border-radius:20px; font-size:11px; font-weight:700; }
-.status-pending { background:#FEF3C7; color:#92400E; }
-.status-contacted { background:#DBEAFE; color:#1D4ED8; }
-.status-done { background:#D1FAE5; color:#065F46; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.form-group { display:flex; flex-direction:column; gap:6px; }
-.form-group.full { grid-column:1/-1; }
-.form-label { font-size:12px; font-weight:700; color:var(--text-sub); }
-.form-input { border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; font-size:14px; outline:none; transition:border-color .2s; }
-.form-input:focus { border-color:var(--primary); }
-.form-textarea { min-height:80px; resize:vertical; }
-.form-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; }
-.btn-cancel { background:var(--bg); color:var(--text); padding:10px 20px; border-radius:8px; font-size:14px; font-weight:700; border:none; cursor:pointer; }
-.btn-save { background:var(--primary); color:#fff; padding:10px 24px; border-radius:8px; font-size:14px; font-weight:700; border:none; cursor:pointer; }
-.img-upload-area { border:2px dashed var(--border); border-radius:12px; padding:24px; text-align:center; cursor:pointer; transition:border-color .2s; }
-.img-upload-area:hover { border-color:var(--primary); }
-.img-preview-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.img-preview-item { position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; border:2px solid var(--border); }
-.img-preview-item.main-img { border-color:var(--primary); }
-.img-preview-item img { width:100%; height:100%; object-fit:cover; }
-.img-preview-actions { position:absolute; inset:0; background:rgba(0,0,0,.5); display:flex; flex-direction:column; gap:2px; align-items:center; justify-content:center; opacity:0; transition:opacity .2s; }
-.img-preview-item:hover .img-preview-actions { opacity:1; }
-.img-action-btn { background:rgba(255,255,255,.9); border:none; border-radius:4px; padding:3px 6px; font-size:10px; font-weight:700; cursor:pointer; width:64px; }
-.spec-row { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:center; margin-bottom:8px; }
-.toggle { position:relative; width:40px; height:22px; background:#CBD5E1; border-radius:11px; cursor:pointer; transition:background .2s; }
-.toggle.on { background:var(--green); }
-.toggle::after { content:''; position:absolute; width:16px; height:16px; border-radius:50%; background:#fff; top:3px; left:3px; transition:left .2s; }
-.toggle.on::after { left:21px; }
-.page { display:none; }
-.page.active { display:block; }
-.toast { position:fixed; bottom:24px; right:24px; background:#1E293B; color:#fff; padding:12px 20px; border-radius:10px; font-size:14px; font-weight:600; transform:translateY(100px); opacity:0; transition:all .3s; z-index:1000; }
-.toast.show { transform:translateY(0); opacity:1; }
-.toast.success { background:var(--green); }
-.toast.error { background:var(--red); }
-.mobile-topbar { display:none; position:sticky; top:0; z-index:30; background:var(--primary-dark); color:#fff; padding:0 16px; height:56px; align-items:center; justify-content:space-between; }
-.hamburger { font-size:24px; cursor:pointer; }
-.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:40; }
-@media (max-width:768px) { .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .main-content{margin-left:0;} .mobile-topbar{display:flex;} .form-grid{grid-template-columns:1fr;} .stats-grid{grid-template-columns:1fr 1fr;} }
-.page-hidden { display:none !important; }
+.al{display:flex;min-height:100vh}
+.sb{width:var(--sw);background:var(--pd);color:#fff;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
+.sblogo{padding:24px 20px;font-size:18px;font-weight:800;border-bottom:1px solid rgba(255,255,255,.1)}
+.sblogo span{opacity:.7;font-size:12px;display:block;margin-top:2px}
+.sbmenu{flex:1;padding:12px 0}
+.mi{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;font-size:14px;font-weight:600;transition:background .15s;border-left:3px solid transparent}
+.mi:hover{background:rgba(255,255,255,.1)}
+.mi.on{background:rgba(255,255,255,.15);border-left-color:#fff}
+.sbfoot{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.lout{width:100%;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer;font-size:13px;font-weight:700}
+.mc{margin-left:var(--sw);flex:1;padding:24px;min-width:0}
+/* Stats */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.scard{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.slbl{font-size:12px;color:var(--sub);margin-bottom:6px}
+.sval{font-size:28px;font-weight:900;color:var(--primary)}
+/* Section Card */
+.sc{background:var(--card);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.sch{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sct{font-size:16px;font-weight:800}
+.btnp{background:var(--primary);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer}
+.bsm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700;border:none;cursor:pointer}
+.be{background:#EFF6FF;color:var(--primary)}.bd{background:#FEF2F2;color:var(--red)}
+/* Table */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:10px 12px;font-size:12px;font-weight:700;color:var(--sub);background:var(--bg);border-bottom:1px solid var(--border)}
+.tbl td{padding:12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.sbadge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.sp{background:#FEF3C7;color:#92400E}.sc2{background:#DBEAFE;color:#1D4ED8}.sd{background:#D1FAE5;color:#065F46}
+/* Form */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+.fl{font-size:12px;font-weight:700;color:var(--sub)}
+.fi{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;transition:border-color .2s;width:100%;background:#fff}
+.fi:focus{border-color:var(--primary)}
+.fta{min-height:80px;resize:vertical}
+.factions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.bcancel{background:var(--bg);color:var(--text);padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+.bsave{background:var(--primary);color:#fff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+/* Image Upload */
+.iupload{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s}
+.iupload:hover{border-color:var(--primary)}
+.ipgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ipitem{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid var(--border)}
+.ipitem.main{border-color:var(--primary)}
+.ipitem img{width:100%;height:100%;object-fit:cover}
+.ipactions{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.ipitem:hover .ipactions{opacity:1}
+.ipbtn{background:rgba(255,255,255,.9);border:none;border-radius:4px;padding:3px 6px;font-size:10px;font-weight:700;cursor:pointer;width:64px}
+/* Spec rows */
+.specrow{display:grid;grid-template-columns:1fr 1fr 32px;gap:8px;align-items:center;margin-bottom:8px}
+.specrow input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:12px;width:100%}
+.delbtn{width:28px;height:28px;background:#FEF2F2;border:none;border-radius:6px;cursor:pointer;color:var(--red);font-size:14px}
+/* Toggle */
+.tog{position:relative;width:40px;height:22px;background:#CBD5E1;border-radius:11px;cursor:pointer;transition:background .2s}
+.tog.on{background:var(--green)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.tog.on::after{left:21px}
+/* Pages */
+.page{display:none}.page.on{display:block}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1E293B;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1000}
+.toast.on{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
+/* Mobile */
+.mbar{display:none;position:sticky;top:0;z-index:30;background:var(--pd);color:#fff;padding:0 16px;height:56px;align-items:center;justify-content:space-between}
+.ham{font-size:24px;cursor:pointer}
+.sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
+.hidden{display:none!important}
+@media(max-width:768px){.sb{transform:translateX(-100%)}.sb.on{transform:translateX(0)}.mc{margin-left:0}.mbar{display:flex}.fg2{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-
 <script>
-const SUPABASE_URL = 'https://ogjrhphhpqpzlzlbugdp.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
-// ★ service_role key: 관리자 기능(이미지 업로드, 상담 조회)에 필요
-// Supabase > Settings > API > service_role key
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzYyNzgzNSwiZXhwIjoyMDg5MjAzODM1fQ.LW4jQ4f-xs0Ky9Ie3q30LtZlofisj-KP3LYsSokdhIg';
-const ADMIN_PASSWORD = 'admin1234'; // ← 원하는 비밀번호로 변경
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const sbAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+const SB_URL='https://ogjrhphhpqpzlzlbugdp.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
+const SB_SVC='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzYyNzgzNSwiZXhwIjoyMDg5MjAzODM1fQ.LW4jQ4f-xs0Ky9Ie3q30LtZlofisj-KP3LYsSokdhIg';
+const ADMIN_PW='admin1234';
+const sb=supabase.createClient(SB_URL,SB_ANON);
+const sba=supabase.createClient(SB_URL,SB_SVC);
 </script>
 
 <!-- Login -->
-<div id="loginPage" class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo">🔐 SE글로벌 렌탈</div>
-    <div class="login-sub">관리자 로그인</div>
-    <input type="password" class="login-input" id="loginPw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">로그인</button>
-    <div class="login-error" id="loginError"></div>
+<div id="loginPage" class="lw">
+  <div class="lcard">
+    <div class="llogo">🔐 SE글로벌 렌탈</div>
+    <div class="lsub">관리자 로그인</div>
+    <input type="password" class="linput" id="lpw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">로그인</button>
+    <div class="lerr" id="lerr"></div>
   </div>
 </div>
 
-<!-- Admin Layout -->
-<div id="adminLayout" class="admin-layout page-hidden">
-  <div class="mobile-topbar">
-    <span class="hamburger" onclick="toggleSidebar()">☰</span>
+<!-- Admin -->
+<div id="adminLayout" class="al hidden">
+  <div class="mbar">
+    <span class="ham" onclick="toggleSb()">☰</span>
     <span style="font-weight:800">SE글로벌 렌탈 관리자</span>
     <span></span>
   </div>
-
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-logo">SE글로벌 렌탈 <span>관리자 페이지</span></div>
-    <div class="sidebar-menu">
-      <div class="menu-item active" onclick="showPage('dashboard',this)"><span class="menu-icon">📊</span>대시보드</div>
-      <div class="menu-item" onclick="showPage('vehicles',this)"><span class="menu-icon">🛵</span>차량 관리</div>
-      <div class="menu-item" onclick="showPage('consult',this)"><span class="menu-icon">📋</span>상담 접수</div>
-      <div class="menu-item" onclick="showPage('site',this)"><span class="menu-icon">⚙️</span>사이트 설정</div>
+  <div class="sb" id="sidebar">
+    <div class="sblogo">SE글로벌 렌탈<span>관리자 페이지</span></div>
+    <div class="sbmenu">
+      <div class="mi on" onclick="showPage('dash',this)"><span>📊</span>대시보드</div>
+      <div class="mi" onclick="showPage('vehicles',this)"><span>🛵</span>차량 관리</div>
+      <div class="mi" onclick="showPage('consult',this)"><span>📋</span>상담 접수</div>
+      <div class="mi" onclick="showPage('site',this)"><span>⚙️</span>사이트 설정</div>
     </div>
-    <div class="sidebar-footer"><button class="logout-btn" onclick="logout()">로그아웃</button></div>
+    <div class="sbfoot"><button class="lout" onclick="logout()">로그아웃</button></div>
   </div>
-  <div class="sidebar-overlay page-hidden" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sbov hidden" id="sbov" onclick="toggleSb()"></div>
 
-  <div class="main-content">
-
+  <div class="mc">
     <!-- Dashboard -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header"><div class="page-title">대시보드</div><div class="page-sub" id="dashDate"></div></div>
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">등록 차량</div><div class="stat-value" id="statVehicles">-</div></div>
-        <div class="stat-card"><div class="stat-label">전체 상담</div><div class="stat-value" id="statConsult">-</div></div>
-        <div class="stat-card"><div class="stat-label">미처리 상담</div><div class="stat-value" id="statPending">-</div></div>
-        <div class="stat-card"><div class="stat-label">처리 완료</div><div class="stat-value" id="statDone">-</div></div>
+    <div class="page on" id="page-dash">
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">대시보드</div><div style="font-size:13px;color:var(--sub)" id="ddate"></div></div>
+      <div class="sgrid">
+        <div class="scard"><div class="slbl">등록 차량</div><div class="sval" id="sv1">-</div></div>
+        <div class="scard"><div class="slbl">전체 상담</div><div class="sval" id="sv2">-</div></div>
+        <div class="scard"><div class="slbl">미처리 상담</div><div class="sval" id="sv3">-</div></div>
+        <div class="scard"><div class="slbl">처리 완료</div><div class="sval" id="sv4">-</div></div>
       </div>
-      <div class="section-card">
-        <div class="section-card-header"><div class="section-card-title">최근 상담 접수</div></div>
-        <div id="recentConsult">로딩 중...</div>
-      </div>
+      <div class="sc"><div class="sch"><div class="sct">최근 상담</div></div><div id="recentC">로딩 중...</div></div>
     </div>
 
     <!-- Vehicles -->
     <div class="page" id="page-vehicles">
-      <div class="page-header"><div class="page-title">차량 관리</div></div>
-      <div id="vehicleListView">
-        <div class="section-card">
-          <div class="section-card-header"><div class="section-card-title">차량 목록</div><button class="btn-primary" onclick="showVehicleForm()">+ 차량 추가</button></div>
-          <div id="vehicleList">로딩 중...</div>
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">차량 관리</div></div>
+      <div id="vlist-view">
+        <div class="sc">
+          <div class="sch"><div class="sct">차량 목록</div><button class="btnp" onclick="showVForm()">+ 차량 추가</button></div>
+          <div id="vlist">로딩 중...</div>
         </div>
       </div>
-      <div id="vehicleFormView" style="display:none">
-        <div class="section-card">
-          <div class="section-card-header"><div class="section-card-title" id="vehicleFormTitle">차량 추가</div><button class="btn-cancel" onclick="hideVehicleForm()">← 목록으로</button></div>
-          <input type="hidden" id="editingVehicleId">
-          <div class="form-grid">
-            <div class="form-group"><label class="form-label">차량 ID (영문, 고유값) *</label><input type="text" class="form-input" id="vId" placeholder="예: honda-pcx"></div>
-            <div class="form-group"><label class="form-label">차량명 *</label><input type="text" class="form-input" id="vName" placeholder="예: Honda PCX 125"></div>
-            <div class="form-group"><label class="form-label">브랜드</label><input type="text" class="form-input" id="vBrand" placeholder="예: Honda"></div>
-            <div class="form-group"><label class="form-label">종류</label><select class="form-input" id="vType"><option value="electric">전기이륜차</option><option value="gasoline">내연기관</option></select></div>
-            <div class="form-group full"><label class="form-label">한줄 소개</label><input type="text" class="form-input" id="vTagline" placeholder="예: 배달 최적화 전기이륜차"></div>
-            <div class="form-group full"><label class="form-label">상세 설명</label><textarea class="form-input form-textarea" id="vDesc" placeholder="차량 상세 설명"></textarea></div>
-            <div class="form-group"><label class="form-label">렌탈 가격</label><input type="text" class="form-input" id="vRental" placeholder="월 15만원~"></div>
-            <div class="form-group"><label class="form-label">리스 가격</label><input type="text" class="form-input" id="vLease" placeholder="월 18만원~"></div>
-            <div class="form-group"><label class="form-label">보증금</label><input type="text" class="form-input" id="vDeposit" placeholder="30만원"></div>
-            <div class="form-group"><label class="form-label">뱃지 (선택)</label><input type="text" class="form-input" id="vBadge" placeholder="추천, 신규 등"></div>
-            <div class="form-group"><label class="form-label">정렬 순서</label><input type="number" class="form-input" id="vSort" value="0"></div>
+      <div id="vform-view" style="display:none">
+        <div class="sc">
+          <div class="sch"><div class="sct" id="vftitle">차량 추가</div><button class="bcancel" onclick="hideVForm()">← 목록으로</button></div>
+          <input type="hidden" id="eid">
+          <div class="fg2">
+            <div class="fg"><label class="fl">차량 ID * (영문, 하이픈 가능)</label><input type="text" class="fi" id="vid" placeholder="예: honda-pcx"></div>
+            <div class="fg"><label class="fl">차량명 *</label><input type="text" class="fi" id="vname2" placeholder="예: Honda PCX 125"></div>
+            <div class="fg"><label class="fl">브랜드</label><input type="text" class="fi" id="vbrand" placeholder="예: Honda"></div>
+            <div class="fg"><label class="fl">종류</label><select class="fi" id="vtype2"><option value="gasoline">⛽ 내연기관</option><option value="electric">⚡ 전기이륜차</option></select></div>
+            <div class="fg full"><label class="fl">한줄 소개</label><input type="text" class="fi" id="vtag2" placeholder="배달 최적화 이륜차"></div>
+            <div class="fg full"><label class="fl">상세 설명</label><textarea class="fi fta" id="vdesc" placeholder="차량 상세 설명"></textarea></div>
+            <div class="fg"><label class="fl">렌탈 가격</label><input type="text" class="fi" id="vrental" placeholder="월 12만원~"></div>
+            <div class="fg"><label class="fl">리스 가격</label><input type="text" class="fi" id="vlease" placeholder="월 14만원~"></div>
+            <div class="fg"><label class="fl">보증금</label><input type="text" class="fi" id="vdep" placeholder="30만원"></div>
+            <div class="fg"><label class="fl">뱃지</label><input type="text" class="fi" id="vbadge" placeholder="추천, 신규 등"></div>
+            <div class="fg"><label class="fl">정렬 순서</label><input type="number" class="fi" id="vsort" value="0"></div>
           </div>
-          <div style="margin-top:24px;margin-bottom:8px;font-size:14px;font-weight:700">📐 제원 정보</div>
-          <div id="specsEditor"></div>
-          <button onclick="addSpecRow()" style="margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer">+ 제원 추가</button>
-          <div style="margin-top:24px;margin-bottom:8px;font-size:14px;font-weight:700">📸 차량 이미지</div>
-          <div class="img-upload-area" onclick="document.getElementById('imgFileInput').click()">
+          <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📐 제원 정보</div>
+          <div id="specrows"></div>
+          <button onclick="addSpec()" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;margin-top:4px">+ 제원 추가</button>
+          <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📸 차량 이미지</div>
+          <div class="iupload" onclick="document.getElementById('ifile').click()">
             <div style="font-size:32px;margin-bottom:8px">📷</div>
             <div style="font-size:14px;font-weight:700">클릭하여 이미지 업로드</div>
-            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG (최대 10MB) — Supabase Storage에 저장됩니다</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG (최대 10MB)</div>
           </div>
-          <input type="file" id="imgFileInput" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this)">
-          <div class="img-preview-grid" id="imgPreviewGrid"></div>
+          <input type="file" id="ifile" accept="image/*" multiple style="display:none" onchange="handleUpload(this)">
+          <div class="ipgrid" id="ipgrid"></div>
           <p style="font-size:11px;color:#94A3B8;margin-top:8px">이미지에 마우스를 올리면 메인 설정/삭제 버튼이 나타납니다</p>
-          <div class="form-actions"><button class="btn-cancel" onclick="hideVehicleForm()">취소</button><button class="btn-save" onclick="saveVehicle()">저장</button></div>
+          <div class="factions"><button class="bcancel" onclick="hideVForm()">취소</button><button class="bsave" onclick="saveVehicle()">저장</button></div>
         </div>
       </div>
     </div>
 
     <!-- Consult -->
     <div class="page" id="page-consult">
-      <div class="page-header"><div class="page-title">상담 접수 목록</div></div>
-      <div class="section-card">
-        <div style="overflow-x:auto">
-          <table class="data-table">
-            <thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>지역</th><th>차종</th><th>유형</th><th>상태</th><th>내용</th></tr></thead>
-            <tbody id="consultTbody"><tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">로딩 중...</td></tr></tbody>
-          </table>
-        </div>
-      </div>
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">상담 접수 목록</div></div>
+      <div class="sc"><div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>지역</th><th>차종</th><th>유형</th><th>상태</th><th>내용</th></tr></thead>
+          <tbody id="ctbody"><tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">로딩 중...</td></tr></tbody>
+        </table>
+      </div></div>
     </div>
 
-    <!-- Site Config -->
+    <!-- Site -->
     <div class="page" id="page-site">
-      <div class="page-header"><div class="page-title">사이트 설정</div></div>
-      <div class="section-card">
-        <div class="form-grid">
-          <div class="form-group"><label class="form-label">사이트명</label><input type="text" class="form-input" id="sSiteName" placeholder="SE글로벌 렌탈"></div>
-          <div class="form-group"><label class="form-label">대표 전화번호</label><input type="text" class="form-input" id="sPhone" placeholder="010-0000-0000"></div>
-          <div class="form-group full"><label class="form-label">카카오톡 오픈채팅 URL</label><input type="text" class="form-input" id="sKakao" placeholder="https://open.kakao.com/..."></div>
-          <div class="form-group"><label class="form-label">상호명</label><input type="text" class="form-input" id="sBusinessName"></div>
-          <div class="form-group"><label class="form-label">사업자등록번호</label><input type="text" class="form-input" id="sBusinessNum" placeholder="000-00-00000"></div>
-          <div class="form-group full"><label class="form-label">주소</label><input type="text" class="form-input" id="sAddress"></div>
-          <div class="form-group full"><label class="form-label">공지사항</label><textarea class="form-input form-textarea" id="sNotice"></textarea></div>
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">사이트 설정</div></div>
+      <div class="sc">
+        <div class="fg2">
+          <div class="fg"><label class="fl">사이트명</label><input type="text" class="fi" id="sname" placeholder="SE글로벌 렌탈"></div>
+          <div class="fg"><label class="fl">대표 전화번호</label><input type="text" class="fi" id="sphone" placeholder="010-0000-0000"></div>
+          <div class="fg full"><label class="fl">카카오톡 오픈채팅 URL</label><input type="text" class="fi" id="skakao" placeholder="https://open.kakao.com/o/..."></div>
+          <div class="fg"><label class="fl">상호명</label><input type="text" class="fi" id="sbizname"></div>
+          <div class="fg"><label class="fl">사업자등록번호</label><input type="text" class="fi" id="sbiznum" placeholder="000-00-00000"></div>
+          <div class="fg full"><label class="fl">주소</label><input type="text" class="fi" id="saddr"></div>
+          <div class="fg full"><label class="fl">공지사항</label><textarea class="fi fta" id="snotice"></textarea></div>
         </div>
-        <div class="form-actions"><button class="btn-save" onclick="saveSite()">저장</button></div>
+        <div class="factions"><button class="bsave" onclick="saveSite()">저장</button></div>
       </div>
     </div>
-
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-let vehicles = [], consults = [], editingImages = [];
+let vehicles=[],consults=[],eImgs=[];
 
-// ── 로그인 ──
-function doLogin() {
-  const pw = document.getElementById('loginPw').value;
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem('rf_admin', '1');
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('adminLayout').classList.remove('page-hidden');
-    document.getElementById('dashDate').textContent = new Date().toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric'});
+// ── Auth ──
+function doLogin(){
+  if(document.getElementById('lpw').value===ADMIN_PW){
+    sessionStorage.setItem('sg_admin','1');
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminLayout').classList.remove('hidden');
+    document.getElementById('ddate').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
     loadAll();
   } else {
-    document.getElementById('loginError').textContent = '비밀번호가 올바르지 않습니다';
+    document.getElementById('lerr').textContent='비밀번호가 올바르지 않습니다';
   }
 }
-function logout() { sessionStorage.removeItem('rf_admin'); location.reload(); }
-if (sessionStorage.getItem('rf_admin')) {
+function logout(){sessionStorage.removeItem('sg_admin');location.reload();}
+if(sessionStorage.getItem('sg_admin')){
   document.getElementById('loginPage').style.display='none';
-  document.getElementById('adminLayout').classList.remove('page-hidden');
-  document.getElementById('dashDate').textContent = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('adminLayout').classList.remove('hidden');
+  document.getElementById('ddate').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
   loadAll();
 }
 
-// ── 내비게이션 ──
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  if(window.innerWidth<=768) closeSidebar();
+// ── Nav ──
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mi').forEach(m=>m.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  if(el)el.classList.add('on');
+  if(window.innerWidth<=768)closeSb();
 }
-function toggleSidebar() {
-  const sb=document.getElementById('sidebar'), ov=document.getElementById('sidebarOverlay');
-  if(sb.classList.contains('open')){ sb.classList.remove('open'); ov.classList.add('page-hidden'); }
-  else { sb.classList.add('open'); ov.classList.remove('page-hidden'); }
+function toggleSb(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sbov');
+  if(s.classList.contains('on')){s.classList.remove('on');o.classList.add('hidden');}
+  else{s.classList.add('on');o.classList.remove('hidden');}
 }
-function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.add('page-hidden'); }
+function closeSb(){document.getElementById('sidebar').classList.remove('on');document.getElementById('sbov').classList.add('hidden');}
 
-// ── 전체 로드 ──
-async function loadAll() { await Promise.all([loadVehicles(), loadConsults(), loadSiteConfig()]); }
+// ── Load All ──
+async function loadAll(){await Promise.all([loadVehicles(),loadConsults(),loadSite()]);}
 
-// ── 차량 ──
-async function loadVehicles() {
-  const { data } = await sbAdmin.from('vehicles').select('*').order('sort_order');
-  vehicles = data || [];
-  renderVehicleList();
-  document.getElementById('statVehicles').textContent = vehicles.length;
+// ── Vehicles ──
+async function loadVehicles(){
+  try{
+    const {data,error}=await sba.from('vehicles').select('*').order('sort_order',{ascending:true});
+    if(error)throw error;
+    vehicles=data||[];
+    renderVList();
+    document.getElementById('sv1').textContent=vehicles.length;
+  }catch(e){toast('차량 로드 실패','err');console.error(e);}
 }
 
-function renderVehicleList() {
-  const el = document.getElementById('vehicleList');
-  if (!vehicles.length) { el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:40px">등록된 차량이 없습니다</p>'; return; }
-  el.innerHTML = `<div style="overflow-x:auto"><table class="data-table"><thead><tr><th>이미지</th><th>ID</th><th>차량명</th><th>종류</th><th>렌탈</th><th>리스</th><th>표시</th><th>관리</th></tr></thead><tbody>${
-    vehicles.map(v=>`<tr>
-      <td>${(v.images||[]).length?`<img src="${((v.images.find(i=>i.is_main)||v.images[0])).url}" style="width:48px;height:48px;border-radius:6px;object-fit:cover">`:'<span style="font-size:28px">🛵</span>'}</td>
-      <td><code style="font-size:11px">${v.id}</code></td>
-      <td style="font-weight:700">${v.name}</td>
-      <td>${v.type==='electric'?'⚡ 전기':'⛽ 내연'}</td>
-      <td>${v.rental_price||'-'}</td>
-      <td>${v.lease_price||'-'}</td>
-      <td><div class="toggle ${v.is_active?'on':''}" onclick="toggleActive('${v.id}',${v.is_active})"></div></td>
-      <td style="display:flex;gap:6px"><button class="btn-sm btn-edit" onclick="editVehicle('${v.id}')">수정</button><button class="btn-sm btn-delete" onclick="deleteVehicle('${v.id}')">삭제</button></td>
-    </tr>`).join('')
+function renderVList(){
+  const el=document.getElementById('vlist');
+  if(!vehicles.length){el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:40px">등록된 차량이 없습니다</p>';return;}
+  el.innerHTML=`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>이미지</th><th>ID</th><th>차량명</th><th>종류</th><th>렌탈</th><th>표시</th><th>관리</th></tr></thead><tbody>${
+    vehicles.map(v=>{
+      const imgs=parseImgs(v.images);
+      const main=imgs.find(i=>i.is_main)||imgs[0];
+      const imgH=main?`<img src="${main.url}" style="width:48px;height:48px;border-radius:6px;object-fit:cover" onerror="this.style.display='none'">`:'<span style="font-size:24px">🛵</span>';
+      return `<tr>
+        <td>${imgH}</td>
+        <td><code style="font-size:11px">${v.id}</code></td>
+        <td style="font-weight:700">${v.name}</td>
+        <td>${v.type==='electric'?'⚡ 전기':'⛽ 내연'}</td>
+        <td>${v.rental_price||'-'}</td>
+        <td><div class="tog ${v.is_active?'on':''}" onclick="toggleV('${v.id}',${v.is_active})"></div></td>
+        <td style="display:flex;gap:6px">
+          <button class="bsm be" onclick="editV('${v.id}')">수정</button>
+          <button class="bsm bd" onclick="deleteV('${v.id}')">삭제</button>
+        </td>
+      </tr>`;
+    }).join('')
   }</tbody></table></div>`;
 }
 
-function showVehicleForm(vehicle=null) {
-  document.getElementById('vehicleListView').style.display='none';
-  document.getElementById('vehicleFormView').style.display='block';
-  document.getElementById('vehicleFormTitle').textContent=vehicle?'차량 수정':'차량 추가';
-  document.getElementById('vId').value=vehicle?vehicle.id:'';
-  document.getElementById('vName').value=vehicle?vehicle.name:'';
-  document.getElementById('vBrand').value=vehicle?vehicle.brand||'':'';
-  document.getElementById('vType').value=vehicle?vehicle.type||'gasoline':'electric';
-  document.getElementById('vTagline').value=vehicle?vehicle.tagline||'':'';
-  document.getElementById('vDesc').value=vehicle?vehicle.description||'':'';
-  document.getElementById('vRental').value=vehicle?vehicle.rental_price||'':'';
-  document.getElementById('vLease').value=vehicle?vehicle.lease_price||'':'';
-  document.getElementById('vDeposit').value=vehicle?vehicle.deposit||'':'';
-  document.getElementById('vBadge').value=vehicle?vehicle.badge||'':'';
-  document.getElementById('vSort').value=vehicle?vehicle.sort_order||0:0;
-  document.getElementById('editingVehicleId').value=vehicle?vehicle.id:'';
-  document.getElementById('specsEditor').innerHTML='';
-  Object.entries(vehicle?vehicle.specs||{}:{}).forEach(([k,v])=>addSpecRow(k,v));
-  editingImages=vehicle?[...(vehicle.images||[])]:[];
-  renderImagePreviews();
+function parseImgs(raw){
+  if(!raw)return[];
+  if(Array.isArray(raw))return raw;
+  try{return JSON.parse(raw);}catch(e){return[];}
 }
-function hideVehicleForm() { document.getElementById('vehicleListView').style.display='block'; document.getElementById('vehicleFormView').style.display='none'; }
-function editVehicle(id) { showVehicleForm(vehicles.find(v=>v.id===id)); }
-async function deleteVehicle(id) {
-  if(!confirm('정말 삭제하시겠습니까?')) return;
-  await sbAdmin.from('vehicles').delete().eq('id',id);
-  showToast('삭제되었습니다','success'); loadVehicles();
-}
-async function toggleActive(id, cur) { await sbAdmin.from('vehicles').update({is_active:!cur}).eq('id',id); loadVehicles(); }
-
-function addSpecRow(key='', val='') {
-  const row=document.createElement('div'); row.className='spec-row';
-  row.innerHTML=`<input type="text" class="form-input spec-key" placeholder="항목 (예: 최고속도)" value="${key}"><input type="text" class="form-input spec-val" placeholder="값 (예: 60km/h)" value="${val}"><button onclick="this.parentElement.remove()" style="background:var(--red);color:#fff;border:none;border-radius:6px;width:32px;height:32px;cursor:pointer">✕</button>`;
-  document.getElementById('specsEditor').appendChild(row);
+function parseSpecs(raw){
+  if(!raw)return{};
+  if(typeof raw==='object'&&!Array.isArray(raw))return raw;
+  try{return JSON.parse(raw);}catch(e){return{};}
 }
 
-async function saveVehicle() {
-  const id=document.getElementById('vId').value.trim(), name=document.getElementById('vName').value.trim();
-  if(!id||!name){showToast('ID와 차량명은 필수입니다','error');return;}
+function showVForm(v=null){
+  document.getElementById('vlist-view').style.display='none';
+  document.getElementById('vform-view').style.display='block';
+  document.getElementById('vftitle').textContent=v?'차량 수정':'차량 추가';
+  document.getElementById('eid').value=v?v.id:'';
+  document.getElementById('vid').value=v?v.id:'';
+  document.getElementById('vid').disabled=!!v; // ID는 수정 불가
+  document.getElementById('vname2').value=v?v.name:'';
+  document.getElementById('vbrand').value=v?v.brand||'':'';
+  document.getElementById('vtype2').value=v?v.type||'gasoline':'gasoline';
+  document.getElementById('vtag2').value=v?v.tagline||'':'';
+  document.getElementById('vdesc').value=v?v.description||'':'';
+  document.getElementById('vrental').value=v?v.rental_price||'':'';
+  document.getElementById('vlease').value=v?v.lease_price||'':'';
+  document.getElementById('vdep').value=v?v.deposit||'':'';
+  document.getElementById('vbadge').value=v?v.badge||'':'';
+  document.getElementById('vsort').value=v?v.sort_order||0:0;
+  // specs
+  document.getElementById('specrows').innerHTML='';
+  const specs=parseSpecs(v?v.specs:{});
+  Object.entries(specs).forEach(([k,val])=>addSpec(k,val));
+  // images
+  eImgs=parseImgs(v?v.images:[]);
+  renderImgs();
+}
+function hideVForm(){
+  document.getElementById('vlist-view').style.display='block';
+  document.getElementById('vform-view').style.display='none';
+}
+function editV(id){showVForm(vehicles.find(v=>v.id===id));}
+async function deleteV(id){
+  if(!confirm('정말 삭제하시겠습니까?'))return;
+  const{error}=await sba.from('vehicles').delete().eq('id',id);
+  if(error){toast('삭제 실패','err');}else{toast('삭제됐습니다','ok');loadVehicles();}
+}
+async function toggleV(id,cur){
+  await sba.from('vehicles').update({is_active:!cur}).eq('id',id);
+  loadVehicles();
+}
+
+function addSpec(k='',v=''){
+  const row=document.createElement('div');row.className='specrow';
+  row.innerHTML=`<input placeholder="항목 (예: 최고속도)" value="${k}"><input placeholder="값 (예: 60km/h)" value="${v}"><button class="delbtn" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('specrows').appendChild(row);
+}
+
+async function saveVehicle(){
+  const id=document.getElementById('vid').value.trim();
+  const name=document.getElementById('vname2').value.trim();
+  if(!id||!name){toast('ID와 차량명은 필수입니다','err');return;}
+  // collect specs
   const specs={};
-  document.querySelectorAll('.spec-row').forEach(row=>{const k=row.querySelector('.spec-key').value.trim(),v=row.querySelector('.spec-val').value.trim();if(k&&v)specs[k]=v;});
+  document.querySelectorAll('.specrow').forEach(r=>{
+    const inputs=r.querySelectorAll('input');
+    const k=inputs[0].value.trim(),v=inputs[1].value.trim();
+    if(k&&v)specs[k]=v;
+  });
   const payload={
-    id, name,
-    brand: document.getElementById('vBrand').value.trim()||null,
-    type: document.getElementById('vType').value,
-    tagline: document.getElementById('vTagline').value.trim()||null,
-    description: document.getElementById('vDesc').value.trim()||null,
-    rental_price: document.getElementById('vRental').value.trim()||null,
-    lease_price: document.getElementById('vLease').value.trim()||null,
-    deposit: document.getElementById('vDeposit').value.trim()||null,
-    badge: document.getElementById('vBadge').value.trim()||null,
-    sort_order: parseInt(document.getElementById('vSort').value)||0,
-    specs: specs,
-    images: editingImages||[],
-    is_active: true
+    name,
+    brand:document.getElementById('vbrand').value.trim()||null,
+    type:document.getElementById('vtype2').value,
+    tagline:document.getElementById('vtag2').value.trim()||null,
+    description:document.getElementById('vdesc').value.trim()||null,
+    rental_price:document.getElementById('vrental').value.trim()||null,
+    lease_price:document.getElementById('vlease').value.trim()||null,
+    deposit:document.getElementById('vdep').value.trim()||null,
+    badge:document.getElementById('vbadge').value.trim()||null,
+    sort_order:parseInt(document.getElementById('vsort').value)||0,
+    specs:specs,
+    images:eImgs,
+    is_active:true
   };
-  const editingId=document.getElementById('editingVehicleId').value;
-  const { error } = editingId ? await sbAdmin.from('vehicles').update(payload).eq('id',editingId) : await sbAdmin.from('vehicles').insert([payload]);
-  if(error){showToast('저장 실패: '+error.message,'error');}
-  else{showToast('저장되었습니다','success');hideVehicleForm();loadVehicles();}
-}
-
-// ── 이미지 업로드 (Supabase Storage) ──
-async function handleImageUpload(input) {
-  const files=Array.from(input.files); if(!files.length) return;
-  for(const file of files){
-    const ext=file.name.split('.').pop();
-    const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,8)}.${ext}`;
-    const { error } = await sbAdmin.storage.from('vehicle-images').upload(path, file, {contentType:file.type, upsert:true});
-    if(error){showToast('업로드 실패: '+error.message,'error');console.error('Storage error:',error);continue;}
-    const { data } = sbAdmin.storage.from('vehicle-images').getPublicUrl(path);
-    editingImages.push({url:data.publicUrl, path, is_main:editingImages.length===0});
+  const editingId=document.getElementById('eid').value;
+  let error;
+  if(editingId){
+    ({error}=await sba.from('vehicles').update(payload).eq('id',editingId));
+  }else{
+    payload.id=id;
+    ({error}=await sba.from('vehicles').insert([payload]));
   }
-  renderImagePreviews(); input.value='';
+  if(error){toast('저장 실패: '+error.message,'err');console.error(error);}
+  else{toast('저장됐습니다','ok');hideVForm();loadVehicles();}
 }
 
-function renderImagePreviews() {
-  document.getElementById('imgPreviewGrid').innerHTML=editingImages.map((img,i)=>`
-    <div class="img-preview-item ${img.is_main?'main-img':''}">
-      <img src="${img.url}" alt="">
-      <div class="img-preview-actions">
-        <button class="img-action-btn" onclick="setMainImage(${i})" style="${img.is_main?'background:#2563EB;color:#fff':''}">${img.is_main?'✓ 메인':'메인 설정'}</button>
-        <button class="img-action-btn" onclick="removeImage(${i})" style="background:#EF4444;color:#fff">삭제</button>
+// ── Image Upload ──
+async function handleUpload(input){
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  for(const file of files){
+    const ext=file.name.split('.').pop().toLowerCase();
+    const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,6)}.${ext}`;
+    const{error}=await sba.storage.from('vehicle-images').upload(path,file,{contentType:file.type,upsert:true});
+    if(error){toast('업로드 실패: '+error.message,'err');console.error(error);continue;}
+    const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+    eImgs.push({url:data.publicUrl,path,is_main:eImgs.length===0});
+  }
+  renderImgs();
+  input.value='';
+}
+function renderImgs(){
+  document.getElementById('ipgrid').innerHTML=eImgs.map((img,i)=>`
+    <div class="ipitem ${img.is_main?'main':''}">
+      <img src="${img.url}" alt="" onerror="this.src=''">
+      <div class="ipactions">
+        <button class="ipbtn" onclick="setMain(${i})" style="${img.is_main?'background:#2563EB;color:#fff':''}">${img.is_main?'✓ 메인':'메인 설정'}</button>
+        <button class="ipbtn" onclick="removeImg(${i})" style="background:#EF4444;color:#fff">삭제</button>
       </div>
     </div>`).join('');
 }
-function setMainImage(idx){editingImages.forEach((img,i)=>img.is_main=(i===idx));renderImagePreviews();}
-async function removeImage(idx){
-  const img=editingImages[idx];
-  if(img.path) await sbAdmin.storage.from('vehicle-images').remove([img.path]);
-  editingImages.splice(idx,1);
-  if(editingImages.length&&!editingImages.find(i=>i.is_main))editingImages[0].is_main=true;
-  renderImagePreviews();
+function setMain(i){eImgs.forEach((img,j)=>img.is_main=(j===i));renderImgs();}
+async function removeImg(i){
+  const img=eImgs[i];
+  if(img.path)await sba.storage.from('vehicle-images').remove([img.path]);
+  eImgs.splice(i,1);
+  if(eImgs.length&&!eImgs.find(x=>x.is_main))eImgs[0].is_main=true;
+  renderImgs();
 }
 
-// ── 상담 ──
-async function loadConsults() {
-  const { data } = await sbAdmin.from('consult_requests').select('*').order('created_at',{ascending:false});
-  consults = data || [];
-  renderConsults();
-  document.getElementById('statConsult').textContent=consults.length;
-  document.getElementById('statPending').textContent=consults.filter(c=>c.status==='pending').length;
-  document.getElementById('statDone').textContent=consults.filter(c=>c.status==='done').length;
-  renderRecentConsult();
+// ── Consult ──
+async function loadConsults(){
+  try{
+    const{data,error}=await sba.from('consult_requests').select('*').order('created_at',{ascending:false});
+    if(error)throw error;
+    consults=data||[];
+    renderConsults();
+    document.getElementById('sv2').textContent=consults.length;
+    document.getElementById('sv3').textContent=consults.filter(c=>c.status==='pending').length;
+    document.getElementById('sv4').textContent=consults.filter(c=>c.status==='done').length;
+    renderRecentC();
+  }catch(e){console.error(e);}
 }
-
-function renderConsults() {
-  const tbody=document.getElementById('consultTbody');
-  if(!consults.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">상담 내역이 없습니다</td></tr>';return;}
-  tbody.innerHTML=consults.map(c=>`<tr>
+function renderConsults(){
+  const tb=document.getElementById('ctbody');
+  if(!consults.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">상담 내역이 없습니다</td></tr>';return;}
+  tb.innerHTML=consults.map(c=>`<tr>
     <td style="font-size:11px;white-space:nowrap">${new Date(c.created_at).toLocaleDateString('ko-KR')}<br>${new Date(c.created_at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td>
     <td style="font-weight:700">${c.name}</td>
     <td><a href="tel:${c.phone}" style="color:var(--primary)">${c.phone}</a></td>
@@ -416,46 +450,64 @@ function renderConsults() {
     <td>${c.vehicle_name||'-'}</td>
     <td>${c.consult_type==='rental'?'렌탈':c.consult_type==='lease'?'리스':'렌탈·리스'}</td>
     <td>
-      <select class="status-badge status-${c.status}" onchange="updateStatus(${c.id},this.value)" style="border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px">
+      <select class="sbadge ${c.status==='pending'?'sp':c.status==='contacted'?'sc2':'sd'}" onchange="updateStatus(${c.id},this.value,this)" style="border:none;background:inherit;cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px">
         <option value="pending" ${c.status==='pending'?'selected':''}>미처리</option>
         <option value="contacted" ${c.status==='contacted'?'selected':''}>연락완료</option>
         <option value="done" ${c.status==='done'?'selected':''}>처리완료</option>
       </select>
     </td>
-    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-sub);font-size:12px">${c.message||'-'}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--sub);font-size:12px">${c.message||'-'}</td>
   </tr>`).join('');
 }
-
-function renderRecentConsult() {
-  const el=document.getElementById('recentConsult'); const recent=consults.slice(0,5);
-  if(!recent.length){el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:24px">상담 내역이 없습니다</p>';return;}
-  el.innerHTML=`<table class="data-table"><thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>차종</th><th>상태</th></tr></thead><tbody>${recent.map(c=>`<tr><td style="font-size:11px">${new Date(c.created_at).toLocaleDateString('ko-KR')}</td><td style="font-weight:700">${c.name}</td><td>${c.phone}</td><td>${c.vehicle_name||'-'}</td><td><span class="status-badge status-${c.status}">${c.status==='pending'?'미처리':c.status==='contacted'?'연락완료':'처리완료'}</span></td></tr>`).join('')}</tbody></table>`;
+function renderRecentC(){
+  const el=document.getElementById('recentC');
+  const r=consults.slice(0,5);
+  if(!r.length){el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:24px">상담 내역이 없습니다</p>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>차종</th><th>상태</th></tr></thead><tbody>${r.map(c=>`<tr><td style="font-size:11px">${new Date(c.created_at).toLocaleDateString('ko-KR')}</td><td style="font-weight:700">${c.name}</td><td>${c.phone}</td><td>${c.vehicle_name||'-'}</td><td><span class="sbadge ${c.status==='pending'?'sp':c.status==='contacted'?'sc2':'sd'}">${c.status==='pending'?'미처리':c.status==='contacted'?'연락완료':'처리완료'}</span></td></tr>`).join('')}</tbody></table>`;
+}
+async function updateStatus(id,status,sel){
+  const{error}=await sba.from('consult_requests').update({status}).eq('id',id);
+  if(error){toast('변경 실패','err');}else{toast('상태 변경됐습니다','ok');sel.className=`sbadge ${status==='pending'?'sp':status==='contacted'?'sc2':'sd'}`;loadConsults();}
 }
 
-async function updateStatus(id, status) {
-  await sbAdmin.from('consult_requests').update({status}).eq('id',id);
-  showToast('상태가 변경되었습니다','success'); loadConsults();
+// ── Site ──
+async function loadSite(){
+  try{
+    const{data:rows}=await sba.from('site_config').select('*').eq('id',1).limit(1);
+    const s=rows&&rows.length?rows[0]:null;
+    if(!s)return;
+    document.getElementById('sname').value=s.site_name||'';
+    document.getElementById('sphone').value=s.phone||'';
+    document.getElementById('skakao').value=s.kakao_url||'';
+    document.getElementById('sbizname').value=s.business_name||'';
+    document.getElementById('sbiznum').value=s.business_number||'';
+    document.getElementById('saddr').value=s.address||'';
+    document.getElementById('snotice').value=s.notice||'';
+  }catch(e){console.error(e);}
 }
-
-// ── 사이트 설정 ──
-async function loadSiteConfig() {
-  const { data: _rows } = await sbAdmin.from('site_config').select('*').eq('id',1).limit(1); const data = _rows && _rows.length ? _rows[0] : null;
-  if(!data) return;
-  document.getElementById('sSiteName').value=data.site_name||'';
-  document.getElementById('sPhone').value=data.phone||'';
-  document.getElementById('sKakao').value=data.kakao_url||'';
-  document.getElementById('sBusinessName').value=data.business_name||'';
-  document.getElementById('sBusinessNum').value=data.business_number||'';
-  document.getElementById('sAddress').value=data.address||'';
-  document.getElementById('sNotice').value=data.notice||'';
-}
-async function saveSite() {
-  const { error } = await sbAdmin.from('site_config').upsert({id:1,site_name:document.getElementById('sSiteName').value,phone:document.getElementById('sPhone').value,kakao_url:document.getElementById('sKakao').value,business_name:document.getElementById('sBusinessName').value,business_number:document.getElementById('sBusinessNum').value,address:document.getElementById('sAddress').value,notice:document.getElementById('sNotice').value});
-  if(error) showToast('저장 실패','error'); else showToast('저장되었습니다','success');
+async function saveSite(){
+  const payload={
+    id:1,
+    site_name:document.getElementById('sname').value||'SE글로벌 렌탈',
+    phone:document.getElementById('sphone').value||null,
+    kakao_url:document.getElementById('skakao').value||null,
+    business_name:document.getElementById('sbizname').value||null,
+    business_number:document.getElementById('sbiznum').value||null,
+    address:document.getElementById('saddr').value||null,
+    notice:document.getElementById('snotice').value||null,
+    updated_at:new Date().toISOString()
+  };
+  const{error}=await sba.from('site_config').upsert(payload,{onConflict:'id'});
+  if(error){toast('저장 실패: '+error.message,'err');console.error(error);}
+  else{toast('저장됐습니다','ok');}
 }
 
 // ── Toast ──
-function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.classList.remove('show'),2800);}
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast on ${type}`;
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
 </script>
 </body>
 </html>
