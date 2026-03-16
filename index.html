@@ -400,7 +400,11 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
   .sec-sub{font-size:14px}
 
   /* 차량 슬라이더 */
-  .vcard{flex:0 0 220px}
+  .vcard{grid-template-columns:1fr;min-height:auto}
+  .vcard-img{min-height:260px}
+  .vcard-body{padding:24px 20px}
+  .vcard-name{font-size:24px}
+  .vcard-pv{font-size:26px}
   .vcard-name{font-size:15px}
   .vcard-body{padding:12px 14px 14px}
   .vcard-pv{font-size:16px}
@@ -453,7 +457,9 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
   .phone-acts{padding:4px 8px 2px;font-size:12px}
   .phone-likes,.phone-cap,.phone-tags,.phone-comments,.phone-input-bar{display:none}
 
-  .vcard{flex:0 0 180px}
+  .vcard-name{font-size:20px}
+  .vcard-pv{font-size:22px}
+  .vcard-body{padding:18px 16px}
   .fgrid{grid-template-columns:1fr 1fr}
   .pgrid{grid-template-columns:repeat(2,1fr)}
   .frow{grid-template-columns:1fr}
@@ -648,10 +654,11 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   <span class="sec-eye">차종 소개</span>
   <h2 class="sec-h">원하는 차량을 선택하세요</h2>
   <p class="sec-sub">배달 라이더를 위해 검증된 차량만 제공합니다</p>
-  <div class="vslider-wrap">
+  <div class="vslider-wrap" id="vsliderWrap">
+    <div class="vgrid" id="vgrid"><div class="loading" style="flex:0 0 100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px"><div class="spin"></div>불러오는 중...</div></div>
     <button class="vslider-btn prev" onclick="slideV(-1)">‹</button>
-    <div class="vgrid" id="vgrid"><div class="loading"><div class="spin"></div>불러오는 중...</div></div>
     <button class="vslider-btn next" onclick="slideV(1)">›</button>
+    <div class="vslider-counter" id="vcount">1 / 1</div>
   </div>
   <div class="vslider-dots" id="vdots"></div>
 </div>
@@ -761,33 +768,43 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <script>
 let vdata=[];
+let vCurIdx=0,vTotal=0,vDragX=0,vDragging=false;
+
 function slideV(dir){
-  const g=document.getElementById('vgrid');
-  const cardW=g.querySelector('.vcard')?.offsetWidth||300;
-  g.scrollBy({left:dir*(cardW+16),behavior:'smooth'});
-  setTimeout(updateDots,350);
+  vCurIdx=(vCurIdx+dir+vTotal)%vTotal;
+  applySlide();
 }
-function updateDots(){
+function goSlide(i){vCurIdx=i;applySlide();}
+function applySlide(){
   const g=document.getElementById('vgrid');
-  const dots=document.querySelectorAll('.vslider-dot');
-  if(!dots.length)return;
-  const cardW=g.querySelector('.vcard')?.offsetWidth||300;
-  const idx=Math.round(g.scrollLeft/(cardW+16));
-  dots.forEach((d,i)=>d.classList.toggle('on',i===idx));
+  if(!g)return;
+  g.style.transform=`translateX(-${vCurIdx*100}%)`;
+  document.querySelectorAll('.vslider-dot').forEach((d,i)=>d.classList.toggle('on',i===vCurIdx));
+  const ct=document.getElementById('vcount');
+  if(ct)ct.textContent=`${vCurIdx+1} / ${vTotal}`;
 }
 function buildDots(count){
+  vTotal=count;
   const wrap=document.getElementById('vdots');
   if(!wrap)return;
   wrap.innerHTML=Array.from({length:count},(_,i)=>
     `<div class="vslider-dot ${i===0?'on':''}" onclick="goSlide(${i})"></div>`
   ).join('');
-  document.getElementById('vgrid').addEventListener('scroll',updateDots,{passive:true});
-}
-function goSlide(i){
+  const ct=document.getElementById('vcount');
+  if(ct)ct.textContent=`1 / ${count}`;
+  // drag/swipe
   const g=document.getElementById('vgrid');
-  const cardW=g.querySelector('.vcard')?.offsetWidth||300;
-  g.scrollTo({left:i*(cardW+16),behavior:'smooth'});
+  let startX=0,moved=0;
+  g.addEventListener('mousedown',e=>{vDragging=true;startX=e.clientX;g.classList.add('dragging')});
+  g.addEventListener('mousemove',e=>{if(!vDragging)return;moved=e.clientX-startX;});
+  g.addEventListener('mouseup',e=>{if(!vDragging)return;vDragging=false;g.classList.remove('dragging');if(Math.abs(moved)>50)slideV(moved<0?1:-1);moved=0;});
+  g.addEventListener('mouseleave',()=>{if(vDragging){vDragging=false;g.classList.remove('dragging');if(Math.abs(moved)>50)slideV(moved<0?1:-1);moved=0;}});
+  // touch
+  let tx=0;
+  g.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  g.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)slideV(dx<0?1:-1);},{passive:true});
 }
+function updateDots(){}
 
 // ── 스크롤 애니메이션 ──
 const observer=new IntersectionObserver((entries)=>{
@@ -882,11 +899,12 @@ async function init(){
         if(cap)cap.textContent=(v.tagline||v.name)+' 🛵';
       }
     }
+    grid.style.transform='translateX(0)';
     grid.innerHTML=vdata.map(v=>{
       const imgs=Array.isArray(v.images)?v.images:(typeof v.images==='string'?JSON.parse(v.images||'[]'):[]);
       const main=imgs.find(x=>x.is_main)||imgs[0];
       const imgEl=main?`<img src="${main.url}" alt="${v.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=vcard-ph>${v.type==='electric'?'⚡':'🏍️'}</div>'">`:`<div class="vcard-ph">${v.type==='electric'?'⚡':'🏍️'}</div>`;
-      return `<div class="vcard" onclick="location.href='vehicle.html?id=${v.id}'">${v.badge?`<div class="vbadge">${v.badge}</div>`:''}<div class="vcard-img">${imgEl}</div><div class="vcard-body"><div class="vcard-type ${v.type==='electric'?'ev':''}">${v.type==='electric'?'ELECTRIC':'GASOLINE'}</div><div class="vcard-name">${v.name}</div><div class="vcard-tag">${v.tagline||''}</div><div class="vcard-price"><span class="vcard-pl">렌탈</span><span class="vcard-pv">${v.rental_price||'문의'}</span><span class="vcard-pu">/월~</span></div></div></div>`;
+      return `<div class="vcard">${v.badge?`<div class="vbadge">${v.badge}</div>`:''}<div class="vcard-img">${imgEl}</div><div class="vcard-body"><div class="vcard-type ${v.type==='electric'?'ev':''}">${v.type==='electric'?'ELECTRIC':'GASOLINE'}</div><div class="vcard-name">${v.name}</div><div class="vcard-tag">${v.tagline||''}</div><div class="vcard-price"><span class="vcard-pl">렌탈</span><span class="vcard-pv">${v.rental_price||'문의'}</span><span class="vcard-pu">/월~</span></div><a href="vehicle.html?id=${v.id}" class="vcard-cta">자세히 보기 →</a></div></div>`;
     }).join('');
     vdata.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;sel.appendChild(o);});
     buildDots(vdata.length);
