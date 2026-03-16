@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>차량 상세 - SE글로벌 렌탈</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --primary:#2563EB; --accent:#F59E0B; --text:#1E293B; --text-sub:#64748B; --bg:#F8FAFC; --card:#fff; --border:#E2E8F0; --green:#10B981; --radius:16px; }
+body { font-family:-apple-system,'Pretendard',sans-serif; background:var(--bg); color:var(--text); padding-bottom:80px; }
+a { text-decoration:none; color:inherit; }
+header { background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; padding:0 20px; }
+.header-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:16px; height:60px; }
+.back-btn { display:flex; align-items:center; gap:6px; font-size:14px; font-weight:600; color:var(--text-sub); cursor:pointer; }
+.logo { font-size:20px; font-weight:800; color:var(--primary); }
+.logo span { color:var(--accent); }
+.gallery { background:#000; position:relative; overflow:hidden; }
+.gallery-main { width:100%; height:min(60vw,420px); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.gallery-main img { width:100%; height:100%; object-fit:contain; cursor:zoom-in; }
+.gallery-placeholder { font-size:120px; opacity:.3; }
+.gallery-arrow { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.15); backdrop-filter:blur(4px); border:none; color:#fff; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
+.gallery-arrow.prev { left:12px; }
+.gallery-arrow.next { right:12px; }
+.gallery-counter { position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,.5); color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; }
+.gallery-thumbs { display:flex; gap:6px; padding:10px 12px; overflow-x:auto; background:#111; scrollbar-width:none; }
+.gallery-thumbs::-webkit-scrollbar { display:none; }
+.gallery-thumb { width:56px; height:56px; border-radius:6px; overflow:hidden; cursor:pointer; flex-shrink:0; border:2px solid transparent; transition:border-color .2s; }
+.gallery-thumb.active { border-color:var(--primary); }
+.gallery-thumb img { width:100%; height:100%; object-fit:cover; }
+.content { max-width:1100px; margin:0 auto; padding:20px; }
+.v-type { font-size:12px; font-weight:700; color:var(--primary); margin-bottom:4px; }
+.v-name { font-size:26px; font-weight:900; margin-bottom:6px; }
+.v-tagline { font-size:15px; color:var(--text-sub); margin-bottom:16px; }
+.pricing-card { background:var(--card); border-radius:var(--radius); padding:20px; margin-bottom:20px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.pricing-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.price-box { text-align:center; padding:16px; border-radius:12px; background:var(--bg); }
+.price-box.primary { background:#EFF6FF; }
+.price-tag { font-size:12px; font-weight:700; color:var(--text-sub); margin-bottom:4px; }
+.price-main { font-size:24px; font-weight:900; color:var(--primary); }
+.price-sub { font-size:11px; color:var(--text-sub); margin-top:2px; }
+.deposit-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); font-size:13px; }
+.tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:20px; }
+.tab-btn { padding:12px 20px; font-size:14px; font-weight:700; color:var(--text-sub); border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; }
+.tab-btn.active { color:var(--primary); border-bottom-color:var(--primary); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.spec-table { width:100%; border-collapse:collapse; }
+.spec-table tr { border-bottom:1px solid var(--border); }
+.spec-table td { padding:12px 4px; font-size:14px; }
+.spec-table td:first-child { color:var(--text-sub); width:40%; }
+.spec-table td:last-child { font-weight:700; }
+.desc-text { font-size:14px; line-height:1.8; }
+.lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:1000; align-items:center; justify-content:center; }
+.lightbox.open { display:flex; }
+.lightbox img { max-width:95vw; max-height:90vh; object-fit:contain; }
+.lightbox-close { position:absolute; top:16px; right:16px; background:none; border:none; color:#fff; font-size:32px; cursor:pointer; }
+.lightbox-arrow { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.15); border:none; color:#fff; width:48px; height:48px; border-radius:50%; font-size:20px; cursor:pointer; }
+.lightbox-arrow.prev { left:16px; }
+.lightbox-arrow.next { right:16px; }
+.mobile-cta { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); padding:10px 16px; z-index:200; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mobile-cta-btn { padding:13px; border-radius:10px; font-size:14px; font-weight:800; text-align:center; border:none; cursor:pointer; }
+.mobile-phone { background:var(--primary); color:#fff; }
+.mobile-kakao { background:#FEE500; color:#3A1D1D; }
+.loading-wrap { text-align:center; padding:80px 20px; }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.error-wrap { text-align:center; padding:80px 20px; }
+</style>
+</head>
+<body>
+
+<script>
+const SUPABASE_URL = 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = 'your-anon-key';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<header>
+  <div class="header-inner">
+    <div class="back-btn" onclick="history.back()">← 목록</div>
+    <a href="index.html" class="logo">SE글로벌 <span>렌탈</span></a>
+  </div>
+</header>
+
+<div id="loadingWrap" class="loading-wrap"><div class="spinner"></div><p style="color:#64748B">차량 정보를 불러오는 중...</p></div>
+<div id="errorWrap" class="error-wrap" style="display:none">
+  <div style="font-size:60px;margin-bottom:16px">🤔</div>
+  <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">차량을 찾을 수 없습니다</h2>
+  <p style="color:#64748B;margin-bottom:24px">URL을 확인하거나 목록으로 돌아가세요</p>
+  <a href="index.html" style="background:#2563EB;color:#fff;padding:12px 24px;border-radius:10px;font-weight:700">목록으로 돌아가기</a>
+</div>
+
+<div id="mainContent" style="display:none">
+  <div class="gallery">
+    <div class="gallery-main" id="galleryMain"><div class="gallery-placeholder">🛵</div></div>
+    <div class="gallery-thumbs" id="galleryThumbs"></div>
+  </div>
+  <div class="content">
+    <div style="margin-bottom:24px">
+      <div class="v-type" id="vType"></div>
+      <h1 class="v-name" id="vName"></h1>
+      <p class="v-tagline" id="vTagline"></p>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-row">
+        <div class="price-box primary"><div class="price-tag">🛵 렌탈</div><div class="price-main" id="pRental">-</div><div class="price-sub">/ 월</div></div>
+        <div class="price-box"><div class="price-tag">📋 리스</div><div class="price-main" id="pLease">-</div><div class="price-sub">/ 월</div></div>
+      </div>
+      <div class="deposit-row"><span style="color:#64748B">보증금 (예치금)</span><span style="font-weight:700" id="pDeposit">상담 문의</span></div>
+      <p style="font-size:11px;color:#94A3B8;margin-top:8px">※ 정확한 요금은 상담 후 확정됩니다</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('spec',this)">제원</button>
+      <button class="tab-btn" onclick="switchTab('desc',this)">상세 설명</button>
+    </div>
+    <div class="tab-content active" id="tab-spec"><table class="spec-table" id="specTable"></table></div>
+    <div class="tab-content" id="tab-desc"><p class="desc-text" id="descText"></p></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px">
+      <button id="pcPhone" style="padding:16px;border-radius:12px;background:#2563EB;color:#fff;font-size:15px;font-weight:800;border:none;cursor:pointer">📞 전화 상담</button>
+      <button id="pcKakao" style="padding:16px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:15px;font-weight:800;border:none;cursor:pointer">💬 카카오톡 문의</button>
+    </div>
+    <p style="font-size:11px;color:#94A3B8;line-height:1.6;margin-top:24px;padding:12px;background:#F8FAFC;border-radius:8px">※ 본 페이지는 특정 제조사·브랜드의 공식 판매페이지가 아닙니다. 차량 사양 및 가격은 변경될 수 있으며, 정확한 내용은 상담을 통해 확인하시기 바랍니다.</p>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-arrow prev" onclick="event.stopPropagation();moveLightbox(-1)">‹</button>
+  <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
+  <button class="lightbox-arrow next" onclick="event.stopPropagation();moveLightbox(1)">›</button>
+</div>
+
+<div class="mobile-cta">
+  <button class="mobile-cta-btn mobile-phone" id="mobilePhone">📞 전화 상담</button>
+  <button class="mobile-cta-btn mobile-kakao" id="mobileKakao">💬 카카오톡</button>
+</div>
+
+<script>
+let images = [], currentIdx = 0;
+const id = new URLSearchParams(location.search).get('id');
+
+async function loadVehicle() {
+  if (!id) { showError(); return; }
+  try {
+    const { data, error } = await sb.from('vehicles').select('*').eq('id', id).single();
+    if (error || !data) throw new Error();
+    const v = data;
+    document.title = `${v.name} - SE글로벌 렌탈`;
+    document.getElementById('vType').textContent = v.type === 'electric' ? '⚡ 전기이륜차' : '⛽ 내연기관';
+    document.getElementById('vName').textContent = v.name;
+    document.getElementById('vTagline').textContent = v.tagline || '';
+    document.getElementById('pRental').textContent = v.rental_price || '문의';
+    document.getElementById('pLease').textContent = v.lease_price || '문의';
+    document.getElementById('pDeposit').textContent = v.deposit || '상담 문의';
+    document.getElementById('descText').textContent = v.description || '상세 설명이 준비 중입니다.';
+    const specs = v.specs || {};
+    document.getElementById('specTable').innerHTML = Object.entries(specs).map(([k,val])=>`<tr><td>${k}</td><td>${val}</td></tr>`).join('') || '<tr><td colspan="2" style="text-align:center;color:#94A3B8;padding:24px">제원 정보가 없습니다</td></tr>';
+    images = v.images || [];
+    buildGallery();
+    loadSiteConfig();
+    document.getElementById('loadingWrap').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+  } catch(e) { showError(); }
+}
+
+function showError() {
+  document.getElementById('loadingWrap').style.display = 'none';
+  document.getElementById('errorWrap').style.display = 'block';
+}
+
+function buildGallery() {
+  const main = document.getElementById('galleryMain');
+  const thumbs = document.getElementById('galleryThumbs');
+  if (!images.length) return;
+  currentIdx = Math.max(0, images.findIndex(i => i.is_main));
+  main.innerHTML = `<img id="mainImg" src="${images[currentIdx].url}" alt="차량 이미지" onclick="openLightbox(${currentIdx})">${images.length>1?`<button class="gallery-arrow prev" onclick="moveGallery(-1)">‹</button><button class="gallery-arrow next" onclick="moveGallery(1)">›</button><div class="gallery-counter" id="galleryCounter">1 / ${images.length}</div>`:''}`;
+  if (images.length > 1) thumbs.innerHTML = images.map((img,i)=>`<div class="gallery-thumb ${i===currentIdx?'active':''}" onclick="goGallery(${i})"><img src="${img.url}" alt=""></div>`).join('');
+}
+
+function moveGallery(dir) { currentIdx=(currentIdx+dir+images.length)%images.length; updateGallery(); }
+function goGallery(idx) { currentIdx=idx; updateGallery(); }
+function updateGallery() {
+  const img=document.getElementById('mainImg'); if(img) img.src=images[currentIdx].url;
+  const ctr=document.getElementById('galleryCounter'); if(ctr) ctr.textContent=`${currentIdx+1} / ${images.length}`;
+  document.querySelectorAll('.gallery-thumb').forEach((t,i)=>t.classList.toggle('active',i===currentIdx));
+}
+function openLightbox(idx) { currentIdx=idx; document.getElementById('lightboxImg').src=images[idx].url; document.getElementById('lightbox').classList.add('open'); }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function moveLightbox(dir) { currentIdx=(currentIdx+dir+images.length)%images.length; document.getElementById('lightboxImg').src=images[currentIdx].url; updateGallery(); }
+function switchTab(tabId, btn) { document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); document.getElementById('tab-'+tabId).classList.add('active'); }
+document.addEventListener('keydown', e => { if(document.getElementById('lightbox').classList.contains('open')){ if(e.key==='ArrowLeft')moveLightbox(-1); if(e.key==='ArrowRight')moveLightbox(1); if(e.key==='Escape')closeLightbox(); }});
+
+async function loadSiteConfig() {
+  try {
+    const { data } = await sb.from('site_config').select('*').eq('id',1).single();
+    if (!data) return;
+    if (data.phone) {
+      const tel='tel:'+data.phone;
+      ['pcPhone','mobilePhone'].forEach(id=>{const el=document.getElementById(id);if(el){el.onclick=()=>window.location.href=tel; if(id==='mobilePhone')el.textContent='📞 '+data.phone;}});
+    }
+    if (data.kakao_url) {
+      ['pcKakao','mobileKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(data.kakao_url,'_blank');});
+    }
+  } catch(e) {}
+}
+
+loadVehicle();
+</script>
+</body>
+</html>
