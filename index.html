@@ -123,7 +123,7 @@ nav a:hover{color:var(--text)}
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 22px 4px;font-size:11px;color:rgba(255,255,255,.5);
 }
-.phone-time{font-weight:700;font-size:13px;color:#fff}
+.phone-time{font-weight:700;font-size:10px;color:#fff;white-space:nowrap;letter-spacing:-.3px}
 .phone-icons{display:flex;gap:4px;align-items:center;font-size:11px}
 .phone-notch-bar{
   width:48px;height:20px;background:#0d0d0d;
@@ -610,7 +610,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
       <div class="phone-rgb-wrap">
         <div class="phone-frame">
           <div class="phone-status">
-            <span class="phone-time">9:41</span>
+            <span class="phone-time" id="phoneTime">9:41</span>
             <span class="phone-icons">▲ ● ■</span>
           </div>
           <div class="phone-notch-bar"><div class="phone-notch-pill"></div></div>
@@ -914,6 +914,26 @@ function closePopupOutside(e){
     requestAnimationFrame(draw);
   }
   draw();
+})();
+
+// 한국 시간 실시간 시계
+(function(){
+  function updateTime(){
+    const el=document.getElementById('phoneTime');
+    if(!el)return;
+    const now=new Date();
+    const kst=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
+    const y=kst.getFullYear();
+    const mo=String(kst.getMonth()+1).padStart(2,'0');
+    const d=String(kst.getDate()).padStart(2,'0');
+    const h=kst.getHours();
+    const m=String(kst.getMinutes()).padStart(2,'0');
+    const ampm=h>=12?'오후':'오전';
+    const h12=h%12||12;
+    el.textContent=`${y}년 ${mo}월 ${d}일 ${ampm} ${h12}:${m}`;
+  }
+  updateTime();
+  setInterval(updateTime,1000);
 })();
 
 async function init(){
