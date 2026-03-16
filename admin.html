@@ -591,12 +591,35 @@ function cropToSquare(file, size=800){
     reader.readAsDataURL(file);
   });
 }
+function cropToRatio(file, w=944, h=800){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        const srcRatio=img.width/img.height;
+        const dstRatio=w/h;
+        let sx,sy,sw,sh;
+        if(srcRatio>dstRatio){sh=img.height;sw=sh*dstRatio;sx=(img.width-sw)/2;sy=0;}
+        else{sw=img.width;sh=sw/dstRatio;sx=0;sy=(img.height-sh)/2;}
+        ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+        canvas.toBlob(blob=>resolve(blob),'image/jpeg',.92);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function uploadHeroImg(input){
   const file=input.files[0];
   if(!file)return;
   const status=document.getElementById('heroImgStatus');
   status.textContent='처리 중...';
-  const blob=await cropToSquare(file,800);
+  const blob=await cropToRatio(file,944,800);
   const path=`hero/hero-${Date.now()}.jpg`;
   const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
   if(error){status.textContent='실패: '+error.message;return;}
