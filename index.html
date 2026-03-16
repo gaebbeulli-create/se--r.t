@@ -299,7 +299,7 @@ async function loadSiteConfig() {
 
 async function loadVehicles() {
   try {
-    const { data, error } = await sb.from('vehicles').select('*').eq('is_active', true).order('sort_order');
+    const { data, error } = await sb.from('vehicles').select('*').order('sort_order');
     if (error) throw error;
     vehiclesData = data || [];
     const grid = document.getElementById('vehicleGrid');
