@@ -459,6 +459,79 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
   .frow{grid-template-columns:1fr}
   .rgrid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ── 애니메이션 ── */
+
+/* Fade Up - 스크롤 진입 시 */
+.anim{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.anim.in{opacity:1;transform:translateY(0)}
+.anim-delay1{transition-delay:.1s}
+.anim-delay2{transition-delay:.2s}
+.anim-delay3{transition-delay:.3s}
+.anim-delay4{transition-delay:.4s}
+
+/* Fade Left */
+.anim-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease}
+.anim-left.in{opacity:1;transform:translateX(0)}
+
+/* Fade Right */
+.anim-right{opacity:0;transform:translateX(30px);transition:opacity .6s ease,transform .6s ease}
+.anim-right.in{opacity:1;transform:translateX(0)}
+
+/* Scale In */
+.anim-scale{opacity:0;transform:scale(.92);transition:opacity .5s ease,transform .5s ease}
+.anim-scale.in{opacity:1;transform:scale(1)}
+
+/* Hero 진입 애니메이션 */
+@keyframes heroFadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes heroFadeRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes heroBadge{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.hero-badge{animation:heroBadge .5s ease forwards}
+.hero h1{animation:heroFadeUp .6s .1s ease both}
+.hero p{animation:heroFadeUp .6s .2s ease both}
+.hero-btns{animation:heroFadeUp .6s .3s ease both}
+.hero-stats{animation:heroFadeUp .6s .4s ease both}
+.phone-rgb-wrap{animation:heroFadeRight .7s .2s ease both}
+
+/* 카드 호버 */
+.vcard{transition:transform .25s ease,box-shadow .25s ease,background .15s}
+.fitem{transition:transform .25s ease,background .2s}
+.fitem:hover{transform:translateY(-4px);background:var(--bg4)}
+.pstep{transition:transform .25s ease,background .2s}
+.pstep:hover{transform:translateY(-3px);background:var(--bg4)}
+.ritem{transition:transform .2s ease,background .2s,border-color .2s}
+.ritem:hover{transform:translateY(-2px);background:var(--bg3);border-color:var(--teal)}
+
+/* FAQ 애니메이션 */
+.faqa{animation:none}
+.faqitem.open .faqa{animation:fadeDown .25s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 버튼 pulse */
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(163,230,53,.4)}70%{box-shadow:0 0 0 10px rgba(163,230,53,0)}100%{box-shadow:0 0 0 0 rgba(163,230,53,0)}}
+.btn-teal{animation:pulse 2s infinite}
+.btn-teal:hover{animation:none}
+
+/* 숫자 카운트업 */
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* 슬라이더 도트 */
+.vslider-dot{transition:all .3s ease}
+
+/* 섹션 타이틀 언더라인 */
+.sec-eye{position:relative;display:inline-block}
+.sec-eye::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--teal);transition:width .6s ease;border-radius:1px}
+.sec-eye.in::after{width:100%}
+
+/* 모바일 CTA 슬라이드업 */
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mcta{animation:slideUp .4s .5s ease both}
+
+/* 로딩 스피너 */
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 스크롤 진행 표시바 */
+.scroll-bar{position:fixed;top:0;left:0;height:2px;background:var(--teal);z-index:200;width:0%;transition:width .1s;box-shadow:0 0 6px var(--teal)}
 </style>
 </head>
 <body>
@@ -468,6 +541,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY);
 </script>
 
+<div class="scroll-bar" id="scrollBar"></div>
 <!-- 상단 공지 배너 -->
 <div class="top-notice" id="topNotice">
   <span id="topNoticeText"></span>
@@ -570,7 +644,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   </div>
 </div>
 
-<div id="vehicles" class="section">
+<div id="vehicles" class="section anim">
   <span class="sec-eye">차종 소개</span>
   <h2 class="sec-h">원하는 차량을 선택하세요</h2>
   <p class="sec-sub">배달 라이더를 위해 검증된 차량만 제공합니다</p>
@@ -583,19 +657,19 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 </div>
 
 <div class="fbg">
-  <div class="section">
+  <div class="section anim">
     <span class="sec-eye">왜 SE글로벌 렌탈인가요</span>
     <h2 class="sec-h">차이가 있습니다</h2>
     <div class="fgrid">
-      <div class="fitem"><div class="ficon">💰</div><div class="ftitle">초기 부담 없음</div><div class="fdesc">보증금 최소화, 월 납입금으로 시작</div></div>
-      <div class="fitem"><div class="ficon">🔧</div><div class="ftitle">전담 정비 지원</div><div class="fdesc">소모품 옵션 별도 제공</div></div>
-      <div class="fitem"><div class="ficon">🚚</div><div class="ftitle">전국 출고</div><div class="fdesc">섬·산간 제외 전국 상담 가능</div></div>
-      <div class="fitem"><div class="ficon">📞</div><div class="ftitle">전담 상담</div><div class="fdesc">배달 라이더 맞춤 플랜 제안</div></div>
+      <div class="fitem anim anim-delay1"><div class="ficon">💰</div><div class="ftitle">초기 부담 없음</div><div class="fdesc">보증금 최소화, 월 납입금으로 시작</div></div>
+      <div class="fitem anim anim-delay2"><div class="ficon">🔧</div><div class="ftitle">전담 정비 지원</div><div class="fdesc">소모품 옵션 별도 제공</div></div>
+      <div class="fitem anim anim-delay3"><div class="ficon">🚚</div><div class="ftitle">전국 출고</div><div class="fdesc">섬·산간 제외 전국 상담 가능</div></div>
+      <div class="fitem anim anim-delay4"><div class="ficon">📞</div><div class="ftitle">전담 상담</div><div class="fdesc">배달 라이더 맞춤 플랜 제안</div></div>
     </div>
   </div>
 </div>
 
-<div id="process" class="section">
+<div id="process" class="section anim">
   <span class="sec-eye">진행 안내</span>
   <h2 class="sec-h">이렇게 진행됩니다</h2>
   <div class="type-row">
@@ -612,7 +686,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 </div>
 
 <div id="shipping" class="ship-sec">
-  <div class="ship-inner">
+  <div class="ship-inner anim">
     <span class="sec-eye">전국 출고 안내</span>
     <h2 class="sec-h">어디서든 출고 가능합니다</h2>
     <div class="rgrid">
@@ -636,7 +710,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   </div>
 </div>
 
-<div id="consult" class="section">
+<div id="consult" class="section anim">
   <span class="sec-eye">온라인 상담</span>
   <h2 class="sec-h">상담 신청</h2>
   <div class="ccard">
@@ -659,7 +733,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   </div>
 </div>
 
-<div id="faq" class="section">
+<div id="faq" class="section anim">
   <span class="sec-eye">FAQ</span>
   <h2 class="sec-h">자주 묻는 질문</h2>
   <div class="faqlist">
@@ -714,6 +788,28 @@ function goSlide(i){
   const cardW=g.querySelector('.vcard')?.offsetWidth||300;
   g.scrollTo({left:i*(cardW+16),behavior:'smooth'});
 }
+
+// ── 스크롤 애니메이션 ──
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      // sec-eye underline
+      const eye=e.target.querySelector('.sec-eye');
+      if(eye)eye.classList.add('in');
+    }
+  });
+},{threshold:0.12});
+
+document.querySelectorAll('.anim,.anim-left,.anim-right,.anim-scale').forEach(el=>observer.observe(el));
+
+// 스크롤 진행바
+window.addEventListener('scroll',()=>{
+  const bar=document.getElementById('scrollBar');
+  if(!bar)return;
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  bar.style.width=pct+'%';
+},{passive:true});
 
 function closePopup(){
   document.getElementById('popupOverlay').classList.remove('show');
