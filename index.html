@@ -368,42 +368,43 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
 
   /* 히어로 - 2컬럼 유지하되 조금 압축 */
   .hero-inner{
-    grid-template-columns:1fr 1fr;
-    padding:28px 14px;
-    gap:16px;
+    grid-template-columns:1fr auto;
+    padding:16px 12px;
+    gap:10px;
     align-items:center;
+    min-height:auto;
   }
-  .hero-badge{font-size:10px;padding:4px 10px;margin-bottom:14px}
-  .hero h1{font-size:clamp(18px,4.5vw,28px);letter-spacing:-0.5px;margin-bottom:10px}
-  .hero p{font-size:12px;margin-bottom:16px;line-height:1.5}
-  .hero-btns{gap:6px;margin-bottom:16px}
-  .btn-teal{padding:9px 14px;font-size:12px;border-radius:8px}
-  .btn-ghost{padding:9px 14px;font-size:12px;border-radius:8px}
-  .hero-stats{gap:16px}
-  .hstat-num{font-size:16px}
-  .hstat-label{font-size:9px}
+  .hero-badge{font-size:9px;padding:3px 8px;margin-bottom:8px}
+  .hero h1{font-size:clamp(16px,4vw,22px);letter-spacing:-0.5px;margin-bottom:8px}
+  .hero p{font-size:11px;margin-bottom:10px;line-height:1.4}
+  .hero-btns{gap:5px;margin-bottom:10px}
+  .btn-teal{padding:8px 10px;font-size:11px;border-radius:8px}
+  .btn-ghost{padding:8px 10px;font-size:11px;border-radius:8px}
+  .hero-stats{gap:10px}
+  .hstat-num{font-size:14px}
+  .hstat-label{font-size:8px}
 
   /* 폰 목업 - 모바일에서도 표시, 크기 줄임 */
   .phone-wrap{display:flex}
   .phone-rgb-wrap{border-radius:28px}
-  .phone-frame{width:160px;border-radius:22px}
-  .phone-status{padding:6px 12px 2px;font-size:8px}
-  .phone-time{font-size:10px}
-  .phone-notch-bar{width:36px;height:14px;border-radius:0 0 8px 8px}
-  .phone-notch-pill{width:14px;height:14px}
-  .phone-header{padding:6px 10px;gap:6px}
-  .phone-av{width:24px;height:24px;font-size:9px}
-  .phone-uname{font-size:9px}
-  .phone-verified{font-size:8px}
-  .phone-follow{font-size:8px;padding:2px 6px}
-  .phone-acts{padding:6px 10px 3px;font-size:14px;gap:8px}
-  .phone-likes{font-size:9px;padding:0 10px 2px}
-  .phone-cap{font-size:9px;padding:0 10px 5px}
-  .phone-tags{padding:0 10px 6px;gap:3px}
+  .phone-frame{width:175px;border-radius:24px}
+  .phone-status{padding:7px 14px 3px;font-size:9px}
+  .phone-time{font-size:8px}
+  .phone-notch-bar{width:40px;height:16px;border-radius:0 0 10px 10px}
+  .phone-notch-pill{width:16px;height:16px}
+  .phone-header{padding:8px 12px;gap:8px}
+  .phone-av{width:30px;height:30px;font-size:11px}
+  .phone-uname{font-size:11px}
+  .phone-verified{font-size:10px}
+  .phone-follow{font-size:9px;padding:3px 8px}
+  .phone-acts{padding:8px 12px 4px;font-size:16px;gap:10px}
+  .phone-likes{font-size:10px;padding:0 12px 3px}
+  .phone-cap{font-size:10px;padding:0 12px 5px}
+  .phone-tags{padding:0 12px 6px;gap:4px}
   .phone-tag{font-size:8px}
-  .phone-comments{padding:0 10px 6px;font-size:8px}
-  .phone-input-bar{padding:5px 10px 8px;gap:5px}
-  .phone-input-av{width:16px;height:16px}
+  .phone-comments{padding:0 12px 6px;font-size:9px}
+  .phone-input-bar{padding:6px 12px 10px;gap:6px}
+  .phone-input-av{width:18px;height:18px}
   .phone-input-fake{font-size:8px;padding:3px 8px}
   .phone-img-badge{font-size:7px;padding:2px 5px;top:6px;right:6px}
 
@@ -456,14 +457,14 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
 @media(max-width:480px){
   /* 더 작은 모바일 */
   .hero-inner{
-    grid-template-columns:1fr 1fr;
-    padding:20px 12px;
-    gap:12px;
+    grid-template-columns:1fr auto;
+    padding:14px 10px;
+    gap:8px;
   }
-  .hero h1{font-size:16px}
-  .btn-teal,.btn-ghost{padding:8px 10px;font-size:11px}
+  .hero h1{font-size:14px}
+  .btn-teal,.btn-ghost{padding:7px 8px;font-size:10px}
 
-  .phone-frame{width:130px;border-radius:18px}
+  .phone-frame{width:145px;border-radius:20px}
   .phone-status{padding:4px 8px 1px}
   .phone-header{padding:4px 8px}
   .phone-av{width:20px;height:20px;font-size:7px}
