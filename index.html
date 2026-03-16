@@ -230,10 +230,10 @@ nav a:hover{color:var(--text)}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border-radius:16px;overflow:hidden;border:0.5px solid var(--border);margin-top:36px}
 .vcard{background:var(--bg2);cursor:pointer;transition:background .15s;position:relative;overflow:hidden}
 .vcard:hover{background:var(--bg3)}
-.vcard-img{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--bg3)}
-.vcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.vcard-img{width:100%;aspect-ratio:1;overflow:hidden;background:var(--bg3);position:relative}
+.vcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
 .vcard:hover .vcard-img img{transform:scale(1.04)}
-.vcard-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg4)}
+.vcard-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg4)}
 .vcard-body{padding:18px 20px 20px}
 .vcard-type{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
 .vcard-type.ev{color:var(--accent2)}
@@ -507,9 +507,9 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
         <button class="btn-ghost" id="heroKakao">카카오톡 문의</button>
       </div>
       <div class="hero-stats">
-        <div><div class="hstat-num">전국</div><div class="hstat-label">출고 지역</div></div>
-        <div><div class="hstat-num">3종+</div><div class="hstat-label">차량 라인업</div></div>
-        <div><div class="hstat-num">공식</div><div class="hstat-label">렌탈·리스</div></div>
+        <div><div class="hstat-num">전국</div><div class="hstat-label">출고 가능</div></div>
+        <div><div class="hstat-num">즉시</div><div class="hstat-label">출고 상담</div></div>
+        <div><div class="hstat-num">최저가</div><div class="hstat-label">보장 렌탈</div></div>
       </div>
     </div>
     <div class="phone-wrap">
@@ -582,7 +582,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
     <h2 class="sec-h">차이가 있습니다</h2>
     <div class="fgrid">
       <div class="fitem"><div class="ficon">💰</div><div class="ftitle">초기 부담 없음</div><div class="fdesc">보증금 최소화, 월 납입금으로 시작</div></div>
-      <div class="fitem"><div class="ficon">🔧</div><div class="ftitle">정비 지원</div><div class="fdesc">계약 기간 내 기본 정비 포함</div></div>
+      <div class="fitem"><div class="ficon">🔧</div><div class="ftitle">전담 정비 지원</div><div class="fdesc">소모품 옵션 별도 제공</div></div>
       <div class="fitem"><div class="ficon">🚚</div><div class="ftitle">전국 출고</div><div class="fdesc">섬·산간 제외 전국 상담 가능</div></div>
       <div class="fitem"><div class="ficon">📞</div><div class="ftitle">전담 상담</div><div class="fdesc">배달 라이더 맞춤 플랜 제안</div></div>
     </div>
