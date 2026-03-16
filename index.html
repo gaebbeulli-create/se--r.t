@@ -488,7 +488,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <header>
   <div class="hi">
-    <div class="logo"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></div>
+    <a href="index.html" class="logo" style="text-decoration:none"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></a>
     <nav><a href="#vehicles">차종</a><a href="#process">안내</a><a href="#consult">상담</a><a href="#faq">FAQ</a></nav>
     <a href="#consult" class="hcta">상담 신청</a>
   </div>
@@ -795,6 +795,16 @@ async function init(){
     buildDots(vdata.length);
   }catch(e){document.getElementById('vgrid').innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--text3);padding:60px;font-size:14px">차량 정보를 불러올 수 없습니다</p>';}
 }
+async function sendTelegram(msg){
+  try{
+    await fetch('https://api.telegram.org/bot8056476186:AAEYyVrZ2yAQToJYXb_-ZOKgqoa49NZhVOU/sendMessage',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:'8563340770',text:msg,parse_mode:'HTML'})
+    });
+  }catch(e){console.warn('telegram:',e);}
+}
+
 async function submitConsult(){
   const name=document.getElementById('fn').value.trim();
   const phone=document.getElementById('fp').value.trim();
@@ -802,9 +812,19 @@ async function submitConsult(){
   const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='접수 중...';
   const vid=document.getElementById('fv').value;
   const v=vdata.find(x=>x.id===vid);
-  const{error}=await sb.from('consult_requests').insert([{name,phone,region:document.getElementById('fr').value||null,consult_type:document.getElementById('ft').value,vehicle_id:vid||null,vehicle_name:v?v.name:null,message:document.getElementById('fm').value.trim()||null,status:'pending'}]);
+  const region=document.getElementById('fr').value||'';
+  const ctype=document.getElementById('ft').value;
+  const msg=document.getElementById('fm').value.trim()||'';
+  const ctypeLabel=ctype==='rental'?'렌탈':ctype==='lease'?'리스':'렌탈·리스';
+  const{error}=await sb.from('consult_requests').insert([{name,phone,region:region||null,consult_type:ctype,vehicle_id:vid||null,vehicle_name:v?v.name:null,message:msg||null,status:'pending'}]);
   if(error){alert('오류가 발생했습니다. 전화 또는 카카오톡으로 문의해주세요.');btn.disabled=false;btn.textContent='상담 신청하기';}
-  else{document.getElementById('cform').style.display='none';document.getElementById('csuccess').style.display='block';}
+  else{
+    document.getElementById('cform').style.display='none';
+    document.getElementById('csuccess').style.display='block';
+    const now=new Date().toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+    const tgMsg=`🛵 <b>새 상담 신청!</b>\n\n👤 이름: <b>${name}</b>\n📞 연락처: <b>${phone}</b>\n📍 지역: ${region||'미입력'}\n🔖 유형: ${ctypeLabel}\n🏍️ 차종: ${v?v.name:'미선택'}\n💬 문의: ${msg||'없음'}\n\n⏰ ${now}`;
+    sendTelegram(tgMsg);
+  }
 }
 init();
 </script>
