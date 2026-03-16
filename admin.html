@@ -168,7 +168,6 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
             <div class="fg full"><label class="fl">상세 설명</label><textarea class="fi fta" id="vdesc" placeholder="차량 상세 설명"></textarea></div>
             <div class="fg"><label class="fl">렌탈 가격</label><input type="text" class="fi" id="vrental" placeholder="월 12만원~"></div>
             <div class="fg"><label class="fl">리스 가격</label><input type="text" class="fi" id="vlease" placeholder="월 14만원~"></div>
-            <div class="fg"><label class="fl">보증금</label><input type="text" class="fi" id="vdep" placeholder="30만원"></div>
             <div class="fg"><label class="fl">정렬 순서</label><input type="number" class="fi" id="vsort" value="0"></div>
           </div>
           <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📐 제원 정보</div>
@@ -320,7 +319,7 @@ function showVForm(v=null){
   document.getElementById('vdesc').value=v?v.description||'':'';
   document.getElementById('vrental').value=v?v.rental_price||'':'';
   document.getElementById('vlease').value=v?v.lease_price||'':'';
-  document.getElementById('vdep').value=v?v.deposit||'':'';
+
   document.getElementById('vbadge2').value=v?v.badge||'':'';
   document.getElementById('vsort').value=v?v.sort_order||0:0;
   // specs
@@ -371,7 +370,7 @@ async function saveVehicle(){
     description:document.getElementById('vdesc').value.trim()||null,
     rental_price:document.getElementById('vrental').value.trim()||null,
     lease_price:document.getElementById('vlease').value.trim()||null,
-    deposit:document.getElementById('vdep').value.trim()||null,
+
     badge:document.getElementById('vbadge2').value.trim()||null,
     sort_order:parseInt(document.getElementById('vsort').value)||0,
     specs:specs,
