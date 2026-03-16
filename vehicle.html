@@ -7,62 +7,202 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--primary:#2563EB;--accent:#F59E0B;--text:#1E293B;--sub:#64748B;--bg:#F8FAFC;--card:#fff;--border:#E2E8F0;--green:#10B981}
-body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);padding-bottom:80px}
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--bg4:#222;
+  --border:#222;--border2:#2a2a2a;
+  --text:#f0f0f0;--text2:#999;--text3:#555;
+  --teal:#a3e635;--accent:#0a84ff;--accent2:#30d158;--red:#ff453a;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding-bottom:80px}
 a{text-decoration:none;color:inherit}
-header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 20px}
-.hi{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;height:60px}
-.back{font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
-.logo{font-size:20px;font-weight:800;color:var(--primary)}.logo span{color:var(--accent)}
-.gallery{background:#000;position:relative;overflow:hidden}
-.gmain{width:100%;height:min(60vw,420px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.gmain img{width:100%;height:100%;object-fit:contain;cursor:zoom-in}
-.gph{font-size:100px;opacity:.3}
-.garr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
-.garr.prev{left:12px}.garr.next{right:12px}
-.gctr{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.5);color:#fff;padding:4px 10px;border-radius:20px;font-size:12px}
-.gthumbs{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;background:#111;scrollbar-width:none}
+
+/* Header */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 20px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(10,10,10,.8);backdrop-filter:blur(20px);
+  border-bottom:0.5px solid rgba(255,255,255,.06);
+}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;
+  transition:color .2s;
+}
+.back-btn:hover{color:var(--teal)}
+.back-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+.logo{font-size:15px;font-weight:800}
+.logo .se{color:#ff2d2d;font-style:italic}
+.logo .gl{color:#fff}
+.logo .x{color:rgba(255,255,255,.3);font-weight:300;margin:0 4px}
+.logo .tb{color:#00ffb3}
+.share-btn{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+
+/* Hero Gallery */
+.gallery-hero{
+  margin-top:56px;position:relative;
+  width:100%;aspect-ratio:1;
+  background:var(--bg2);overflow:hidden;
+}
+.gallery-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-hero-ph{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:100px;background:linear-gradient(135deg,#111,#1a1a1a);
+}
+.gallery-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 40%);
+  pointer-events:none;
+}
+/* Gallery arrows */
+.garr{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
+  border:0.5px solid rgba(255,255,255,.15);
+  color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;transition:all .2s;
+}
+.garr:hover{background:rgba(163,230,53,.2);border-color:var(--teal)}
+.garr.prev{left:14px}.garr.next{right:14px}
+.gctr{
+  position:absolute;bottom:16px;right:16px;
+  background:rgba(0,0,0,.6);color:#fff;
+  padding:4px 10px;border-radius:980px;font-size:11px;font-weight:600;
+  border:0.5px solid rgba(255,255,255,.1);z-index:5;
+}
+/* Thumbnails */
+.gthumbs{
+  display:flex;gap:2px;background:var(--bg);
+  overflow-x:auto;scrollbar-width:none;
+}
 .gthumbs::-webkit-scrollbar{display:none}
-.gthumb{width:56px;height:56px;border-radius:6px;overflow:hidden;cursor:pointer;flex-shrink:0;border:2px solid transparent}
-.gthumb.on{border-color:var(--primary)}
+.gthumb{width:64px;height:64px;flex-shrink:0;cursor:pointer;overflow:hidden;opacity:.4;transition:opacity .2s;position:relative}
+.gthumb.on{opacity:1}
+.gthumb::after{content:'';position:absolute;inset:0;border-bottom:2px solid transparent;transition:border-color .2s}
+.gthumb.on::after{border-bottom-color:var(--teal)}
 .gthumb img{width:100%;height:100%;object-fit:cover}
-.content{max-width:1100px;margin:0 auto;padding:20px}
-.vtype{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:4px}
-.vname{font-size:26px;font-weight:900;margin-bottom:6px}
-.vtag{font-size:15px;color:var(--sub);margin-bottom:16px}
-.pcard{background:var(--card);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-.prow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pbox{text-align:center;padding:16px;border-radius:12px;background:var(--bg)}
-.pbox.hi{background:#EFF6FF}
-.ptag{font-size:12px;font-weight:700;color:var(--sub);margin-bottom:4px}
-.pval{font-size:24px;font-weight:900;color:var(--primary)}
-.psub{font-size:11px;color:var(--sub);margin-top:2px}
-.deprow{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:13px}
-.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
-.tab{padding:12px 20px;font-size:14px;font-weight:700;color:var(--sub);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px}
-.tab.on{color:var(--primary);border-bottom-color:var(--primary)}
-.tc{display:none}.tc.on{display:block}
-.stbl{width:100%;border-collapse:collapse}
-.stbl tr{border-bottom:1px solid var(--border)}
-.stbl td{padding:12px 4px;font-size:14px}
-.stbl td:first-child{color:var(--sub);width:40%}
-.stbl td:last-child{font-weight:700}
-.desc{font-size:14px;line-height:1.8}
-/* lightbox */
-.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;align-items:center;justify-content:center}
+
+/* Content */
+.content{padding:0 20px;max-width:680px;margin:0 auto}
+
+/* Vehicle Header */
+.v-header{padding:24px 0 20px;border-bottom:0.5px solid var(--border)}
+.v-type-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(163,230,53,.1);border:0.5px solid rgba(163,230,53,.3);
+  color:var(--teal);font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 10px;border-radius:980px;margin-bottom:12px;
+}
+.v-type-badge.gas{background:rgba(10,132,255,.1);border-color:rgba(10,132,255,.3);color:var(--accent)}
+.v-name{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:8px}
+.v-tag{font-size:15px;color:var(--text2);line-height:1.5}
+
+/* Price Cards */
+.price-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:20px 0;border-bottom:0.5px solid var(--border)}
+.price-card{
+  background:var(--bg2);border:0.5px solid var(--border2);
+  border-radius:16px;padding:18px 16px;
+  transition:border-color .2s;
+}
+.price-card.featured{
+  background:linear-gradient(135deg,rgba(163,230,53,.12),rgba(163,230,53,.05));
+  border-color:rgba(163,230,53,.3);
+}
+.price-card-label{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;letter-spacing:.5px}
+.price-card.featured .price-card-label{color:rgba(163,230,53,.7)}
+.price-card-val{font-size:26px;font-weight:900;color:var(--teal);letter-spacing:-1px}
+.price-card:not(.featured) .price-card-val{color:var(--text)}
+.price-card-unit{font-size:12px;color:var(--text3);margin-top:2px}
+.price-note{font-size:11px;color:var(--text3);text-align:center;margin-top:12px}
+
+/* Action Buttons */
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:20px 0;border-bottom:0.5px solid var(--border)}
+.action-btn{
+  padding:14px;border-radius:14px;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;
+  font-family:inherit;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.action-phone{background:var(--teal);color:#0a0a0a}
+.action-phone:hover{opacity:.85;transform:translateY(-1px)}
+.action-kakao{background:#FEE500;color:#1a1a00}
+.action-kakao:hover{opacity:.85;transform:translateY(-1px)}
+
+/* Info Sections */
+.info-block{padding:24px 0;border-bottom:0.5px solid var(--border)}
+.info-block:last-of-type{border-bottom:none}
+.info-block-header{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:16px;
+}
+.info-block-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:rgba(163,230,53,.1);border:0.5px solid rgba(163,230,53,.2);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.info-block-title{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)}
+
+/* Spec grid */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spec-item{
+  background:var(--bg2);border:0.5px solid var(--border2);
+  border-radius:12px;padding:14px 12px;
+}
+.spec-key{font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.spec-val{font-size:15px;font-weight:700;color:var(--text)}
+
+/* Description */
+.desc-text{font-size:15px;line-height:1.8;color:var(--text2);white-space:pre-line}
+
+/* Notice */
+.notice{
+  background:rgba(255,214,10,.04);border:0.5px solid rgba(255,214,10,.12);
+  border-radius:12px;padding:14px 16px;
+  font-size:11px;color:var(--text3);line-height:1.6;
+  margin:16px 0 24px;
+}
+
+/* Mobile CTA */
+.mcta{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(10,10,10,.92);backdrop-filter:blur(20px);
+  border-top:0.5px solid var(--border);
+  padding:10px 20px;z-index:200;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.mb{padding:13px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;border:none;cursor:pointer;font-family:inherit}
+.mp{background:var(--teal);color:#0a0a0a}
+.mk{background:#FEE500;color:#1a1a00}
+
+/* Lightbox */
+.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1000;align-items:center;justify-content:center}
 .lb.on{display:flex}
-.lb img{max-width:95vw;max-height:90vh;object-fit:contain}
-.lbclose{position:absolute;top:16px;right:16px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer}
-.lbarr{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer}
-.lbarr.prev{left:16px}.lbarr.next{right:16px}
-.mcta{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 16px;z-index:200;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.mcbtn{padding:13px;border-radius:10px;font-size:14px;font-weight:800;text-align:center;border:none;cursor:pointer}
-.mph{background:var(--primary);color:#fff}
-.mkk{background:#FEE500;color:#3A1D1D}
-.lwrap{text-align:center;padding:80px 20px}
-.spin{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.lb img{max-width:100vw;max-height:100vh;object-fit:contain}
+.lbc{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:22px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.lba{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lba.prev{left:12px}.lba.next{right:12px}
+
+/* Loading / Error */
+.lwrap{text-align:center;padding:120px 20px}
+.spin{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ewrap{text-align:center;padding:80px 20px}
+.ewrap{text-align:center;padding:120px 20px}
+
+/* Scroll animations */
+.anim{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+.anim.in{opacity:1;transform:translateY(0)}
+.anim-d1{transition-delay:.1s}.anim-d2{transition-delay:.2s}.anim-d3{transition-delay:.3s}
+
+@media(max-width:480px){
+  .v-name{font-size:26px}
+  .price-card-val{font-size:22px}
+  .spec-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
@@ -73,63 +213,94 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 </script>
 
 <header>
-  <div class="hi">
-    <div class="back" onclick="history.back()">← 목록</div>
-    <a href="index.html" class="logo">SE글로벌 <span>렌탈</span></a>
+  <div class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15,18 9,12 15,6"/></svg>
+    목록
   </div>
+  <div class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></div>
+  <div class="share-btn" onclick="shareVehicle()">📤</div>
 </header>
 
-<div id="lwrap" class="lwrap"><div class="spin"></div><p style="color:var(--sub)">차량 정보를 불러오는 중...</p></div>
+<div id="lwrap" class="lwrap"><div class="spin"></div><p style="font-size:13px;color:var(--text3)">불러오는 중...</p></div>
 <div id="ewrap" class="ewrap" style="display:none">
-  <div style="font-size:60px;margin-bottom:16px">🤔</div>
-  <h2 style="font-size:20px;font-weight:800;margin-bottom:8px">차량을 찾을 수 없습니다</h2>
-  <p style="color:var(--sub);margin-bottom:24px">URL을 확인하거나 목록으로 돌아가세요</p>
-  <a href="index.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700">목록으로</a>
+  <div style="font-size:56px;margin-bottom:16px">😕</div>
+  <p style="font-size:18px;font-weight:700;margin-bottom:8px">차량을 찾을 수 없습니다</p>
+  <p style="font-size:14px;color:var(--text3);margin-bottom:28px">URL을 확인하거나 목록으로 돌아가세요</p>
+  <a href="index.html" style="background:var(--teal);color:#0a0a0a;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700">목록으로</a>
 </div>
 
 <div id="main" style="display:none">
-  <div class="gallery">
-    <div class="gmain" id="gmain"><div class="gph">🛵</div></div>
-    <div class="gthumbs" id="gthumbs"></div>
+  <!-- 갤러리 -->
+  <div class="gallery-hero" id="gmain">
+    <div class="gallery-hero-ph">🏍️</div>
+    <div class="gallery-overlay"></div>
   </div>
+  <div class="gthumbs" id="gthumbs"></div>
+
   <div class="content">
-    <div style="margin-bottom:20px">
-      <div class="vtype" id="vtype"></div>
-      <h1 class="vname" id="vname"></h1>
-      <p class="vtag" id="vtag"></p>
+    <!-- 차량 헤더 -->
+    <div class="v-header anim">
+      <div class="v-type-badge" id="vTypeBadge">⚡ ELECTRIC</div>
+      <div class="v-name" id="vName">로딩 중...</div>
+      <div class="v-tag" id="vTag"></div>
     </div>
-    <div class="pcard">
-      <div class="prow">
-        <div class="pbox hi"><div class="ptag">🛵 렌탈</div><div class="pval" id="prental">-</div><div class="psub">/월</div></div>
-        <div class="pbox"><div class="ptag">📋 리스</div><div class="pval" id="please">-</div><div class="psub">/월</div></div>
+
+    <!-- 가격 -->
+    <div class="price-cards anim anim-d1">
+      <div class="price-card featured">
+        <div class="price-card-label">🛵 렌탈</div>
+        <div class="price-card-val" id="pRental">-</div>
+        <div class="price-card-unit">/ 월</div>
       </div>
-      <div class="deprow"><span style="color:var(--sub)">보증금</span><span style="font-weight:700" id="pdep">상담 문의</span></div>
-      <p style="font-size:11px;color:#94A3B8;margin-top:8px">※ 정확한 요금은 상담 후 확정됩니다</p>
+      <div class="price-card">
+        <div class="price-card-label">📋 리스</div>
+        <div class="price-card-val" id="pLease">-</div>
+        <div class="price-card-unit">/ 월</div>
+      </div>
     </div>
-    <div class="tabs">
-      <button class="tab on" onclick="switchTab('spec',this)">제원</button>
-      <button class="tab" onclick="switchTab('desc',this)">상세 설명</button>
+    <div class="price-note" style="padding:8px 0 16px;border-bottom:0.5px solid var(--border)">※ 정확한 요금은 상담 후 확정됩니다</div>
+
+    <!-- 액션 버튼 -->
+    <div class="action-row anim anim-d2">
+      <button class="action-btn action-phone" id="pcP">📞 전화 상담</button>
+      <button class="action-btn action-kakao" id="pcK">💬 카카오톡</button>
     </div>
-    <div class="tc on" id="tc-spec"><table class="stbl" id="stbl"></table></div>
-    <div class="tc" id="tc-desc"><p class="desc" id="desctext"></p></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:32px">
-      <button id="pcPhone" style="padding:16px;border-radius:12px;background:var(--primary);color:#fff;font-size:15px;font-weight:800;border:none;cursor:pointer">📞 전화 상담</button>
-      <button id="pcKakao" style="padding:16px;border-radius:12px;background:#FEE500;color:#3A1D1D;font-size:15px;font-weight:800;border:none;cursor:pointer">💬 카카오톡</button>
+
+    <!-- 제원 -->
+    <div class="info-block anim anim-d2">
+      <div class="info-block-header">
+        <div class="info-block-icon">📐</div>
+        <div class="info-block-title">제원 정보</div>
+      </div>
+      <div class="spec-grid" id="specL">
+        <div class="spec-item"><div class="spec-key">정보</div><div class="spec-val">없음</div></div>
+      </div>
     </div>
-    <p style="font-size:11px;color:#94A3B8;line-height:1.6;margin-top:20px;padding:12px;background:#F8FAFC;border-radius:8px">※ 본 페이지는 특정 제조사의 공식 페이지가 아닙니다. 차량 사양 및 가격은 변경될 수 있습니다.</p>
+
+    <!-- 상세 설명 -->
+    <div class="info-block anim anim-d3">
+      <div class="info-block-header">
+        <div class="info-block-icon">📝</div>
+        <div class="info-block-title">상세 설명</div>
+      </div>
+      <p class="desc-text" id="descT">상세 설명이 준비 중입니다.</p>
+    </div>
+
+    <div class="notice">※ 본 페이지는 특정 제조사의 공식 페이지가 아닙니다. 차량 사양 및 가격은 변경될 수 있으며, 정확한 내용은 상담을 통해 확인하시기 바랍니다.</div>
   </div>
 </div>
 
+<!-- Lightbox -->
 <div class="lb" id="lb" onclick="closeLb()">
-  <button class="lbclose" onclick="closeLb()">✕</button>
-  <button class="lbarr prev" onclick="event.stopPropagation();moveLb(-1)">‹</button>
+  <button class="lbc" onclick="closeLb()">✕</button>
+  <button class="lba prev" onclick="event.stopPropagation();moveLb(-1)">‹</button>
   <img id="lbimg" src="" alt="" onclick="event.stopPropagation()">
-  <button class="lbarr next" onclick="event.stopPropagation();moveLb(1)">›</button>
+  <button class="lba next" onclick="event.stopPropagation();moveLb(1)">›</button>
 </div>
 
 <div class="mcta">
-  <button class="mcbtn mph" id="mPhone">📞 전화 상담</button>
-  <button class="mcbtn mkk" id="mKakao">💬 카카오톡</button>
+  <button class="mb mp" id="mP">📞 전화 상담</button>
+  <button class="mb mk" id="mK">💬 카카오톡</button>
 </div>
 
 <script>
@@ -139,29 +310,46 @@ const vid=new URLSearchParams(location.search).get('id');
 async function init(){
   if(!vid){showErr();return;}
   try{
-    const {data,error}=await sb.from('vehicles').select('*').eq('id',vid).limit(1);
-    if(error||!data||!data.length)throw new Error('not found');
+    const{data,error}=await sb.from('vehicles').select('*').eq('id',vid).limit(1);
+    if(error||!data||!data.length)throw new Error();
     const v=data[0];
-    document.title=`${v.name} - SE글로벌 렌탈`;
-    document.getElementById('vtype').textContent=v.type==='electric'?'⚡ 전기이륜차':'⛽ 내연기관';
-    document.getElementById('vname').textContent=v.name;
-    document.getElementById('vtag').textContent=v.tagline||'';
-    document.getElementById('prental').textContent=v.rental_price||'문의';
-    document.getElementById('please').textContent=v.lease_price||'문의';
-    document.getElementById('pdep').textContent=v.deposit||'상담 문의';
-    document.getElementById('desctext').textContent=v.description||'상세 설명이 준비 중입니다.';
-    // specs
+    document.title=v.name+' - SE글로벌 렌탈 TEAMBRO';
+
+    // 타입 배지
+    const badge=document.getElementById('vTypeBadge');
+    if(v.type==='electric'){badge.textContent='⚡ ELECTRIC';}
+    else{badge.textContent='⛽ GASOLINE';badge.classList.add('gas');}
+
+    document.getElementById('vName').textContent=v.name;
+    document.getElementById('vTag').textContent=v.tagline||'';
+    document.getElementById('pRental').textContent=v.rental_price||'문의';
+    document.getElementById('pLease').textContent=v.lease_price||'문의';
+    document.getElementById('descT').textContent=v.description||'상세 설명이 준비 중입니다.';
+
+    // 제원 - 그리드로
     let specs={};
     if(v.specs){try{specs=typeof v.specs==='string'?JSON.parse(v.specs):v.specs;}catch(e){}}
-    const rows=Object.entries(specs).map(([k,val])=>`<tr><td>${k}</td><td>${val}</td></tr>`).join('');
-    document.getElementById('stbl').innerHTML=rows||'<tr><td colspan="2" style="text-align:center;color:#94A3B8;padding:24px">제원 정보가 없습니다</td></tr>';
-    // images
+    const ents=Object.entries(specs);
+    document.getElementById('specL').innerHTML=ents.length
+      ?ents.map(([k,val])=>`<div class="spec-item"><div class="spec-key">${k}</div><div class="spec-val">${val}</div></div>`).join('')
+      :'<div class="spec-item" style="grid-column:1/-1"><div class="spec-key">정보</div><div class="spec-val" style="color:var(--text3)">없음</div></div>';
+
+    // 이미지
     try{imgs=typeof v.images==='string'?JSON.parse(v.images):(Array.isArray(v.images)?v.images:[]);}catch(e){imgs=[];}
     buildGallery();
-    // site config for CTAs
     loadCTA();
+
     document.getElementById('lwrap').style.display='none';
     document.getElementById('main').style.display='block';
+
+    // 애니메이션
+    setTimeout(()=>{
+      const obs=new IntersectionObserver(entries=>{
+        entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});
+      },{threshold:.1});
+      document.querySelectorAll('.anim').forEach(el=>obs.observe(el));
+    },100);
+
   }catch(e){showErr();}
 }
 
@@ -172,31 +360,59 @@ function buildGallery(){
   const gt=document.getElementById('gthumbs');
   if(!imgs.length)return;
   cur=Math.max(0,imgs.findIndex(i=>i.is_main));
-  gm.innerHTML=`<img id="mimg" src="${imgs[cur].url}" alt="차량 이미지" onclick="openLb(${cur})">${imgs.length>1?`<button class="garr prev" onclick="moveG(-1)">‹</button><button class="garr next" onclick="moveG(1)">›</button><div class="gctr" id="gctr">1/${imgs.length}</div>`:''}`;
-  if(imgs.length>1)gt.innerHTML=imgs.map((img,i)=>`<div class="gthumb ${i===cur?'on':''}" onclick="goG(${i})"><img src="${img.url}" alt=""></div>`).join('');
+  if(cur<0)cur=0;
+  updateGalleryMain();
+  if(imgs.length>1){
+    // arrows
+    const pa=document.createElement('button');pa.className='garr prev';pa.innerHTML='‹';pa.onclick=()=>moveG(-1);
+    const na=document.createElement('button');na.className='garr next';na.innerHTML='›';na.onclick=()=>moveG(1);
+    const ct=document.createElement('div');ct.className='gctr';ct.id='gctr';ct.textContent=`${cur+1}/${imgs.length}`;
+    gm.appendChild(pa);gm.appendChild(na);gm.appendChild(ct);
+    // thumbs
+    gt.innerHTML=imgs.map((img,i)=>`<div class="gthumb ${i===cur?'on':''}" onclick="goG(${i})"><img src="${img.url}" alt=""></div>`).join('');
+  }
 }
-function moveG(d){cur=(cur+d+imgs.length)%imgs.length;updateG();}
-function goG(i){cur=i;updateG();}
-function updateG(){
-  const mi=document.getElementById('mimg');if(mi)mi.src=imgs[cur].url;
-  const ct=document.getElementById('gctr');if(ct)ct.textContent=`${cur+1}/${imgs.length}`;
-  document.querySelectorAll('.gthumb').forEach((t,i)=>t.classList.toggle('on',i===cur));
+
+function updateGalleryMain(){
+  const gm=document.getElementById('gmain');
+  // remove old img
+  const oldImg=gm.querySelector('img:not(.lb img)');
+  const oldPh=gm.querySelector('.gallery-hero-ph');
+  if(oldImg)oldImg.remove();
+  if(oldPh)oldPh.remove();
+  const img=document.createElement('img');
+  img.src=imgs[cur].url;
+  img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in';
+  img.onclick=()=>openLb(cur);
+  img.onerror=()=>{img.remove();const ph=document.createElement('div');ph.className='gallery-hero-ph';ph.textContent='🏍️';gm.insertBefore(ph,gm.firstChild);};
+  gm.insertBefore(img,gm.querySelector('.gallery-overlay'));
 }
+
+function moveG(d){cur=(cur+d+imgs.length)%imgs.length;updateGalleryMain();const ct=document.getElementById('gctr');if(ct)ct.textContent=`${cur+1}/${imgs.length}`;document.querySelectorAll('.gthumb').forEach((t,i)=>t.classList.toggle('on',i===cur));}
+function goG(i){cur=i;updateGalleryMain();const ct=document.getElementById('gctr');if(ct)ct.textContent=`${cur+1}/${imgs.length}`;document.querySelectorAll('.gthumb').forEach((t,j)=>t.classList.toggle('on',j===cur));}
 function openLb(i){cur=i;document.getElementById('lbimg').src=imgs[i].url;document.getElementById('lb').classList.add('on');}
 function closeLb(){document.getElementById('lb').classList.remove('on');}
-function moveLb(d){cur=(cur+d+imgs.length)%imgs.length;document.getElementById('lbimg').src=imgs[cur].url;updateG();}
-function switchTab(id,btn){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.querySelectorAll('.tc').forEach(c=>c.classList.remove('on'));btn.classList.add('on');document.getElementById('tc-'+id).classList.add('on');}
+function moveLb(d){cur=(cur+d+imgs.length)%imgs.length;document.getElementById('lbimg').src=imgs[cur].url;goG(cur);}
 document.addEventListener('keydown',e=>{if(document.getElementById('lb').classList.contains('on')){if(e.key==='ArrowLeft')moveLb(-1);if(e.key==='ArrowRight')moveLb(1);if(e.key==='Escape')closeLb();}});
 
 async function loadCTA(){
   try{
-    const {data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
+    const{data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
     const s=rows&&rows.length?rows[0]:null;
     if(!s)return;
-    if(s.phone){['pcPhone','mPhone'].forEach(id=>{const el=document.getElementById(id);if(el){el.onclick=()=>location.href='tel:'+s.phone;if(id==='mPhone')el.textContent='📞 '+s.phone;}});}
-    if(s.kakao_url){['pcKakao','mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});}
+    if(s.phone){
+      ['pcP','mP'].forEach(id=>{const el=document.getElementById(id);if(el){el.onclick=()=>location.href='tel:'+s.phone;}});
+      document.getElementById('mP').textContent='📞 '+s.phone;
+    }
+    if(s.kakao_url){['pcK','mK'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});}
   }catch(e){}
 }
+
+function shareVehicle(){
+  if(navigator.share){navigator.share({title:document.title,url:location.href});}
+  else{navigator.clipboard?.writeText(location.href);alert('링크가 복사됐습니다!');}
+}
+
 init();
 </script>
 </body>
