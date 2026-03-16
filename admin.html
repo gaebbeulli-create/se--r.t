@@ -340,7 +340,21 @@ async function saveVehicle() {
   if(!id||!name){showToast('ID와 차량명은 필수입니다','error');return;}
   const specs={};
   document.querySelectorAll('.spec-row').forEach(row=>{const k=row.querySelector('.spec-key').value.trim(),v=row.querySelector('.spec-val').value.trim();if(k&&v)specs[k]=v;});
-  const payload={id,name,brand:document.getElementById('vBrand').value.trim(),type:document.getElementById('vType').value,tagline:document.getElementById('vTagline').value.trim(),description:document.getElementById('vDesc').value.trim(),rental_price:document.getElementById('vRental').value.trim(),lease_price:document.getElementById('vLease').value.trim(),deposit:document.getElementById('vDeposit').value.trim(),badge:document.getElementById('vBadge').value.trim(),sort_order:parseInt(document.getElementById('vSort').value)||0,specs,images:editingImages};
+  const payload={
+    id, name,
+    brand: document.getElementById('vBrand').value.trim()||null,
+    type: document.getElementById('vType').value,
+    tagline: document.getElementById('vTagline').value.trim()||null,
+    description: document.getElementById('vDesc').value.trim()||null,
+    rental_price: document.getElementById('vRental').value.trim()||null,
+    lease_price: document.getElementById('vLease').value.trim()||null,
+    deposit: document.getElementById('vDeposit').value.trim()||null,
+    badge: document.getElementById('vBadge').value.trim()||null,
+    sort_order: parseInt(document.getElementById('vSort').value)||0,
+    specs: specs,
+    images: editingImages||[],
+    is_active: true
+  };
   const editingId=document.getElementById('editingVehicleId').value;
   const { error } = editingId ? await sbAdmin.from('vehicles').update(payload).eq('id',editingId) : await sbAdmin.from('vehicles').insert([payload]);
   if(error){showToast('저장 실패: '+error.message,'error');}
@@ -353,8 +367,8 @@ async function handleImageUpload(input) {
   for(const file of files){
     const ext=file.name.split('.').pop();
     const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,8)}.${ext}`;
-    const { error } = await sbAdmin.storage.from('vehicle-images').upload(path, file, {contentType:file.type, upsert:false});
-    if(error){showToast('업로드 실패: '+file.name,'error');continue;}
+    const { error } = await sbAdmin.storage.from('vehicle-images').upload(path, file, {contentType:file.type, upsert:true});
+    if(error){showToast('업로드 실패: '+error.message,'error');console.error('Storage error:',error);continue;}
     const { data } = sbAdmin.storage.from('vehicle-images').getPublicUrl(path);
     editingImages.push({url:data.publicUrl, path, is_main:editingImages.length===0});
   }
