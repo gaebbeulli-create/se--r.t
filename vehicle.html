@@ -2,460 +2,705 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>차량 상세 - SE글로벌 렌탈</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>관리자 - SE글로벌 렌탈</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#080808;--bg2:#111;--bg3:#181818;--bg4:#222;
-  --border:#1e1e1e;--border2:#2a2a2a;
-  --text:#f0f0f0;--text2:#888;--text3:#444;
-  --teal:#a3e635;--accent:#0a84ff;--red:#ff453a;
+  --primary:#2563EB;--pd:#1D4ED8;
+  --text:#1E293B;--sub:#64748B;
+  --bg:#F1F5F9;--bg2:#fff;--bg3:#F8FAFC;--card:#fff;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --green:#10B981;--red:#EF4444;--sw:220px;
+  --teal:#2563EB;--accent:#2563EB;
 }
-html{scroll-behavior:smooth}
 body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
-a{text-decoration:none;color:inherit}
-
-/* ── Header ── */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:56px;padding:0 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(8,8,8,.85);backdrop-filter:blur(24px);
-  border-bottom:0.5px solid rgba(255,255,255,.05);
-}
-.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:color .2s}
-.back-btn:hover{color:var(--teal)}
-.logo{font-size:14px;font-weight:800}
-.logo .se{color:#ff2d2d;font-style:italic}
-.logo .gl{color:#fff}
-.logo .x{color:rgba(255,255,255,.25);font-weight:300;margin:0 3px}
-.logo .tb{color:#00ffb3}
-.hbtn{width:34px;height:34px;border-radius:50%;background:var(--bg3);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all .2s}
-.hbtn:hover{background:var(--bg4);border-color:var(--teal)}
-
-/* ── PC Layout: 2-column ── */
-.page-wrap{
-  margin-top:56px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  min-height:calc(100vh - 56px);
-  max-width:1400px;
-  margin-left:auto;margin-right:auto;
-}
-
-/* ── Left: Gallery (sticky) ── */
-.gallery-col{
-  position:sticky;top:56px;
-  height:calc(100vh - 56px);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-}
-.gallery-main{
-  flex:1;position:relative;overflow:hidden;
-  background:var(--bg2);cursor:zoom-in;
-}
-.gallery-main img{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:contain;object-position:center;transition:transform .5s ease;
-  padding:16px;
-}
-.gallery-main:hover img{transform:scale(1.03)}
-.gallery-main-ph{
-  width:100%;height:100%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:100px;background:linear-gradient(135deg,#111,#1a1a1a);
-}
-.gallery-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 40%);
-  pointer-events:none;z-index:1;
-}
-.gallery-badge{
-  position:absolute;top:20px;left:20px;z-index:2;
-  background:rgba(163,230,53,.15);border:0.5px solid rgba(163,230,53,.4);
-  color:var(--teal);font-size:10px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;
-  padding:5px 12px;border-radius:980px;
-}
-.gallery-badge.gas{background:rgba(10,132,255,.15);border-color:rgba(10,132,255,.4);color:var(--accent)}
-.garr{
-  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
-  width:42px;height:42px;border-radius:50%;
-  background:rgba(0,0,0,.6);backdrop-filter:blur(10px);
-  border:0.5px solid rgba(255,255,255,.12);
-  color:#fff;font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
-}
-.garr:hover{background:rgba(163,230,53,.2);border-color:var(--teal);color:var(--teal)}
-.garr.prev{left:16px}.garr.next{right:16px}
-.gctr{
-  position:absolute;bottom:16px;right:16px;z-index:2;
-  background:rgba(0,0,0,.65);color:#fff;
-  padding:4px 10px;border-radius:980px;font-size:11px;font-weight:600;
-  border:0.5px solid rgba(255,255,255,.1);
-}
-.gthumbs{
-  display:flex;height:72px;background:var(--bg);
-  border-top:0.5px solid var(--border);overflow-x:auto;scrollbar-width:none;flex-shrink:0;
-}
-.gthumbs::-webkit-scrollbar{display:none}
-.gthumb{
-  flex:0 0 72px;height:72px;cursor:pointer;overflow:hidden;
-  opacity:.4;transition:opacity .2s;position:relative;
-}
-.gthumb.on{opacity:1}
-.gthumb::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal);opacity:0;transition:opacity .2s}
-.gthumb.on::after{opacity:1}
-.gthumb img{width:100%;height:100%;object-fit:contain;background:var(--bg2)}
-
-/* ── Right: Info ── */
-.info-col{
-  overflow-y:auto;
-  padding:40px 48px 120px;
-  border-left:0.5px solid var(--border);
-  height:calc(100vh - 56px);
-  scrollbar-width:thin;scrollbar-color:var(--bg4) transparent;
-}
-.info-col::-webkit-scrollbar{width:4px}
-.info-col::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-
-/* Vehicle name section */
-.v-eyebrow{
-  font-size:11px;font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;color:var(--teal);margin-bottom:10px;
-}
-.v-name{
-  font-size:clamp(28px,3vw,44px);font-weight:900;
-  letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px;
-}
-.v-tag{font-size:16px;color:var(--text2);line-height:1.5;margin-bottom:32px}
-
-/* Price */
-.price-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
-.price-card{
-  background:var(--bg2);border:0.5px solid var(--border2);
-  border-radius:16px;padding:20px;
-  transition:border-color .2s,background .2s;
-}
-.price-card:hover{border-color:var(--border2);background:var(--bg3)}
-.price-card.feat{
-  background:linear-gradient(135deg,rgba(163,230,53,.1) 0%,rgba(163,230,53,.03) 100%);
-  border-color:rgba(163,230,53,.25);
-}
-.pc-label{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;letter-spacing:.5px}
-.price-card.feat .pc-label{color:rgba(163,230,53,.6)}
-.pc-val{font-size:28px;font-weight:900;color:var(--teal);letter-spacing:-1px}
-.price-card:not(.feat) .pc-val{color:var(--text)}
-.pc-unit{font-size:12px;color:var(--text3);margin-top:2px}
-.price-note{font-size:11px;color:var(--text3);margin-bottom:28px;padding-top:8px}
-
-/* CTA buttons */
-.cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px}
-.cta-btn{
-  padding:16px;border-radius:14px;font-size:15px;font-weight:700;
-  border:none;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .2s;
-}
-.cta-phone{background:var(--teal);color:#080808}
-.cta-phone:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 8px 24px rgba(163,230,53,.3)}
-.cta-kakao{background:#FEE500;color:#1a1a00}
-.cta-kakao:hover{opacity:.85;transform:translateY(-2px);box-shadow:0 8px 24px rgba(254,229,0,.2)}
-
-/* Divider */
-.divider{height:0.5px;background:var(--border);margin:28px 0}
-
-/* Info blocks */
-.info-block{margin-bottom:32px}
-.info-block-head{
-  display:flex;align-items:center;gap:10px;margin-bottom:16px;
-}
-.info-icon{
-  width:30px;height:30px;border-radius:8px;
-  background:rgba(163,230,53,.08);border:0.5px solid rgba(163,230,53,.15);
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-}
-.info-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal)}
-
-/* Spec grid */
-.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.spec-item{
-  background:var(--bg2);border:0.5px solid var(--border2);
-  border-radius:12px;padding:14px;
-  transition:border-color .2s;
-}
-.spec-item:hover{border-color:var(--border2)}
-.spec-key{font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:500}
-.spec-val{font-size:15px;font-weight:700}
-
-/* Description */
-.desc-text{font-size:15px;line-height:1.85;color:var(--text2);white-space:pre-line}
-
-/* Notice */
-.notice{
-  background:rgba(255,214,10,.03);border:0.5px solid rgba(255,214,10,.1);
-  border-radius:12px;padding:14px 16px;
-  font-size:11px;color:var(--text3);line-height:1.6;margin-top:12px;
-}
-
-/* Mobile CTA (fixed bottom) */
-.mcta{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(8,8,8,.92);backdrop-filter:blur(20px);
-  border-top:0.5px solid var(--border);
-  padding:10px 20px;z-index:200;
-  display:grid;grid-template-columns:1fr 1fr;gap:8px;
-}
-.mb{padding:13px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit;text-align:center}
-.mp{background:var(--teal);color:#080808}
-.mk{background:#FEE500;color:#1a1a00}
-
-/* Lightbox */
-.lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1000;align-items:center;justify-content:center}
-.lb.on{display:flex}
-.lb img{max-width:100vw;max-height:100vh;object-fit:contain}
-.lbc{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:20px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.lba{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.1);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.lba.prev{left:12px}.lba.next{right:12px}
-
-/* Loading/Error */
-.lwrap{margin-top:56px;text-align:center;padding:120px 20px}
-.spin{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ewrap{margin-top:56px;text-align:center;padding:120px 20px}
-
-/* Scroll animations */
-.anim{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
-.anim.in{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.05s}.d2{transition-delay:.1s}.d3{transition-delay:.15s}.d4{transition-delay:.2s}.d5{transition-delay:.25s}
-
-/* ── Mobile: stack layout ── */
-@media(max-width:900px){
-  .page-wrap{
-    grid-template-columns:1fr;
-    margin-top:56px;
-  }
-  .gallery-col{
-    position:relative;top:0;
-    height:auto;
-  }
-  .gallery-main{aspect-ratio:1;height:auto}
-  .info-col{
-    height:auto;overflow-y:visible;
-    padding:28px 20px 100px;
-    border-left:none;
-    border-top:0.5px solid var(--border);
-  }
-  .v-name{font-size:28px}
-  .pc-val{font-size:24px}
-  .spec-grid{grid-template-columns:1fr 1fr}
-}
+/* Login */
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.lcard{background:var(--card);border-radius:20px;padding:40px;width:360px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.llogo{font-size:24px;font-weight:900;color:var(--primary);text-align:center;margin-bottom:8px}
+.lsub{text-align:center;color:var(--sub);font-size:14px;margin-bottom:32px}
+.linput{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-size:15px;margin-bottom:12px;outline:none}
+.linput:focus{border-color:var(--primary)}
+.lbtn{width:100%;background:var(--primary);color:#fff;padding:13px;border-radius:10px;font-size:15px;font-weight:800;border:none;cursor:pointer}
+.lerr{color:var(--red);font-size:13px;text-align:center;margin-top:8px}
+/* Layout */
+.al{display:flex;min-height:100vh}
+.sb{width:var(--sw);background:var(--pd);color:#fff;position:fixed;top:0;bottom:0;left:0;display:flex;flex-direction:column;z-index:50;transition:transform .3s}
+.sblogo{padding:24px 20px;font-size:18px;font-weight:800;border-bottom:1px solid rgba(255,255,255,.1)}
+.sblogo span{opacity:.7;font-size:12px;display:block;margin-top:2px}
+.sbmenu{flex:1;padding:12px 0}
+.mi{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;font-size:14px;font-weight:600;transition:background .15s;border-left:3px solid transparent}
+.mi:hover{background:rgba(255,255,255,.1)}
+.mi.on{background:rgba(255,255,255,.15);border-left-color:#fff}
+.sbfoot{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.lout{width:100%;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;padding:10px;cursor:pointer;font-size:13px;font-weight:700}
+.mc{margin-left:var(--sw);flex:1;padding:24px;min-width:0}
+/* Stats */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.scard{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.slbl{font-size:12px;color:var(--sub);margin-bottom:6px}
+.sval{font-size:28px;font-weight:900;color:var(--primary)}
+/* Section Card */
+.sc{background:var(--card);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.sch{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sct{font-size:16px;font-weight:800}
+.btnp{background:var(--primary);color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer}
+.bsm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700;border:none;cursor:pointer}
+.be{background:#EFF6FF;color:var(--primary)}.bd{background:#FEF2F2;color:var(--red)}
+/* Table */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:10px 12px;font-size:12px;font-weight:700;color:var(--sub);background:var(--bg);border-bottom:1px solid var(--border)}
+.tbl td{padding:12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.sbadge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.sp{background:#FEF3C7;color:#92400E}.sc2{background:#DBEAFE;color:#1D4ED8}.sd{background:#D1FAE5;color:#065F46}
+/* Form */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+.fl{font-size:12px;font-weight:700;color:var(--sub)}
+.fi{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;transition:border-color .2s;width:100%;background:#fff}
+.fi:focus{border-color:var(--primary)}
+.fta{min-height:80px;resize:vertical;color:var(--text)}
+.factions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.bcancel{background:var(--bg);color:var(--text);padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+.bsave{background:var(--primary);color:#fff;padding:10px 24px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+/* Image Upload */
+.iupload{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s}
+.iupload:hover{border-color:var(--primary)}
+.ipgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ipitem{position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:2px solid var(--border)}
+.ipitem.main{border-color:var(--primary)}
+.ipitem img{width:100%;height:100%;object-fit:cover}
+.ipactions{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.ipitem:hover .ipactions{opacity:1}
+.ipbtn{background:rgba(255,255,255,.9);border:none;border-radius:4px;padding:3px 6px;font-size:10px;font-weight:700;cursor:pointer;width:64px}
+/* Spec rows */
+.specrow{display:grid;grid-template-columns:1fr 1fr 32px;gap:8px;align-items:center;margin-bottom:8px}
+.specrow input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:12px;width:100%}
+.delbtn{width:28px;height:28px;background:#FEF2F2;border:none;border-radius:6px;cursor:pointer;color:var(--red);font-size:14px}
+/* Toggle */
+.tog{position:relative;width:40px;height:22px;background:#CBD5E1;border-radius:11px;cursor:pointer;transition:background .2s}
+.tog.on{background:var(--green)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s}
+.tog.on::after{left:21px}
+/* Pages */
+.page{display:none}.page.on{display:block}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1E293B;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1000}
+.toast.on{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
+/* Mobile */
+.mbar{display:none;position:sticky;top:0;z-index:30;background:var(--pd);color:#fff;padding:0 16px;height:56px;align-items:center;justify-content:space-between}
+.ham{font-size:24px;cursor:pointer}
+.sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
+.hidden{display:none!important}
+@media(max-width:768px){.sb{transform:translateX(-100%)}.sb.on{transform:translateX(0)}.mc{margin-left:0}.mbar{display:flex}.fg2{grid-template-columns:1fr}.sgrid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <script>
 const SB_URL='https://ogjrhphhpqpzlzlbugdp.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
+const SB_SVC='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzYyNzgzNSwiZXhwIjoyMDg5MjAzODM1fQ.LW4jQ4f-xs0Ky9Ie3q30LtZlofisj-KP3LYsSokdhIg';
+const ADMIN_PW='admin1234';
+const sb=supabase.createClient(SB_URL,SB_ANON);
+const sba=supabase.createClient(SB_URL,SB_SVC);
 </script>
 
-<header>
-  <div class="back-btn" onclick="history.back()">← 목록</div>
-  <div class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></div>
-  <div class="hbtn" onclick="shareV()">📤</div>
-</header>
-
-<div id="lwrap" class="lwrap"><div class="spin"></div><p style="font-size:13px;color:var(--text3)">불러오는 중...</p></div>
-<div id="ewrap" class="ewrap" style="display:none">
-  <div style="font-size:56px;margin-bottom:16px">😕</div>
-  <p style="font-size:18px;font-weight:700;margin-bottom:8px">차량을 찾을 수 없습니다</p>
-  <p style="font-size:14px;color:var(--text3);margin-bottom:28px">URL을 확인하거나 목록으로 돌아가세요</p>
-  <a href="index.html" style="background:var(--teal);color:#080808;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700">목록으로</a>
-</div>
-
-<div id="main" class="page-wrap" style="display:none">
-  <!-- 왼쪽: 갤러리 -->
-  <div class="gallery-col">
-    <div class="gallery-main" id="gmain">
-      <div class="gallery-main-ph">🏍️</div>
-      <div class="gallery-overlay"></div>
-      <div class="gallery-badge" id="gBadge">⚡ ELECTRIC</div>
-    </div>
-    <div class="gthumbs" id="gthumbs"></div>
-  </div>
-
-  <!-- 오른쪽: 정보 -->
-  <div class="info-col">
-    <div class="v-eyebrow anim" id="vEye">SE글로벌 렌탈 TEAMBRO</div>
-    <div class="v-name anim d1" id="vName">로딩 중...</div>
-    <div class="v-tag anim d2" id="vTag"></div>
-
-    <!-- 가격 -->
-    <div class="price-row anim d2">
-      <div class="price-card feat">
-        <div class="pc-label">🛵 렌탈</div>
-        <div class="pc-val" id="pR">-</div>
-        <div class="pc-unit">/ 월</div>
-      </div>
-      <div class="price-card">
-        <div class="pc-label">📋 리스</div>
-        <div class="pc-val" id="pL">-</div>
-        <div class="pc-unit">/ 월</div>
-      </div>
-    </div>
-    <div class="price-note anim d3">※ 정확한 요금은 상담 후 확정됩니다</div>
-
-    <!-- CTA -->
-    <div class="cta-row anim d3">
-      <button class="cta-btn cta-phone" id="pcP">📞 전화 상담</button>
-      <button class="cta-btn cta-kakao" id="pcK">💬 카카오톡</button>
-    </div>
-
-    <div class="divider anim d3"></div>
-
-    <!-- 제원 -->
-    <div class="info-block anim d4">
-      <div class="info-block-head">
-        <div class="info-icon">📐</div>
-        <div class="info-title">제원 정보</div>
-      </div>
-      <div class="spec-grid" id="specG"></div>
-    </div>
-
-    <div class="divider anim d4"></div>
-
-    <!-- 설명 -->
-    <div class="info-block anim d5">
-      <div class="info-block-head">
-        <div class="info-icon">📝</div>
-        <div class="info-title">상세 설명</div>
-      </div>
-      <p class="desc-text" id="descT">상세 설명이 준비 중입니다.</p>
-    </div>
-
-    <div class="notice anim d5">※ 본 페이지는 특정 제조사의 공식 페이지가 아닙니다. 차량 사양 및 가격은 변경될 수 있으며, 정확한 내용은 상담을 통해 확인하시기 바랍니다.</div>
+<!-- Login -->
+<div id="loginPage" class="lw">
+  <div class="lcard">
+    <div class="llogo">🔐 SE글로벌 렌탈</div>
+    <div class="lsub">관리자 로그인</div>
+    <input type="password" class="linput" id="lpw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">로그인</button>
+    <div class="lerr" id="lerr"></div>
   </div>
 </div>
 
-<!-- Lightbox -->
-<div class="lb" id="lb" onclick="closeLb()">
-  <button class="lbc" onclick="closeLb()">✕</button>
-  <button class="lba prev" onclick="event.stopPropagation();moveLb(-1)">‹</button>
-  <img id="lbimg" src="" alt="" onclick="event.stopPropagation()">
-  <button class="lba next" onclick="event.stopPropagation();moveLb(1)">›</button>
+<!-- Admin -->
+<div id="adminLayout" class="al hidden">
+  <div class="mbar">
+    <span class="ham" onclick="toggleSb()">☰</span>
+    <span style="font-weight:800">SE글로벌 렌탈 관리자</span>
+    <span></span>
+  </div>
+  <div class="sb" id="sidebar">
+    <div class="sblogo">SE글로벌 렌탈<span>관리자 페이지</span></div>
+    <div class="sbmenu">
+      <div class="mi on" onclick="showPage('dash',this)"><span>📊</span>대시보드</div>
+      <div class="mi" onclick="showPage('vehicles',this)"><span>🛵</span>차량 관리</div>
+      <div class="mi" onclick="showPage('consult',this)"><span>📋</span>상담 접수</div>
+      <div class="mi" onclick="showPage('site',this)"><span>⚙️</span>사이트 설정</div>
+    </div>
+    <div class="sbfoot"><button class="lout" onclick="logout()">로그아웃</button></div>
+  </div>
+  <div class="sbov hidden" id="sbov" onclick="toggleSb()"></div>
+
+  <div class="mc">
+    <!-- Dashboard -->
+    <div class="page on" id="page-dash">
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">대시보드</div><div style="font-size:13px;color:var(--sub)" id="ddate"></div></div>
+      <div class="sgrid">
+        <div class="scard"><div class="slbl">등록 차량</div><div class="sval" id="sv1">-</div></div>
+        <div class="scard"><div class="slbl">전체 상담</div><div class="sval" id="sv2">-</div></div>
+        <div class="scard"><div class="slbl">미처리 상담</div><div class="sval" id="sv3">-</div></div>
+        <div class="scard"><div class="slbl">처리 완료</div><div class="sval" id="sv4">-</div></div>
+      </div>
+      <div class="sc"><div class="sch"><div class="sct">최근 상담</div></div><div id="recentC">로딩 중...</div></div>
+    </div>
+
+    <!-- Vehicles -->
+    <div class="page" id="page-vehicles">
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">차량 관리</div></div>
+      <div id="vlist-view">
+        <div class="sc">
+          <div class="sch"><div class="sct">차량 목록</div><button class="btnp" onclick="showVForm()">+ 차량 추가</button></div>
+          <div id="vlist">로딩 중...</div>
+        </div>
+      </div>
+      <div id="vform-view" style="display:none">
+        <div class="sc">
+          <div class="sch"><div class="sct" id="vftitle">차량 추가</div><button class="bcancel" onclick="hideVForm()">← 목록으로</button></div>
+          <input type="hidden" id="eid">
+          <div class="fg2">
+            <div class="fg"><label class="fl">차량 ID * (영문, 하이픈 가능)</label><input type="text" class="fi" id="vid" placeholder="예: honda-pcx"></div>
+            <div class="fg"><label class="fl">차량명 *</label><input type="text" class="fi" id="vname2" placeholder="예: Honda PCX 125"></div>
+            <div class="fg"><label class="fl">종류</label><select class="fi" id="vtype2"><option value="gasoline">⛽ 내연기관</option><option value="electric">⚡ 전기이륜차</option></select></div>
+            <div class="fg"><label class="fl">뱃지</label><input type="text" class="fi" id="vbadge2" placeholder="추천, 신규 등"></div>
+            <div class="fg full"><label class="fl">한줄 소개</label><input type="text" class="fi" id="vtag2" placeholder="배달 최적화 이륜차"></div>
+            <div class="fg full"><label class="fl">상세 설명</label><textarea class="fi fta" id="vdesc" placeholder="차량 상세 설명"></textarea></div>
+            <div class="fg"><label class="fl">렌탈 가격</label><input type="text" class="fi" id="vrental" placeholder="월 12만원~"></div>
+            <div class="fg"><label class="fl">리스 가격</label><input type="text" class="fi" id="vlease" placeholder="월 14만원~"></div>
+            <div class="fg"><label class="fl">정렬 순서</label><input type="number" class="fi" id="vsort" value="0"></div>
+          </div>
+          <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📐 제원 정보</div>
+          <div id="specrows"></div>
+          <button onclick="addSpec()" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;margin-top:4px">+ 제원 추가</button>
+          <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📸 차량 이미지</div>
+          <div class="iupload" id="iuploadArea" onclick="document.getElementById('ifile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor=''" ondrop="event.preventDefault();this.style.borderColor='';handleUploadFiles(event.dataTransfer.files)">
+            <div style="font-size:32px;margin-bottom:8px">📷</div>
+            <div style="font-size:14px;font-weight:700">클릭 또는 드래그로 업로드</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG 여러 장 동시 선택 가능 · 자동 1:1 크롭</div>
+            <div style="font-size:11px;color:#94A3B8;margin-top:2px" id="uploadStatus"></div>
+          </div>
+          <input type="file" id="ifile" accept="image/*" multiple style="display:none" onchange="handleUploadFiles(this.files)">
+          <div class="ipgrid" id="ipgrid"></div>
+          <p style="font-size:11px;color:#94A3B8;margin-top:8px">이미지에 마우스를 올리면 메인 설정/삭제 버튼이 나타납니다</p>
+          <div class="factions"><button class="bcancel" onclick="hideVForm()">취소</button><button class="bsave" onclick="saveVehicle()">저장</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consult -->
+    <div class="page" id="page-consult">
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">상담 접수 목록</div></div>
+      <div class="sc"><div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>지역</th><th>차종</th><th>유형</th><th>상태</th><th>내용</th></tr></thead>
+          <tbody id="ctbody"><tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">로딩 중...</td></tr></tbody>
+        </table>
+      </div></div>
+    </div>
+
+    <!-- Site -->
+    <div class="page" id="page-site">
+      <div style="margin-bottom:24px"><div style="font-size:22px;font-weight:800">사이트 설정</div></div>
+      <div class="sc">
+        <div class="fg2">
+          <div class="fg"><label class="fl">사이트명</label><input type="text" class="fi" id="sname" placeholder="SE글로벌 렌탈"></div>
+          <div class="fg"><label class="fl">대표 전화번호</label><input type="text" class="fi" id="sphone" placeholder="010-0000-0000"></div>
+          <div class="fg full"><label class="fl">카카오톡 오픈채팅 URL</label><input type="text" class="fi" id="skakao" placeholder="https://open.kakao.com/o/..."></div>
+          <div class="fg"><label class="fl">상호명</label><input type="text" class="fi" id="sbizname"></div>
+          <div class="fg"><label class="fl">사업자등록번호</label><input type="text" class="fi" id="sbiznum" placeholder="000-00-00000"></div>
+          <div class="fg full"><label class="fl">주소</label><input type="text" class="fi" id="saddr"></div>
+          <div class="fg full"><label class="fl">공지사항</label><textarea class="fi fta" id="snotice"></textarea></div>
+          <div class="fg full"><label class="fl">폰 목업 캡션 텍스트</label><input type="text" class="fi" id="smockuptext" placeholder="배달 라이더를 위한 최적의 이륜차 🛵"></div>
+          <!-- 상단 공지 배너 -->
+          <div class="fg full">
+            <label class="fl">상단 공지 배너 (빨간 띠)</label>
+            <input type="text" class="fi" id="stop_notice" placeholder="예: 🎉 신규 가입 시 보증금 10% 할인! 지금 바로 상담하세요">
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">비워두면 배너가 표시되지 않습니다</div>
+          </div>
+          <!-- 팝업 -->
+          <div class="fg full">
+            <label class="fl">팝업 이미지</label>
+            <div style="margin-top:6px">
+              <div id="popupImgPreview" style="width:200px;height:200px;border-radius:10px;overflow:hidden;border:0.5px solid var(--border);background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:8px">🖼️</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button onclick="document.getElementById('popupImgFile').click()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">이미지 업로드</button>
+                <button onclick="removePopupImg()" style="background:var(--bg);color:var(--red);border:1px solid var(--red);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">삭제</button>
+                <span style="font-size:11px;color:var(--text3)" id="popupImgStatus"></span>
+              </div>
+              <input type="file" id="popupImgFile" accept="image/*" style="display:none" onchange="uploadPopupImg(this)">
+              <input type="hidden" id="spopupimg">
+            </div>
+          </div>
+          <div class="fg full">
+            <label class="fl">팝업 제목</label>
+            <input type="text" class="fi" id="spopuptitle" placeholder="예: 🎉 특별 프로모션">
+          </div>
+          <div class="fg full">
+            <label class="fl">팝업 내용</label>
+            <textarea class="fi fta" id="spopuptext" placeholder="팝업에 표시될 내용을 입력해주세요"></textarea>
+          </div>
+          <div class="fg full">
+            <label class="fl">팝업 버튼 텍스트</label>
+            <input type="text" class="fi" id="spopupbtn" placeholder="예: 지금 상담하기">
+          </div>
+          <div class="fg" style="flex-direction:row;align-items:center;gap:10px">
+            <label class="fl">팝업 활성화</label>
+            <div class="tog" id="popupToggle" onclick="togglePopup()" style="cursor:pointer"></div>
+            <input type="hidden" id="spopupactive" value="false">
+          </div>
+          <div class="fg full">
+            <label class="fl">대문 이미지 (폰 목업에 표시)</label>
+            <div style="margin-top:6px">
+              <div id="heroImgPreview" style="width:120px;height:120px;border-radius:12px;overflow:hidden;border:0.5px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:8px">🏍️</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button onclick="document.getElementById('heroImgFile').click()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">이미지 업로드</button>
+                <button onclick="removeHeroImg()" style="background:var(--bg);color:var(--red);border:1px solid var(--red);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">삭제</button>
+                <span style="font-size:11px;color:var(--text-sub)" id="heroImgStatus"></span>
+              </div>
+              <input type="file" id="heroImgFile" accept="image/*" style="display:none" onchange="uploadHeroImg(this)">
+              <input type="hidden" id="sheroimg">
+            </div>
+          </div>
+        </div>
+        <div class="factions"><button class="bsave" onclick="saveSite()">저장</button></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="mcta">
-  <button class="mb mp" id="mP">📞 전화 상담</button>
-  <button class="mb mk" id="mK">💬 카카오톡</button>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-let imgs=[],cur=0;
-const vid=new URLSearchParams(location.search).get('id');
+let vehicles=[],consults=[],eImgs=[];
 
-async function init(){
-  if(!vid){showErr();return;}
-  try{
-    const{data,error}=await sb.from('vehicles').select('*').eq('id',vid).limit(1);
-    if(error||!data||!data.length)throw new Error();
-    const v=data[0];
-    document.title=v.name+' | SE글로벌 렌탈 TEAMBRO';
-
-    const isEv=v.type==='electric';
-    const badge=document.getElementById('gBadge');
-    badge.textContent=isEv?'⚡ ELECTRIC':'⛽ GASOLINE';
-    if(!isEv)badge.classList.add('gas');
-
-    document.getElementById('vEye').textContent=isEv?'전기이륜차 · SE글로벌 렌탈':'내연기관 · SE글로벌 렌탈';
-    document.getElementById('vName').textContent=v.name;
-    document.getElementById('vTag').textContent=v.tagline||'';
-    document.getElementById('pR').textContent=v.rental_price||'문의';
-    document.getElementById('pL').textContent=v.lease_price||'문의';
-    document.getElementById('descT').textContent=v.description||'상세 설명이 준비 중입니다.';
-
-    // 제원
-    let specs={};
-    if(v.specs){try{specs=typeof v.specs==='string'?JSON.parse(v.specs):v.specs;}catch(e){}}
-    const ents=Object.entries(specs);
-    document.getElementById('specG').innerHTML=ents.length
-      ?ents.map(([k,val])=>`<div class="spec-item"><div class="spec-key">${k}</div><div class="spec-val">${val}</div></div>`).join('')
-      :'<div class="spec-item" style="grid-column:1/-1"><div class="spec-key">제원 정보</div><div class="spec-val" style="color:var(--text3)">등록되지 않음</div></div>';
-
-    // 이미지
-    try{imgs=typeof v.images==='string'?JSON.parse(v.images):(Array.isArray(v.images)?v.images:[]);}catch(e){imgs=[];}
-    buildGallery();
-    loadCTA();
-
-    document.getElementById('lwrap').style.display='none';
-    document.getElementById('main').style.display='grid';
-
-    // 애니메이션
-    setTimeout(()=>{
-      const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in');});},{threshold:.08});
-      document.querySelectorAll('.anim').forEach(el=>obs.observe(el));
-    },100);
-  }catch(e){showErr();}
-}
-
-function showErr(){document.getElementById('lwrap').style.display='none';document.getElementById('ewrap').style.display='block';}
-
-function buildGallery(){
-  const gm=document.getElementById('gmain');
-  const gt=document.getElementById('gthumbs');
-  if(!imgs.length)return;
-  cur=imgs.findIndex(i=>i.is_main);
-  if(cur<0)cur=0;
-  renderImg();
-  if(imgs.length>1){
-    const pa=document.createElement('button');pa.className='garr prev';pa.innerHTML='‹';pa.onclick=()=>moveG(-1);
-    const na=document.createElement('button');na.className='garr next';na.innerHTML='›';na.onclick=()=>moveG(1);
-    const ct=document.createElement('div');ct.className='gctr';ct.id='gctr';ct.textContent=`${cur+1} / ${imgs.length}`;
-    gm.appendChild(pa);gm.appendChild(na);gm.appendChild(ct);
-    gt.innerHTML=imgs.map((img,i)=>`<div class="gthumb ${i===cur?'on':''}" onclick="goG(${i})"><img src="${img.url}" alt=""></div>`).join('');
+// ── Auth ──
+function doLogin(){
+  if(document.getElementById('lpw').value===ADMIN_PW){
+    sessionStorage.setItem('sg_admin','1');
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('adminLayout').classList.remove('hidden');
+    document.getElementById('ddate').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+    loadAll();
+  } else {
+    document.getElementById('lerr').textContent='비밀번호가 올바르지 않습니다';
   }
 }
-
-function renderImg(){
-  const gm=document.getElementById('gmain');
-  gm.querySelectorAll('img:not(#lbimg)').forEach(e=>e.remove());
-  gm.querySelector('.gallery-main-ph')?.remove();
-  const img=document.createElement('img');
-  img.src=imgs[cur].url;
-  img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;cursor:zoom-in;z-index:0';
-  img.onclick=()=>openLb(cur);
-  img.onerror=()=>{img.remove();const ph=document.createElement('div');ph.className='gallery-main-ph';ph.textContent='🏍️';gm.prepend(ph);};
-  gm.prepend(img);
+function logout(){sessionStorage.removeItem('sg_admin');location.reload();}
+if(sessionStorage.getItem('sg_admin')){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('adminLayout').classList.remove('hidden');
+  document.getElementById('ddate').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  loadAll();
 }
 
-function moveG(d){cur=(cur+d+imgs.length)%imgs.length;renderImg();const ct=document.getElementById('gctr');if(ct)ct.textContent=`${cur+1} / ${imgs.length}`;document.querySelectorAll('.gthumb').forEach((t,i)=>t.classList.toggle('on',i===cur));}
-function goG(i){cur=i;renderImg();const ct=document.getElementById('gctr');if(ct)ct.textContent=`${cur+1} / ${imgs.length}`;document.querySelectorAll('.gthumb').forEach((t,j)=>t.classList.toggle('on',j===cur));}
-function openLb(i){cur=i;document.getElementById('lbimg').src=imgs[i].url;document.getElementById('lb').classList.add('on');}
-function closeLb(){document.getElementById('lb').classList.remove('on');}
-function moveLb(d){cur=(cur+d+imgs.length)%imgs.length;document.getElementById('lbimg').src=imgs[cur].url;goG(cur);}
-document.addEventListener('keydown',e=>{if(document.getElementById('lb').classList.contains('on')){if(e.key==='ArrowLeft')moveLb(-1);if(e.key==='ArrowRight')moveLb(1);if(e.key==='Escape')closeLb();}});
+// ── Nav ──
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mi').forEach(m=>m.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  if(el)el.classList.add('on');
+  if(window.innerWidth<=768)closeSb();
+}
+function toggleSb(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sbov');
+  if(s.classList.contains('on')){s.classList.remove('on');o.classList.add('hidden');}
+  else{s.classList.add('on');o.classList.remove('hidden');}
+}
+function closeSb(){document.getElementById('sidebar').classList.remove('on');document.getElementById('sbov').classList.add('hidden');}
 
-async function loadCTA(){
+// ── Load All ──
+async function loadAll(){await Promise.all([loadVehicles(),loadConsults(),loadSite()]);}
+
+// ── Vehicles ──
+async function loadVehicles(){
   try{
-    const{data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
+    const {data,error}=await sba.from('vehicles').select('*').order('sort_order',{ascending:true});
+    if(error)throw error;
+    vehicles=data||[];
+    renderVList();
+    document.getElementById('sv1').textContent=vehicles.length;
+  }catch(e){toast('차량 로드 실패','err');console.error(e);}
+}
+
+function renderVList(){
+  const el=document.getElementById('vlist');
+  if(!vehicles.length){el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:40px">등록된 차량이 없습니다</p>';return;}
+  el.innerHTML=`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>이미지</th><th>ID</th><th>차량명</th><th>종류</th><th>렌탈</th><th>표시</th><th>관리</th></tr></thead><tbody>${
+    vehicles.map(v=>{
+      const imgs=parseImgs(v.images);
+      const main=imgs.find(i=>i.is_main)||imgs[0];
+      const imgH=main?`<img src="${main.url}" style="width:48px;height:48px;border-radius:6px;object-fit:cover" onerror="this.style.display='none'">`:'<span style="font-size:24px">🛵</span>';
+      return `<tr>
+        <td>${imgH}</td>
+        <td><code style="font-size:11px">${v.id}</code></td>
+        <td style="font-weight:700">${v.name}</td>
+        <td>${v.type==='electric'?'⚡ 전기':'⛽ 내연'}</td>
+        <td>${v.rental_price||'-'}</td>
+        <td><div class="tog ${v.is_active?'on':''}" onclick="toggleV('${v.id}',${v.is_active})"></div></td>
+        <td style="display:flex;gap:6px">
+          <button class="bsm be" onclick="editV('${v.id}')">수정</button>
+          <button class="bsm bd" onclick="deleteV('${v.id}')">삭제</button>
+        </td>
+      </tr>`;
+    }).join('')
+  }</tbody></table></div>`;
+}
+
+function parseImgs(raw){
+  if(!raw)return[];
+  if(Array.isArray(raw))return raw;
+  try{return JSON.parse(raw);}catch(e){return[];}
+}
+function parseSpecs(raw){
+  if(!raw)return{};
+  if(typeof raw==='object'&&!Array.isArray(raw))return raw;
+  try{return JSON.parse(raw);}catch(e){return{};}
+}
+
+function showVForm(v=null){
+  document.getElementById('vlist-view').style.display='none';
+  document.getElementById('vform-view').style.display='block';
+  document.getElementById('vftitle').textContent=v?'차량 수정':'차량 추가';
+  document.getElementById('eid').value=v?v.id:'';
+  document.getElementById('vid').value=v?v.id:'';
+  document.getElementById('vid').disabled=!!v; // ID는 수정 불가
+  document.getElementById('vname2').value=v?v.name:'';
+  document.getElementById('vtype2').value=v?v.type||'gasoline':'gasoline';
+  document.getElementById('vtag2').value=v?v.tagline||'':'';
+  document.getElementById('vdesc').value=v?v.description||'':'';
+  document.getElementById('vrental').value=v?v.rental_price||'':'';
+  document.getElementById('vlease').value=v?v.lease_price||'':'';
+
+  document.getElementById('vbadge2').value=v?v.badge||'':'';
+  document.getElementById('vsort').value=v?v.sort_order||0:0;
+  // specs
+  document.getElementById('specrows').innerHTML='';
+  const specs=parseSpecs(v?v.specs:{});
+  Object.entries(specs).forEach(([k,val])=>addSpec(k,val));
+  // images
+  eImgs=parseImgs(v?v.images:[]);
+  renderImgs();
+}
+function hideVForm(){
+  document.getElementById('vlist-view').style.display='block';
+  document.getElementById('vform-view').style.display='none';
+}
+function editV(id){showVForm(vehicles.find(v=>v.id===id));}
+async function deleteV(id){
+  if(!confirm('정말 삭제하시겠습니까?'))return;
+  const{error}=await sba.from('vehicles').delete().eq('id',id);
+  if(error){toast('삭제 실패','err');}else{toast('삭제됐습니다','ok');loadVehicles();}
+}
+async function toggleV(id,cur){
+  await sba.from('vehicles').update({is_active:!cur}).eq('id',id);
+  loadVehicles();
+}
+
+function addSpec(k='',v=''){
+  const row=document.createElement('div');row.className='specrow';
+  row.innerHTML=`<input placeholder="항목 (예: 최고속도)" value="${k}"><input placeholder="값 (예: 60km/h)" value="${v}"><button class="delbtn" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('specrows').appendChild(row);
+}
+
+async function saveVehicle(){
+  const id=document.getElementById('vid').value.trim();
+  const name=document.getElementById('vname2').value.trim();
+  if(!id||!name){toast('ID와 차량명은 필수입니다','err');return;}
+  // collect specs
+  const specs={};
+  document.querySelectorAll('.specrow').forEach(r=>{
+    const inputs=r.querySelectorAll('input');
+    const k=inputs[0].value.trim(),v=inputs[1].value.trim();
+    if(k&&v)specs[k]=v;
+  });
+  const payload={
+    name,
+    
+    type:document.getElementById('vtype2').value,
+    tagline:document.getElementById('vtag2').value.trim()||null,
+    description:document.getElementById('vdesc').value.trim()||null,
+    rental_price:document.getElementById('vrental').value.trim()||null,
+    lease_price:document.getElementById('vlease').value.trim()||null,
+
+    badge:document.getElementById('vbadge2').value.trim()||null,
+    sort_order:parseInt(document.getElementById('vsort').value)||0,
+    specs:specs,
+    images:eImgs,
+  };
+  const editingId=document.getElementById('eid').value;
+  let error;
+  if(editingId){
+    ({error}=await sba.from('vehicles').update(payload).eq('id',editingId));
+  }else{
+    payload.id=id;
+    ({error}=await sba.from('vehicles').upsert([payload],{onConflict:'id'}));
+  }
+  if(error){toast('저장 실패: '+error.message,'err');console.error(error);}
+  else{toast('저장됐습니다','ok');hideVForm();loadVehicles();}
+}
+
+// ── Image Upload ──
+async function handleUploadFiles(fileList){
+  const files=Array.from(fileList);
+  if(!files.length)return;
+  const status=document.getElementById('uploadStatus');
+  status.textContent=`0 / ${files.length} 처리 중...`;
+  let done=0;
+  for(const file of files){
+    try{
+      // 1:1 정사각형으로 자동 크롭 + 최대 1200px 리사이즈
+      const blob=await cropToSquare(file,1200);
+      const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,6)}.jpg`;
+      const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+      if(error){toast('업로드 실패: '+error.message,'err');continue;}
+      const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+      eImgs.push({url:data.publicUrl,path,is_main:eImgs.length===0});
+      done++;
+      status.textContent=`${done} / ${files.length} 완료...`;
+      renderImgs();
+    }catch(e){toast('처리 실패: '+e.message,'err');}
+  }
+  status.textContent=`✓ ${done}장 업로드 완료`;
+  setTimeout(()=>status.textContent='',3000);
+  document.getElementById('ifile').value='';
+}
+async function handleUpload(input){handleUploadFiles(input.files);}
+function renderImgs(){
+  document.getElementById('ipgrid').innerHTML=eImgs.map((img,i)=>`
+    <div class="ipitem ${img.is_main?'main':''}">
+      <img src="${img.url}" alt="" onerror="this.src=''">
+      <div class="ipactions">
+        <button class="ipbtn" onclick="setMain(${i})" style="${img.is_main?'background:#2563EB;color:#fff':''}">${img.is_main?'✓ 메인':'메인 설정'}</button>
+        <button class="ipbtn" onclick="removeImg(${i})" style="background:#EF4444;color:#fff">삭제</button>
+      </div>
+    </div>`).join('');
+}
+function setMain(i){eImgs.forEach((img,j)=>img.is_main=(j===i));renderImgs();}
+async function removeImg(i){
+  const img=eImgs[i];
+  if(img.path)await sba.storage.from('vehicle-images').remove([img.path]);
+  eImgs.splice(i,1);
+  if(eImgs.length&&!eImgs.find(x=>x.is_main))eImgs[0].is_main=true;
+  renderImgs();
+}
+
+// ── Consult ──
+async function loadConsults(){
+  try{
+    const{data,error}=await sba.from('consult_requests').select('*').order('created_at',{ascending:false});
+    if(error)throw error;
+    consults=data||[];
+    renderConsults();
+    document.getElementById('sv2').textContent=consults.length;
+    document.getElementById('sv3').textContent=consults.filter(c=>c.status==='pending').length;
+    document.getElementById('sv4').textContent=consults.filter(c=>c.status==='done').length;
+    renderRecentC();
+  }catch(e){console.error(e);}
+}
+function renderConsults(){
+  const tb=document.getElementById('ctbody');
+  if(!consults.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#94A3B8">상담 내역이 없습니다</td></tr>';return;}
+  tb.innerHTML=consults.map(c=>`<tr>
+    <td style="font-size:11px;white-space:nowrap">${new Date(c.created_at).toLocaleDateString('ko-KR')}<br>${new Date(c.created_at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td>
+    <td style="font-weight:700">${c.name}</td>
+    <td><a href="tel:${c.phone}" style="color:var(--primary)">${c.phone}</a></td>
+    <td>${c.region||'-'}</td>
+    <td>${c.vehicle_name||'-'}</td>
+    <td>${c.consult_type==='rental'?'렌탈':c.consult_type==='lease'?'리스':'렌탈·리스'}</td>
+    <td>
+      <select class="sbadge ${c.status==='pending'?'sp':c.status==='contacted'?'sc2':'sd'}" onchange="updateStatus(${c.id},this.value,this)" style="border:none;background:inherit;cursor:pointer;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px">
+        <option value="pending" ${c.status==='pending'?'selected':''}>미처리</option>
+        <option value="contacted" ${c.status==='contacted'?'selected':''}>연락완료</option>
+        <option value="done" ${c.status==='done'?'selected':''}>처리완료</option>
+      </select>
+    </td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--sub);font-size:12px">${c.message||'-'}</td>
+    <td><button class="bdanger" onclick="deleteConsult(${c.id})">🗑️</button></td>
+  </tr>`).join('');
+}
+function renderRecentC(){
+  const el=document.getElementById('recentC');
+  const r=consults.slice(0,5);
+  if(!r.length){el.innerHTML='<p style="text-align:center;color:#94A3B8;padding:24px">상담 내역이 없습니다</p>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr><th>일시</th><th>이름</th><th>연락처</th><th>차종</th><th>상태</th></tr></thead><tbody>${r.map(c=>`<tr><td style="font-size:11px">${new Date(c.created_at).toLocaleDateString('ko-KR')}</td><td style="font-weight:700">${c.name}</td><td>${c.phone}</td><td>${c.vehicle_name||'-'}</td><td><span class="sbadge ${c.status==='pending'?'sp':c.status==='contacted'?'sc2':'sd'}">${c.status==='pending'?'미처리':c.status==='contacted'?'연락완료':'처리완료'}</span></td></tr>`).join('')}</tbody></table>`;
+}
+async function deleteConsult(id){
+  if(!confirm('이 상담 내역을 삭제할까요?'))return;
+  const{error}=await sba.from('consult_requests').delete().eq('id',id);
+  if(error){toast('삭제 실패: '+error.message,'err');return;}
+  consults=consults.filter(c=>c.id!==id);
+  renderConsults();
+  renderRecentC();
+  document.getElementById('sv2').textContent=consults.length;
+  document.getElementById('sv3').textContent=consults.filter(c=>c.status==='pending').length;
+  document.getElementById('sv4').textContent=consults.filter(c=>c.status==='done').length;
+  toast('삭제됐어요 ✓','ok');
+}
+
+async function updateStatus(id,status,sel){
+  const{error}=await sba.from('consult_requests').update({status}).eq('id',id);
+  if(error){toast('변경 실패','err');}else{toast('상태 변경됐습니다','ok');sel.className=`sbadge ${status==='pending'?'sp':status==='contacted'?'sc2':'sd'}`;loadConsults();}
+}
+
+// ── Site ──
+async function loadSite(){
+  try{
+    const{data:rows}=await sba.from('site_config').select('*').eq('id',1).limit(1);
     const s=rows&&rows.length?rows[0]:null;
     if(!s)return;
-    if(s.phone){
-      ['pcP','mP'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>location.href='tel:'+s.phone;});
-      document.getElementById('mP').textContent='📞 '+s.phone;
+    document.getElementById('sname').value=s.site_name||'';
+    document.getElementById('sphone').value=s.phone||'';
+    document.getElementById('skakao').value=s.kakao_url||'';
+    document.getElementById('sbizname').value=s.business_name||'';
+    document.getElementById('sbiznum').value=s.business_number||'';
+    document.getElementById('saddr').value=s.address||'';
+    document.getElementById('snotice').value=s.notice||'';
+    document.getElementById('sheroimg').value=s.hero_image||'';
+    document.getElementById('smockuptext').value=s.mockup_text||'';
+    document.getElementById('stop_notice').value=s.top_notice||'';
+    document.getElementById('spopuptitle').value=s.popup_title||'';
+    document.getElementById('spopuptext').value=s.popup_text||'';
+    document.getElementById('spopupbtn').value=s.popup_btn||'';
+    document.getElementById('spopupimg').value=s.popup_image||'';
+    const pa=s.popup_active||false;
+    document.getElementById('spopupactive').value=pa;
+    if(pa)document.getElementById('popupToggle').classList.add('on');
+    if(s.popup_image){document.getElementById('popupImgPreview').innerHTML=`<img src="${s.popup_image}" style="width:100%;height:100%;object-fit:cover">`;}
+    if(s.hero_image){
+      document.getElementById('heroImgPreview').innerHTML=`<img src="${s.hero_image}" style="width:100%;height:100%;object-fit:cover">`;
     }
-    if(s.kakao_url){['pcK','mK'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});}
-  }catch(e){}
+  }catch(e){console.error(e);}
+}
+async function saveSite(){
+  const payload={
+    id:1,
+    site_name:document.getElementById('sname').value||'SE글로벌 렌탈',
+    phone:document.getElementById('sphone').value||null,
+    kakao_url:document.getElementById('skakao').value||null,
+    business_name:document.getElementById('sbizname').value||null,
+    business_number:document.getElementById('sbiznum').value||null,
+    address:document.getElementById('saddr').value||null,
+    notice:document.getElementById('snotice').value||null,
+    hero_image:document.getElementById('sheroimg').value||null,
+    mockup_text:document.getElementById('smockuptext').value||null,
+    top_notice:document.getElementById('stop_notice').value||null,
+    popup_image:document.getElementById('spopupimg').value||null,
+    popup_title:document.getElementById('spopuptitle').value||null,
+    popup_text:document.getElementById('spopuptext').value||null,
+    popup_btn:document.getElementById('spopupbtn').value||null,
+    popup_active:document.getElementById('spopupactive').value==='true',
+    updated_at:new Date().toISOString()
+  };
+  const{error}=await sba.from('site_config').upsert(payload,{onConflict:'id'});
+  if(error){toast('저장 실패: '+error.message,'err');console.error(error);}
+  else{toast('저장됐습니다','ok');}
 }
 
-function shareV(){
-  if(navigator.share)navigator.share({title:document.title,url:location.href});
-  else{navigator.clipboard?.writeText(location.href);alert('링크가 복사됐습니다!');}
+// ── Toast ──
+function cropToSquare(file, size=800){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        canvas.width=size;canvas.height=size;
+        const ctx=canvas.getContext('2d');
+        const s=Math.min(img.width,img.height);
+        const ox=(img.width-s)/2,oy=(img.height-s)/2;
+        ctx.drawImage(img,ox,oy,s,s,0,0,size,size);
+        canvas.toBlob(blob=>resolve(blob),'image/jpeg',.92);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
-init();
+function cropToRatio(file, w=944, h=800){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        const srcRatio=img.width/img.height;
+        const dstRatio=w/h;
+        let sx,sy,sw,sh;
+        if(srcRatio>dstRatio){sh=img.height;sw=sh*dstRatio;sx=(img.width-sw)/2;sy=0;}
+        else{sw=img.width;sh=sw/dstRatio;sx=0;sy=(img.height-sh)/2;}
+        ctx.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+        canvas.toBlob(blob=>resolve(blob),'image/jpeg',.92);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadHeroImg(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=document.getElementById('heroImgStatus');
+  status.textContent='처리 중...';
+  const blob=await cropToRatio(file,944,800);
+  const path=`hero/hero-${Date.now()}.jpg`;
+  const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+  if(error){status.textContent='실패: '+error.message;return;}
+  const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+  document.getElementById('sheroimg').value=data.publicUrl;
+  document.getElementById('heroImgPreview').innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  status.textContent='완료 ✓';
+  input.value='';
+}
+function removeHeroImg(){
+  document.getElementById('sheroimg').value='';
+  document.getElementById('heroImgPreview').innerHTML='🏍️';
+  document.getElementById('heroImgStatus').textContent='';
+}
+
+function togglePopup(){
+  const tog=document.getElementById('popupToggle');
+  const inp=document.getElementById('spopupactive');
+  const isOn=tog.classList.contains('on');
+  tog.classList.toggle('on');
+  inp.value=isOn?'false':'true';
+}
+async function uploadPopupImg(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=document.getElementById('popupImgStatus');
+  status.textContent='처리 중...';
+  const blob=await cropToSquare(file,800);
+  const path=`popup/popup-${Date.now()}.jpg`;
+  const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+  if(error){status.textContent='실패: '+error.message;return;}
+  const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+  document.getElementById('spopupimg').value=data.publicUrl;
+  document.getElementById('popupImgPreview').innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  status.textContent='완료 ✓';
+  input.value='';
+}
+function removePopupImg(){
+  document.getElementById('spopupimg').value='';
+  document.getElementById('popupImgPreview').innerHTML='🖼️';
+  document.getElementById('popupImgStatus').textContent='';
+}
+
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast on ${type}`;
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
 </script>
 </body>
 </html>
