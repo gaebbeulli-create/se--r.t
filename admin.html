@@ -210,6 +210,19 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
           <div class="fg"><label class="fl">사업자등록번호</label><input type="text" class="fi" id="sbiznum" placeholder="000-00-00000"></div>
           <div class="fg full"><label class="fl">주소</label><input type="text" class="fi" id="saddr"></div>
           <div class="fg full"><label class="fl">공지사항</label><textarea class="fi fta" id="snotice"></textarea></div>
+          <div class="fg full">
+            <label class="fl">대문 이미지 (폰 목업에 표시)</label>
+            <div style="margin-top:6px">
+              <div id="heroImgPreview" style="width:120px;height:120px;border-radius:12px;overflow:hidden;border:0.5px solid var(--border);background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:8px">🏍️</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button onclick="document.getElementById('heroImgFile').click()" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">이미지 업로드</button>
+                <button onclick="removeHeroImg()" style="background:var(--bg);color:var(--red);border:1px solid var(--red);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit">삭제</button>
+                <span style="font-size:11px;color:var(--text-sub)" id="heroImgStatus"></span>
+              </div>
+              <input type="file" id="heroImgFile" accept="image/*" style="display:none" onchange="uploadHeroImg(this)">
+              <input type="hidden" id="sheroimg">
+            </div>
+          </div>
         </div>
         <div class="factions"><button class="bsave" onclick="saveSite()">저장</button></div>
       </div>
@@ -479,6 +492,10 @@ async function loadSite(){
     document.getElementById('sbiznum').value=s.business_number||'';
     document.getElementById('saddr').value=s.address||'';
     document.getElementById('snotice').value=s.notice||'';
+    document.getElementById('sheroimg').value=s.hero_image||'';
+    if(s.hero_image){
+      document.getElementById('heroImgPreview').innerHTML=`<img src="${s.hero_image}" style="width:100%;height:100%;object-fit:cover">`;
+    }
   }catch(e){console.error(e);}
 }
 async function saveSite(){
@@ -491,6 +508,7 @@ async function saveSite(){
     business_number:document.getElementById('sbiznum').value||null,
     address:document.getElementById('saddr').value||null,
     notice:document.getElementById('snotice').value||null,
+    hero_image:document.getElementById('sheroimg').value||null,
     updated_at:new Date().toISOString()
   };
   const{error}=await sba.from('site_config').upsert(payload,{onConflict:'id'});
@@ -499,6 +517,27 @@ async function saveSite(){
 }
 
 // ── Toast ──
+async function uploadHeroImg(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=document.getElementById('heroImgStatus');
+  status.textContent='업로드 중...';
+  const ext=file.name.split('.').pop().toLowerCase();
+  const path=`hero/hero-${Date.now()}.${ext}`;
+  const{error}=await sba.storage.from('vehicle-images').upload(path,file,{contentType:file.type,upsert:true});
+  if(error){status.textContent='실패: '+error.message;return;}
+  const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+  document.getElementById('sheroimg').value=data.publicUrl;
+  document.getElementById('heroImgPreview').innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  status.textContent='업로드 완료 ✓';
+  input.value='';
+}
+function removeHeroImg(){
+  document.getElementById('sheroimg').value='';
+  document.getElementById('heroImgPreview').innerHTML='🏍️';
+  document.getElementById('heroImgStatus').textContent='';
+}
+
 function toast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className=`toast on ${type}`;
