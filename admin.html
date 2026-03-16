@@ -439,7 +439,7 @@ async function updateStatus(id, status) {
 
 // ── 사이트 설정 ──
 async function loadSiteConfig() {
-  const { data } = await sbAdmin.from('site_config').select('*').eq('id',1).single();
+  const { data: _rows } = await sbAdmin.from('site_config').select('*').eq('id',1).limit(1); const data = _rows && _rows.length ? _rows[0] : null;
   if(!data) return;
   document.getElementById('sSiteName').value=data.site_name||'';
   document.getElementById('sPhone').value=data.phone||'';
