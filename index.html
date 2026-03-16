@@ -105,13 +105,16 @@ nav a:hover{color:var(--text)}
 /* ── Phone Mockup ── */
 .phone-wrap{display:flex;justify-content:center;align-items:center}
 .phone-rgb-wrap{
-  position:relative;border-radius:28px;padding:2.5px;width:fit-content;
-  background:linear-gradient(135deg,#a3e635,#ff006e,#ffea00,#00d4ff,#bf00ff,#a3e635);
-  background-size:400% 400%;
-  animation:rgbShift 4s ease infinite;
-  box-shadow:0 0 30px rgba(163,230,53,.25),0 0 60px rgba(255,0,110,.15),0 0 90px rgba(0,212,255,.1);
+  position:relative;border-radius:30px;padding:3px;width:fit-content;
+  box-shadow:0 0 24px rgba(163,230,53,.2),0 0 48px rgba(0,212,255,.15);
 }
-@keyframes rgbShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.phone-rgb-wrap .phone-frame{
+  position:relative;z-index:1;
+  margin:3px;border-radius:27px;overflow:hidden;
+  background:#0d0d0d;
+}
+
 .phone-frame{
   width:360px;border-radius:26px;overflow:hidden;
   background:#0d0d0d;position:relative;
@@ -228,56 +231,23 @@ nav a:hover{color:var(--text)}
 .sec-sub{font-size:16px;color:var(--text2);line-height:1.5;font-weight:300}
 
 /* Vehicle grid */
-/* Vehicle Slider */
-.vslider-wrap{position:relative;margin-top:36px;overflow:hidden}
-.vgrid{
-  display:flex;
-  transition:transform .45s cubic-bezier(.25,.46,.45,.94);
-  will-change:transform;
-  cursor:grab;
-  user-select:none;
-}
-.vgrid.dragging{cursor:grabbing;transition:none}
-.vcard{
-  flex:0 0 calc(33.333% - 8px);
-  margin-right:12px;
-  background:var(--bg2);
-  position:relative;overflow:hidden;
-  border-radius:16px;border:0.5px solid var(--border);
-  transition:transform .25s,box-shadow .25s;
-}
-.vcard:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
-.vcard-img{
-  width:100%;aspect-ratio:1;
-  overflow:hidden;background:var(--bg3);position:relative;
-  cursor:pointer;
-}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border);border-radius:16px;overflow:hidden;border:0.5px solid var(--border);margin-top:36px}
+.vcard{background:var(--bg2);cursor:pointer;transition:background .15s;position:relative;overflow:hidden}
+.vcard:hover{background:var(--bg3)}
+.vcard-img{width:100%;aspect-ratio:1;overflow:hidden;background:var(--bg3);position:relative}
 .vcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
 .vcard:hover .vcard-img img{transform:scale(1.04)}
 .vcard-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--bg4)}
-.vcard-body{padding:16px 18px 18px}
+.vcard-body{padding:18px 20px 20px}
 .vcard-type{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
 .vcard-type.ev{color:var(--accent2)}
-.vcard-name{font-size:17px;font-weight:700;margin-bottom:3px;letter-spacing:-.3px}
-.vcard-tag{font-size:12px;color:var(--text3);margin-bottom:12px}
-.vcard-price{display:flex;align-items:baseline;gap:5px;padding-top:12px;border-top:0.5px solid var(--border2)}
-.vcard-pl{font-size:11px;color:var(--text3)}
-.vcard-pv{font-size:18px;font-weight:700;color:var(--teal)}
-.vcard-pu{font-size:11px;color:var(--text3)}
-.vbadge{position:absolute;top:10px;left:10px;background:rgba(163,230,53,.15);border:0.5px solid rgba(163,230,53,.3);color:var(--teal);padding:3px 9px;border-radius:980px;font-size:10px;font-weight:700;z-index:2}
-/* 슬라이더 화살표 */
-.vslider-nav{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px}
-.vslider-arr{
-  width:40px;height:40px;border-radius:50%;
-  background:var(--bg3);border:0.5px solid var(--border2);
-  color:var(--text);font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
-}
-.vslider-arr:hover{background:var(--teal);color:#0a0a0a;border-color:var(--teal)}
-.vslider-dots{display:flex;gap:6px;align-items:center}
-.vslider-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all .2s}
-.vslider-dot.on{background:var(--teal);width:18px;border-radius:3px}
+.vcard-name{font-size:19px;font-weight:700;margin-bottom:3px;letter-spacing:-.3px}
+.vcard-tag{font-size:13px;color:var(--text3);margin-bottom:14px}
+.vcard-price{display:flex;align-items:baseline;gap:5px;padding-top:14px;border-top:0.5px solid var(--border2)}
+.vcard-pl{font-size:12px;color:var(--text3)}
+.vcard-pv{font-size:20px;font-weight:700;color:var(--teal)}
+.vcard-pu{font-size:12px;color:var(--text3)}
+.vbadge{position:absolute;top:12px;left:12px;background:rgba(163,230,53,.15);border:0.5px solid rgba(163,230,53,.3);color:var(--teal);padding:3px 9px;border-radius:980px;font-size:10px;font-weight:700}
 
 /* Features */
 .fbg{background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
@@ -432,7 +402,12 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
   .sec-h{font-size:clamp(22px,5vw,36px)}
   .sec-sub{font-size:14px}
 
-  /* 차량 슬라이더 모바일 */
+  /* 차량 슬라이더 */
+  .vcard{grid-template-columns:1fr;min-height:auto}
+  .vcard-img{min-height:260px}
+  .vcard-body{padding:24px 20px}
+  .vcard-name{font-size:24px}
+  .vcard-pv{font-size:26px}
   .vcard-name{font-size:15px}
   .vcard-body{padding:12px 14px 14px}
   .vcard-pv{font-size:16px}
@@ -609,7 +584,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   <div class="hero-inner">
     <div>
       <div class="hero-badge">SE글로벌 렌탈 &nbsp;×&nbsp; <em>배달 라이더 전문</em></div>
-      <h1>이륜차 렌탈·리스 <span class="hl">더 쉽게, 더 저렴하게.</span></h1>
+      <h1>이륜차 렌탈·리스<br><span class="hl">더 쉽게, 더 저렴하게.</span></h1>
       <p>초기 비용 부담 없이 바로 시작하세요<br>전국 출고 상담 가능 (섬·산간 제외)</p>
       <div class="hero-btns">
         <button class="btn-teal" onclick="document.getElementById('consult').scrollIntoView({behavior:'smooth'})">상담 요청하기 →</button>
@@ -683,13 +658,12 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   <h2 class="sec-h">원하는 차량을 선택하세요</h2>
   <p class="sec-sub">배달 라이더를 위해 검증된 차량만 제공합니다</p>
   <div class="vslider-wrap" id="vsliderWrap">
-    <div class="vgrid" id="vgrid"><div class="loading" style="flex:0 0 100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;width:100%"><div class="spin"></div>불러오는 중...</div></div>
+    <div class="vgrid" id="vgrid"><div class="loading" style="flex:0 0 100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px"><div class="spin"></div>불러오는 중...</div></div>
+    <button class="vslider-btn prev" onclick="slideV(-1)">‹</button>
+    <button class="vslider-btn next" onclick="slideV(1)">›</button>
+    <div class="vslider-counter" id="vcount">1 / 1</div>
   </div>
-  <div class="vslider-nav">
-    <button class="vslider-arr" onclick="slideV(-1)">‹</button>
-    <div class="vslider-dots" id="vdots"></div>
-    <button class="vslider-arr" onclick="slideV(1)">›</button>
-  </div>
+  <div class="vslider-dots" id="vdots"></div>
 </div>
 
 <div class="fbg">
@@ -797,58 +771,41 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <script>
 let vdata=[];
-let vCurIdx=0,vTotal=0,vPerPage=3,vDragging=false,vStartX=0,vMoved=0;
-
-function getPerPage(){return window.innerWidth<=600?1:window.innerWidth<=900?2:3;}
-function maxIdx(){return Math.max(0,vTotal-vPerPage);}
+let vCurIdx=0,vTotal=0,vDragX=0,vDragging=false;
 
 function slideV(dir){
-  vPerPage=getPerPage();
-  vCurIdx=Math.max(0,Math.min(vCurIdx+dir,maxIdx()));
+  vCurIdx=(vCurIdx+dir+vTotal)%vTotal;
   applySlide();
 }
-function goSlide(i){
-  vPerPage=getPerPage();
-  vCurIdx=Math.max(0,Math.min(i,maxIdx()));
-  applySlide();
-}
+function goSlide(i){vCurIdx=i;applySlide();}
 function applySlide(){
   const g=document.getElementById('vgrid');
   if(!g)return;
-  const wrap=document.getElementById('vsliderWrap');
-  const cardW=(wrap.offsetWidth/vPerPage);
-  g.style.transform=`translateX(-${vCurIdx*cardW}px)`;
+  g.style.transform=`translateX(-${vCurIdx*100}%)`;
   document.querySelectorAll('.vslider-dot').forEach((d,i)=>d.classList.toggle('on',i===vCurIdx));
+  const ct=document.getElementById('vcount');
+  if(ct)ct.textContent=`${vCurIdx+1} / ${vTotal}`;
 }
 function buildDots(count){
   vTotal=count;
-  vPerPage=getPerPage();
   const wrap=document.getElementById('vdots');
   if(!wrap)return;
-  const dots=maxIdx()+1;
-  wrap.innerHTML=Array.from({length:dots},(_,i)=>
+  wrap.innerHTML=Array.from({length:count},(_,i)=>
     `<div class="vslider-dot ${i===0?'on':''}" onclick="goSlide(${i})"></div>`
   ).join('');
-  // 카드 너비 동적 설정
-  setCardWidths();
+  const ct=document.getElementById('vcount');
+  if(ct)ct.textContent=`1 / ${count}`;
   // drag/swipe
   const g=document.getElementById('vgrid');
-  g.addEventListener('mousedown',e=>{vDragging=true;vStartX=e.clientX;vMoved=0;g.classList.add('dragging')});
-  g.addEventListener('mousemove',e=>{if(!vDragging)return;vMoved=e.clientX-vStartX;});
-  g.addEventListener('mouseup',()=>{if(!vDragging)return;vDragging=false;document.getElementById('vgrid').classList.remove('dragging');if(Math.abs(vMoved)>50)slideV(vMoved<0?1:-1);vMoved=0;});
-  g.addEventListener('mouseleave',()=>{if(vDragging){vDragging=false;document.getElementById('vgrid').classList.remove('dragging');if(Math.abs(vMoved)>50)slideV(vMoved<0?1:-1);vMoved=0;}});
+  let startX=0,moved=0;
+  g.addEventListener('mousedown',e=>{vDragging=true;startX=e.clientX;g.classList.add('dragging')});
+  g.addEventListener('mousemove',e=>{if(!vDragging)return;moved=e.clientX-startX;});
+  g.addEventListener('mouseup',e=>{if(!vDragging)return;vDragging=false;g.classList.remove('dragging');if(Math.abs(moved)>50)slideV(moved<0?1:-1);moved=0;});
+  g.addEventListener('mouseleave',()=>{if(vDragging){vDragging=false;g.classList.remove('dragging');if(Math.abs(moved)>50)slideV(moved<0?1:-1);moved=0;}});
+  // touch
   let tx=0;
   g.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
   g.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)slideV(dx<0?1:-1);},{passive:true});
-  window.addEventListener('resize',()=>{vPerPage=getPerPage();setCardWidths();applySlide();});
-}
-function setCardWidths(){
-  const wrap=document.getElementById('vsliderWrap');
-  if(!wrap)return;
-  vPerPage=getPerPage();
-  const gap=12;
-  const cardW=(wrap.offsetWidth-(gap*(vPerPage-1)))/vPerPage;
-  document.querySelectorAll('.vcard').forEach(c=>{c.style.flex=`0 0 ${cardW}px`;c.style.marginRight=gap+'px';});
 }
 function updateDots(){}
 
@@ -881,6 +838,52 @@ function closePopup(){
 function closePopupOutside(e){
   if(e.target.id==='popupOverlay')closePopup();
 }
+
+// RGB 테두리 시계방향 흐름 - canvas
+(function(){
+  const wrap=document.querySelector('.phone-rgb-wrap');
+  if(!wrap)return;
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;border-radius:30px;z-index:0;pointer-events:none';
+  wrap.insertBefore(canvas,wrap.firstChild);
+
+  const colors=['#ff0000','#ff6600','#ffff00','#00ff88','#00d4ff','#0055ff','#8800ff','#ff00ff','#ff0000'];
+  let angle=0;
+
+  function resize(){
+    canvas.width=wrap.offsetWidth;
+    canvas.height=wrap.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  function draw(){
+    const w=canvas.width,h=canvas.height;
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,w,h);
+
+    // 테두리 path
+    const r=28,bw=3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(0,0,w,h,r);
+    ctx.roundRect(bw,bw,w-bw*2,h-bw*2,r-bw);
+    ctx.closePath();
+    ctx.clip('evenodd');
+
+    // 시계방향 흐르는 그라데이션 - 중심 기준 코닉
+    const cx=w/2,cy=h/2;
+    const grad=ctx.createConicGradient(angle,cx,cy);
+    colors.forEach((c,i)=>grad.addColorStop(i/(colors.length-1),c));
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,h);
+    ctx.restore();
+
+    angle+=0.015; // 시계방향 속도
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
 async function init(){
   try{
@@ -950,9 +953,8 @@ async function init(){
       const imgs=Array.isArray(v.images)?v.images:(typeof v.images==='string'?JSON.parse(v.images||'[]'):[]);
       const main=imgs.find(x=>x.is_main)||imgs[0];
       const imgEl=main?`<img src="${main.url}" alt="${v.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=vcard-ph>${v.type==='electric'?'⚡':'🏍️'}</div>'">`:`<div class="vcard-ph">${v.type==='electric'?'⚡':'🏍️'}</div>`;
-      return `<div class="vcard"><div class="vcard-img" onclick="location.href='vehicle.html?id=${v.id}'">${v.badge?`<div class="vbadge">${v.badge}</div>`:''} ${imgEl}</div><div class="vcard-body"><div class="vcard-type ${v.type==='electric'?'ev':''}">${v.type==='electric'?'ELECTRIC':'GASOLINE'}</div><div class="vcard-name">${v.name}</div><div class="vcard-tag">${v.tagline||''}</div><div class="vcard-price"><span class="vcard-pl">렌탈</span><span class="vcard-pv">${v.rental_price||'문의'}</span><span class="vcard-pu">/월~</span></div></div></div>`;
+      return `<div class="vcard">${v.badge?`<div class="vbadge">${v.badge}</div>`:''}<div class="vcard-img">${imgEl}</div><div class="vcard-body"><div class="vcard-type ${v.type==='electric'?'ev':''}">${v.type==='electric'?'ELECTRIC':'GASOLINE'}</div><div class="vcard-name">${v.name}</div><div class="vcard-tag">${v.tagline||''}</div><div class="vcard-price"><span class="vcard-pl">렌탈</span><span class="vcard-pv">${v.rental_price||'문의'}</span><span class="vcard-pu">/월~</span></div><a href="vehicle.html?id=${v.id}" class="vcard-cta">자세히 보기 →</a></div></div>`;
     }).join('');
-    setTimeout(()=>setCardWidths(),50);
     vdata.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;sel.appendChild(o);});
     buildDots(vdata.length);
   }catch(e){document.getElementById('vgrid').innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--text3);padding:60px;font-size:14px">차량 정보를 불러올 수 없습니다</p>';}
