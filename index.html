@@ -368,26 +368,26 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
 
   /* 히어로 - 2컬럼 유지하되 조금 압축 */
   .hero-inner{
-    grid-template-columns:1fr auto;
-    padding:16px 12px;
-    gap:10px;
+    grid-template-columns:1fr 1fr;
+    padding:20px 16px;
+    gap:16px;
     align-items:center;
     min-height:auto;
   }
   .hero-badge{font-size:9px;padding:3px 8px;margin-bottom:8px}
-  .hero h1{font-size:clamp(16px,4vw,22px);letter-spacing:-0.5px;margin-bottom:8px}
-  .hero p{font-size:11px;margin-bottom:10px;line-height:1.4}
-  .hero-btns{gap:5px;margin-bottom:10px}
-  .btn-teal{padding:8px 10px;font-size:11px;border-radius:8px}
-  .btn-ghost{padding:8px 10px;font-size:11px;border-radius:8px}
-  .hero-stats{gap:10px}
-  .hstat-num{font-size:14px}
-  .hstat-label{font-size:8px}
+  .hero h1{font-size:clamp(18px,4.5vw,26px);letter-spacing:-0.5px;margin-bottom:10px}
+  .hero p{font-size:12px;margin-bottom:14px;line-height:1.5}
+  .hero-btns{gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .btn-teal{padding:10px 14px;font-size:12px;border-radius:8px}
+  .btn-ghost{padding:10px 14px;font-size:12px;border-radius:8px}
+  .hero-stats{gap:14px}
+  .hstat-num{font-size:16px}
+  .hstat-label{font-size:9px}
 
   /* 폰 목업 - 모바일에서도 표시, 크기 줄임 */
   .phone-wrap{display:flex}
-  .phone-rgb-wrap{border-radius:28px}
-  .phone-frame{width:175px;border-radius:24px}
+  .phone-rgb-wrap{border-radius:26px}
+  .phone-frame{width:160px;border-radius:22px}
   .phone-status{padding:7px 14px 3px;font-size:9px}
   .phone-time{font-size:8px}
   .phone-notch-bar{width:40px;height:16px;border-radius:0 0 10px 10px}
@@ -457,14 +457,14 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
 @media(max-width:480px){
   /* 더 작은 모바일 */
   .hero-inner{
-    grid-template-columns:1fr auto;
-    padding:14px 10px;
-    gap:8px;
+    grid-template-columns:1fr 1fr;
+    padding:16px 12px;
+    gap:12px;
   }
-  .hero h1{font-size:14px}
-  .btn-teal,.btn-ghost{padding:7px 8px;font-size:10px}
+  .hero h1{font-size:16px}
+  .btn-teal,.btn-ghost{padding:9px 12px;font-size:11px}
 
-  .phone-frame{width:145px;border-radius:20px}
+  .phone-frame{width:150px;border-radius:20px}
   .phone-status{padding:4px 8px 1px}
   .phone-header{padding:4px 8px}
   .phone-av{width:20px;height:20px;font-size:7px}
