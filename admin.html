@@ -8,12 +8,12 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --primary:#a3e635;--pd:#84cc16;
-  --text:#f5f5f7;--sub:#a1a1a6;
-  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1e;--card:#141414;
-  --border:#2c2c2e;--border2:#3a3a3c;
-  --green:#30d158;--red:#ff453a;--sw:220px;
-  --teal:#a3e635;--accent:#0a84ff;
+  --primary:#2563EB;--pd:#1D4ED8;
+  --text:#1E293B;--sub:#64748B;
+  --bg:#F1F5F9;--bg2:#fff;--bg3:#F8FAFC;--card:#fff;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --green:#10B981;--red:#EF4444;--sw:220px;
+  --teal:#2563EB;--accent:#2563EB;
 }
 body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 /* Login */
@@ -62,7 +62,7 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text)
 .fg.full{grid-column:1/-1}
 .fl{font-size:12px;font-weight:700;color:var(--sub)}
 .fi{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;outline:none;transition:border-color .2s;width:100%;background:#fff}
-.fi:focus{border-color:var(--teal)}
+.fi:focus{border-color:var(--primary)}
 .fta{min-height:80px;resize:vertical;color:var(--text)}
 .factions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
 .bcancel{background:var(--bg);color:var(--text);padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;border:none;cursor:pointer}
@@ -91,7 +91,7 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text)
 /* Toast */
 .toast{position:fixed;bottom:24px;right:24px;background:#1E293B;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1000}
 .toast.on{transform:translateY(0);opacity:1}
-.toast.ok{background:rgba(48,209,88,.9);color:#fff}.toast.err{background:rgba(255,69,58,.9);color:#fff}
+.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
 /* Mobile */
 .mbar{display:none;position:sticky;top:0;z-index:30;background:var(--pd);color:#fff;padding:0 16px;height:56px;align-items:center;justify-content:space-between}
 .ham{font-size:24px;cursor:pointer}
@@ -181,12 +181,13 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
           <div id="specrows"></div>
           <button onclick="addSpec()" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;margin-top:4px">+ 제원 추가</button>
           <div style="margin-top:20px;margin-bottom:8px;font-size:14px;font-weight:700">📸 차량 이미지</div>
-          <div class="iupload" onclick="document.getElementById('ifile').click()">
+          <div class="iupload" id="iuploadArea" onclick="document.getElementById('ifile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor=''" ondrop="event.preventDefault();this.style.borderColor='';handleUploadFiles(event.dataTransfer.files)">
             <div style="font-size:32px;margin-bottom:8px">📷</div>
-            <div style="font-size:14px;font-weight:700">클릭하여 이미지 업로드</div>
-            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG (최대 10MB)</div>
+            <div style="font-size:14px;font-weight:700">클릭 또는 드래그로 업로드</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG 여러 장 동시 선택 가능 · 자동 1:1 크롭</div>
+            <div style="font-size:11px;color:#94A3B8;margin-top:2px" id="uploadStatus"></div>
           </div>
-          <input type="file" id="ifile" accept="image/*" multiple style="display:none" onchange="handleUpload(this)">
+          <input type="file" id="ifile" accept="image/*" multiple style="display:none" onchange="handleUploadFiles(this.files)">
           <div class="ipgrid" id="ipgrid"></div>
           <p style="font-size:11px;color:#94A3B8;margin-top:8px">이미지에 마우스를 올리면 메인 설정/삭제 버튼이 나타납니다</p>
           <div class="factions"><button class="bcancel" onclick="hideVForm()">취소</button><button class="bsave" onclick="saveVehicle()">저장</button></div>
@@ -447,20 +448,31 @@ async function saveVehicle(){
 }
 
 // ── Image Upload ──
-async function handleUpload(input){
-  const files=Array.from(input.files);
+async function handleUploadFiles(fileList){
+  const files=Array.from(fileList);
   if(!files.length)return;
+  const status=document.getElementById('uploadStatus');
+  status.textContent=`0 / ${files.length} 처리 중...`;
+  let done=0;
   for(const file of files){
-    const ext=file.name.split('.').pop().toLowerCase();
-    const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,6)}.${ext}`;
-    const{error}=await sba.storage.from('vehicle-images').upload(path,file,{contentType:file.type,upsert:true});
-    if(error){toast('업로드 실패: '+error.message,'err');console.error(error);continue;}
-    const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
-    eImgs.push({url:data.publicUrl,path,is_main:eImgs.length===0});
+    try{
+      // 1:1 정사각형으로 자동 크롭 + 최대 1200px 리사이즈
+      const blob=await cropToSquare(file,1200);
+      const path=`vehicles/${Date.now()}-${Math.random().toString(36).substr(2,6)}.jpg`;
+      const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+      if(error){toast('업로드 실패: '+error.message,'err');continue;}
+      const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+      eImgs.push({url:data.publicUrl,path,is_main:eImgs.length===0});
+      done++;
+      status.textContent=`${done} / ${files.length} 완료...`;
+      renderImgs();
+    }catch(e){toast('처리 실패: '+e.message,'err');}
   }
-  renderImgs();
-  input.value='';
+  status.textContent=`✓ ${done}장 업로드 완료`;
+  setTimeout(()=>status.textContent='',3000);
+  document.getElementById('ifile').value='';
 }
+async function handleUpload(input){handleUploadFiles(input.files);}
 function renderImgs(){
   document.getElementById('ipgrid').innerHTML=eImgs.map((img,i)=>`
     <div class="ipitem ${img.is_main?'main':''}">
@@ -499,7 +511,7 @@ function renderConsults(){
   tb.innerHTML=consults.map(c=>`<tr>
     <td style="font-size:11px;white-space:nowrap">${new Date(c.created_at).toLocaleDateString('ko-KR')}<br>${new Date(c.created_at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}</td>
     <td style="font-weight:700">${c.name}</td>
-    <td><a href="tel:${c.phone}" style="color:var(--teal)">${c.phone}</a></td>
+    <td><a href="tel:${c.phone}" style="color:var(--primary)">${c.phone}</a></td>
     <td>${c.region||'-'}</td>
     <td>${c.vehicle_name||'-'}</td>
     <td>${c.consult_type==='rental'?'렌탈':c.consult_type==='lease'?'리스':'렌탈·리스'}</td>
