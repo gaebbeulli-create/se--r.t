@@ -184,7 +184,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <!-- 상품 상세 모달 -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal-box" id="modalBox">
+  <div class="modal-box" id="modalBox" onclick="event.stopPropagation()">
     <div class="modal-close"><button onclick="closeModal()">✕</button></div>
     <div class="modal-img" id="modalImg"><div class="modal-img-ph">🛵</div></div>
     <div class="modal-thumbs" id="modalThumbs"></div>
@@ -249,7 +249,7 @@ function renderProds(){
     const features=(p.features||'').split('\n').filter(Boolean).slice(0,3);
     const featHtml=features.map(f=>`<div class="pcard-feature">${f}</div>`).join('');
 
-    return `<div class="pcard anim" style="transition-delay:${i*0.05}s" onclick="openModal(${i},${filtered.indexOf(p)})">
+    return `<div class="pcard anim" style="transition-delay:${i*0.05}s" onclick="event.stopPropagation();openModal(${filtered.indexOf(p)})">
       <div class="pcard-img">
         ${imgEl}
         ${p.badge?`<div class="pcard-badge">${p.badge}</div>`:''}
@@ -280,7 +280,7 @@ function renderProds(){
 let curModalImgs=[];
 let curModalImgIdx=0;
 
-function openModal(idx){
+function openModal(idx,e){if(e)e.stopPropagation();
   const filtered=curCat==='all'?allProds:allProds.filter(p=>p.category===curCat);
   const p=filtered[idx];
   if(!p)return;
@@ -345,7 +345,9 @@ function updateModalImg(idx){
 }
 
 function closeModal(e){
-  if(e&&e.target!==document.getElementById('modalOverlay')&&e.type==='click')return;
+  if(e&&e.type==='click'){
+    if(e.target!==document.getElementById('modalOverlay'))return;
+  }
   document.getElementById('modalOverlay').classList.remove('show');
   document.body.style.overflow='';
 }
