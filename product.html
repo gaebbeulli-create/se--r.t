@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신용할부 · 판매 | SE글로벌 렌탈 TEAMBRO</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1e;--bg4:#2c2c2e;--border:#2c2c2e;--border2:#3a3a3c;--text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;--teal:#a3e635;--accent:#0a84ff;--accent2:#30d158}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding-bottom:80px}
+a{text-decoration:none;color:inherit}
+header{background:rgba(10,10,10,.85);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
+.hi{max-width:980px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;height:52px}
+.back-btn{font-size:13px;font-weight:600;color:var(--text2)}
+.back-btn:hover{color:var(--teal)}
+.logo{display:flex;align-items:center}
+.logo .se{color:#ff2d2d;font-weight:900;font-size:17px;font-style:italic}
+.logo .gl{color:#fff;font-weight:900;font-size:17px}
+.logo .x{color:rgba(255,255,255,.3);font-weight:300;font-size:13px;margin:0 6px}
+.logo .tb{color:#00ffb3;font-weight:900;font-size:17px}
+.hcta{background:var(--teal);color:#0a0a0a;padding:7px 16px;border-radius:980px;font-size:13px;font-weight:700}
+
+/* Hero */
+.page-hero{background:var(--bg);padding:56px 22px 48px;text-align:center;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(10,132,255,.08) 0%,transparent 65%);pointer-events:none}
+.page-hero-eye{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:block}
+.page-hero h1{font-size:clamp(26px,5vw,48px);font-weight:900;letter-spacing:-1.5px;margin-bottom:12px;line-height:1.1}
+.page-hero p{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 28px;line-height:1.6}
+.hero-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.hero-tab{padding:10px 24px;border-radius:980px;font-size:14px;font-weight:700;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);transition:all .2s}
+.hero-tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hero-tab:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Content */
+.content{max-width:980px;margin:0 auto;padding:40px 22px}
+
+/* Tab panels */
+.tab-panel{display:none}
+.tab-panel.on{display:block}
+
+/* Info cards */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+.info-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:16px;padding:24px}
+.info-card-icon{font-size:28px;margin-bottom:12px}
+.info-card-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.info-card-desc{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Steps */
+.steps-title{font-size:18px;font-weight:800;margin-bottom:16px;letter-spacing:-.3px}
+.steps{display:flex;flex-direction:column;gap:0;border:0.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:32px}
+.step{display:flex;align-items:flex-start;gap:16px;padding:18px 20px;background:var(--bg2);border-bottom:0.5px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--teal);color:#0a0a0a;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* Vehicle list */
+.sec-title{font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.sec-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.vlist{display:flex;flex-direction:column;gap:10px}
+.vlist-item{display:flex;gap:16px;align-items:center;background:var(--bg2);border:0.5px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s}
+.vlist-item:hover{border-color:var(--teal);background:var(--bg3)}
+.vlist-img{width:72px;height:72px;border-radius:10px;overflow:hidden;background:var(--bg3);flex-shrink:0;position:relative}
+.vlist-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vlist-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px}
+.vlist-info{flex:1}
+.vlist-type{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+.vlist-type.ev{color:var(--accent2)}
+.vlist-name{font-size:16px;font-weight:700;margin-bottom:2px}
+.vlist-tag{font-size:12px;color:var(--text3)}
+.vlist-price{text-align:right;flex-shrink:0}
+.vlist-pl{font-size:10px;color:var(--text3);margin-bottom:2px}
+.vlist-pv{font-size:17px;font-weight:700;color:var(--teal)}
+.vlist-arr{font-size:18px;color:var(--text3)}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,rgba(163,230,53,.08),rgba(10,132,255,.05));border:0.5px solid rgba(163,230,53,.2);border-radius:18px;padding:28px;text-align:center;margin-top:32px}
+.cta-box h3{font-size:20px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
+.cta-box p{font-size:13px;color:var(--text2);margin-bottom:20px}
+.cta-btns{display:flex;gap:10px;justify-content:center}
+.btn-phone{background:var(--teal);color:#0a0a0a;padding:13px 28px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.btn-kakao{background:#FEE500;color:#1a1a00;padding:13px 28px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+
+/* Consult form */
+.form-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:18px;padding:28px;margin-top:32px}
+.form-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.form-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.fl{font-size:12px;font-weight:600;color:var(--text2)}
+.fi{background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;transition:border-color .2s;width:100%}
+.fi:focus{border-color:var(--teal)}
+.fi::placeholder{color:var(--text3)}
+.fi option{background:var(--bg3)}
+.fta{min-height:80px;resize:none}
+.bsub{width:100%;background:var(--teal);color:#0a0a0a;padding:13px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;margin-top:4px}
+.bsub:hover{opacity:.85}
+.suc{text-align:center;padding:28px 0}
+.suc .si{font-size:48px;margin-bottom:10px}
+.suc h3{font-size:17px;font-weight:700;color:var(--accent2);margin-bottom:6px}
+
+/* Mobile CTA */
+.mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:10px 16px;z-index:200;grid-template-columns:1fr 1fr;gap:8px}
+.mb{padding:12px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;border:none;cursor:pointer;font-family:inherit}
+.mp{background:var(--teal);color:#0a0a0a}
+.mk{background:#FEE500;color:#1d1d1f}
+
+.spin{width:24px;height:24px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){.info-grid{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.cta-btns{flex-direction:column}.page-hero{padding:40px 18px 32px}body{padding-bottom:72px}.mcta{display:grid}}
+</style>
+</head>
+<body>
+<script>
+const SB_URL='https://ogjrhphhpqpzlzlbugdp.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+</script>
+
+<header>
+  <div class="hi">
+    <a href="index.html" class="back-btn">← 홈으로</a>
+    <a href="index.html" class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></a>
+    <a href="#consult-form" class="hcta">상담 신청</a>
+  </div>
+</header>
+
+<div class="page-hero">
+  <span class="page-hero-eye">신용할부 · 판매</span>
+  <h1>내 차로 만드는<br>가장 스마트한 방법</h1>
+  <p>신용할부로 부담 없이 시작하거나,<br>원하는 차량을 직접 구매하세요</p>
+  <div class="hero-tabs">
+    <div class="hero-tab on" onclick="switchTab('credit',this)">💳 신용할부</div>
+    <div class="hero-tab" onclick="switchTab('sale',this)">🛒 판매</div>
+  </div>
+</div>
+
+<div class="content">
+  <!-- 신용할부 탭 -->
+  <div class="tab-panel on" id="tab-credit">
+    <div class="info-grid">
+      <div class="info-card"><div class="info-card-icon">💰</div><div class="info-card-title">무이자 할부 가능</div><div class="info-card-desc">일정 조건 충족 시 무이자 혜택을 받으세요</div></div>
+      <div class="info-card"><div class="info-card-icon">⚡</div><div class="info-card-title">빠른 심사</div><div class="info-card-desc">간편한 신용 심사로 당일 승인 가능</div></div>
+      <div class="info-card"><div class="info-card-icon">📅</div><div class="info-card-title">기간 선택</div><div class="info-card-desc">12 / 24 / 36개월 중 원하는 기간 선택</div></div>
+      <div class="info-card"><div class="info-card-icon">🏍️</div><div class="info-card-title">소유권 즉시 이전</div><div class="info-card-desc">계약 즉시 내 차로 등록됩니다</div></div>
+    </div>
+    <div class="steps-title">진행 순서</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">상담 신청</div><div class="step-desc">전화 또는 카카오톡으로 간편하게 상담</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">신용 심사</div><div class="step-desc">간단한 정보 입력 후 빠른 심사 진행</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">차량 선택</div><div class="step-desc">원하는 차종과 색상 선택</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">계약 체결</div><div class="step-desc">할부 조건 확인 후 계약 진행</div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">출고</div><div class="step-desc">탁송 또는 직접 수령 선택 가능</div></div></div>
+    </div>
+    <div class="sec-title">할부 가능 차량</div>
+    <div class="sec-sub">아래 차량 중 원하는 모델을 선택하세요</div>
+    <div class="vlist" id="vlist-credit"><div class="spin"></div></div>
+    <div class="cta-box">
+      <h3>신용할부 상담받기</h3>
+      <p>조건과 월 납입금을 무료로 안내해 드립니다</p>
+      <div class="cta-btns">
+        <button class="btn-phone" id="cp1">📞 전화 상담</button>
+        <button class="btn-kakao" id="ck1">💬 카카오톡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 판매 탭 -->
+  <div class="tab-panel" id="tab-sale">
+    <div class="info-grid">
+      <div class="info-card"><div class="info-card-icon">🏷️</div><div class="info-card-title">합리적인 가격</div><div class="info-card-desc">다양한 차종을 최적의 가격에 제공합니다</div></div>
+      <div class="info-card"><div class="info-card-icon">📜</div><div class="info-card-title">완전한 소유권</div><div class="info-card-desc">구매 즉시 내 명의로 등록 가능</div></div>
+      <div class="info-card"><div class="info-card-icon">🚚</div><div class="info-card-title">전국 탁송</div><div class="info-card-desc">섬·산간 제외 전국 배송 가능</div></div>
+      <div class="info-card"><div class="info-card-icon">🔧</div><div class="info-card-title">A/S 지원</div><div class="info-card-desc">구매 후 정비 서비스 별도 지원</div></div>
+    </div>
+    <div class="steps-title">구매 절차</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">차량 선택</div><div class="step-desc">원하는 차종을 선택하세요</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">상담 신청</div><div class="step-desc">가격 및 조건 상담 진행</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">계약 및 결제</div><div class="step-desc">계약서 작성 및 대금 납부</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">출고·탁송</div><div class="step-desc">전국 어디서나 받으실 수 있습니다</div></div></div>
+    </div>
+    <div class="sec-title">판매 차량 목록</div>
+    <div class="sec-sub">클릭하면 상세 정보를 볼 수 있습니다</div>
+    <div class="vlist" id="vlist-sale"><div class="spin"></div></div>
+    <div class="cta-box">
+      <h3>구매 상담받기</h3>
+      <p>원하는 차량의 가격과 조건을 바로 안내해 드립니다</p>
+      <div class="cta-btns">
+        <button class="btn-phone" id="cp2">📞 전화 상담</button>
+        <button class="btn-kakao" id="ck2">💬 카카오톡</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상담 폼 -->
+  <div class="form-box" id="consult-form">
+    <div class="form-title">온라인 상담 신청</div>
+    <div class="form-sub">빠른 시간 내에 연락드리겠습니다</div>
+    <div id="cform">
+      <div class="frow">
+        <div class="fg"><label class="fl">이름 *</label><input type="text" class="fi" id="fn" placeholder="홍길동"></div>
+        <div class="fg"><label class="fl">연락처 *</label><input type="tel" class="fi" id="fp" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">서비스 유형</label><select class="fi" id="ft"><option value="credit">신용할부</option><option value="sale">판매</option></select></div>
+        <div class="fg"><label class="fl">관심 차종</label><select class="fi" id="fv"><option value="">선택하세요</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">문의 내용</label><textarea class="fi fta" id="fm" placeholder="궁금하신 내용을 자유롭게 입력해주세요"></textarea></div>
+      <button class="bsub" id="sbtn" onclick="submitConsult()">상담 신청하기</button>
+    </div>
+    <div id="csuccess" style="display:none" class="suc"><div class="si">✅</div><h3>신청 완료!</h3><p style="font-size:14px;color:var(--text3)">영업일 기준 1~2일 이내 연락드립니다</p></div>
+  </div>
+</div>
+
+<div class="mcta">
+  <button class="mb mp" id="mPhone">📞 전화 상담</button>
+  <button class="mb mk" id="mKakao">💬 카카오톡</button>
+</div>
+
+<script>
+let vdata=[];
+function switchTab(id,el){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.hero-tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  el.classList.add('on');
+}
+function renderVList(id){
+  const el=document.getElementById('vlist-'+id);
+  if(!el||!vdata.length){if(el)el.innerHTML='<p style="color:var(--text3);font-size:13px;padding:20px 0">등록된 차량이 없습니다</p>';return;}
+  el.innerHTML=vdata.map(v=>{
+    const imgs=Array.isArray(v.images)?v.images:(typeof v.images==='string'?JSON.parse(v.images||'[]'):[]);
+    const main=imgs.find(x=>x.is_main)||imgs[0];
+    const imgEl=main?`<img src="${main.url}" alt="${v.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=vlist-img-ph>${v.type==='electric'?'⚡':'🏍️'}</div>'">`:`<div class="vlist-img-ph">${v.type==='electric'?'⚡':'🏍️'}</div>`;
+    return `<div class="vlist-item" onclick="location.href='vehicle.html?id=${v.id}'">
+      <div class="vlist-img">${imgEl}</div>
+      <div class="vlist-info">
+        <div class="vlist-type ${v.type==='electric'?'ev':''}">${v.type==='electric'?'⚡ ELECTRIC':'⛽ GASOLINE'}</div>
+        <div class="vlist-name">${v.name}</div>
+        <div class="vlist-tag">${v.tagline||''}</div>
+      </div>
+      <div class="vlist-price">
+        <div class="vlist-pl">렌탈</div>
+        <div class="vlist-pv">${v.rental_price||'문의'}</div>
+      </div>
+      <div class="vlist-arr">›</div>
+    </div>`;
+  }).join('');
+}
+async function submitConsult(){
+  const name=document.getElementById('fn').value.trim();
+  const phone=document.getElementById('fp').value.trim();
+  if(!name||!phone){alert('이름과 연락처는 필수입니다');return;}
+  const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='접수 중...';
+  const vid=document.getElementById('fv').value;
+  const v=vdata.find(x=>x.id===vid);
+  const ctype=document.getElementById('ft').value;
+  const{error}=await sb.from('consult_requests').insert([{name,phone,consult_type:ctype,vehicle_id:vid||null,vehicle_name:v?v.name:null,message:document.getElementById('fm').value.trim()||null,status:'pending'}]);
+  if(error){alert('오류가 발생했습니다');btn.disabled=false;btn.textContent='상담 신청하기';}
+  else{document.getElementById('cform').style.display='none';document.getElementById('csuccess').style.display='block';}
+}
+async function init(){
+  try{
+    const{data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
+    const s=rows&&rows.length?rows[0]:null;
+    if(s){
+      if(s.phone){['cp1','cp2','mPhone'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>location.href='tel:'+s.phone;});document.getElementById('mPhone').textContent='📞 '+s.phone;}
+      if(s.kakao_url){['ck1','ck2','mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});}
+    }
+  }catch(e){}
+  try{
+    const{data}=await sb.from('vehicles').select('*').order('sort_order',{ascending:true});
+    vdata=data||[];
+    renderVList('credit');
+    renderVList('sale');
+    vdata.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=v.name;document.getElementById('fv').appendChild(o);});
+  }catch(e){}
+}
+// URL 파라미터로 탭 전환
+const tab=new URLSearchParams(location.search).get('tab');
+if(tab==='sale'){setTimeout(()=>switchTab('sale',document.querySelectorAll('.hero-tab')[1]),0);}
+init();
+</script>
+</body>
+</html>
