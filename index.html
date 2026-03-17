@@ -70,6 +70,33 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text)
 a{text-decoration:none;color:inherit}
 
 /* Header */
+/* Dropdown */
+.nav-item{position:relative}
+.nav-item:hover .dropdown{display:block}
+.dropdown{
+  display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  background:rgba(15,15,15,.97);backdrop-filter:blur(20px);
+  border:0.5px solid var(--border2);border-radius:14px;
+  padding:8px;min-width:200px;margin-top:8px;
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+  z-index:200;
+}
+.dropdown::before{
+  content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  width:12px;height:12px;background:rgba(15,15,15,.97);
+  border-left:0.5px solid var(--border2);border-top:0.5px solid var(--border2);
+  transform:translateX(-50%) rotate(45deg);
+}
+.dd-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:background .15s;white-space:nowrap}
+.dd-item:hover{background:var(--bg3)}
+.dd-icon{font-size:18px;width:28px;text-align:center}
+.dd-label{font-size:13px;font-weight:600;color:var(--text)}
+.dd-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.dd-divider{height:0.5px;background:var(--border);margin:6px 4px}
+.nav-arrow{font-size:10px;opacity:.5;margin-left:2px;transition:transform .2s}
+.nav-item:hover .nav-arrow{transform:rotate(180deg)}
+
+/* Header */
 header{background:rgba(10,10,10,.85);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
 .hi{max-width:980px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;height:52px}
 .logo{display:flex;align-items:center;gap:0;line-height:1}
@@ -623,7 +650,33 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 <header>
   <div class="hi">
     <a href="index.html" class="logo" style="text-decoration:none"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></a>
-    <nav><a href="#vehicles">차종</a><a href="#process">안내</a><a href="#consult">상담</a><a href="#faq">FAQ</a></nav>
+    <nav>
+      <div class="nav-item">
+        <a href="vehicles.html" style="display:flex;align-items:center;gap:3px">차량 <span class="nav-arrow">▼</span></a>
+        <div class="dropdown" id="vehicleDropdown">
+          <div class="dd-item" onclick="location.href='vehicles.html'">
+            <span class="dd-icon">🏍️</span>
+            <div><div class="dd-label">전체 차량</div><div class="dd-sub">모든 차종 보기</div></div>
+          </div>
+          <div class="dd-item" onclick="location.href='vehicles.html?type=electric'">
+            <span class="dd-icon">⚡</span>
+            <div><div class="dd-label">전기이륜차</div><div class="dd-sub">이누리 OK1 외</div></div>
+          </div>
+          <div class="dd-item" onclick="location.href='vehicles.html?type=gasoline'">
+            <span class="dd-icon">⛽</span>
+            <div><div class="dd-label">내연기관</div><div class="dd-sub">Honda PCX, NMAX 외</div></div>
+          </div>
+          <div class="dd-divider"></div>
+          <div class="dd-item" onclick="location.href='service.html'">
+            <span class="dd-icon">📋</span>
+            <div><div class="dd-label">서비스 안내</div><div class="dd-sub">렌탈·리스·할부·판매</div></div>
+          </div>
+        </div>
+      </div>
+      <a href="#process">안내</a>
+      <a href="#consult">상담</a>
+      <a href="#faq">FAQ</a>
+    </nav>
     <a href="#consult" class="hcta">상담 신청</a>
   </div>
 </header>
