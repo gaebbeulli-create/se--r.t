@@ -720,6 +720,161 @@ function removePopupImg(){
 }
 
 // ── Options Management ──
+// ── Products Management ──
+let allProducts=[];
+let curProdFilter='all';
+let prodImgs=[];
+
+function filterProd(cat,el){
+  curProdFilter=cat;
+  document.querySelectorAll('#tab-products button[onclick^="filterProd"]').forEach(b=>{
+    b.style.background='var(--bg3)';b.style.color='var(--text2)';b.className='';
+  });
+  el.style.background='var(--teal)';el.style.color='#0a0a0a';
+  renderProducts();
+}
+
+function renderProducts(){
+  const filtered=curProdFilter==='all'?allProducts:allProducts.filter(p=>p.category===curProdFilter);
+  const el=document.getElementById('prodList');
+  if(!filtered.length){el.innerHTML='<p style="color:var(--sub);font-size:13px;padding:20px 0">등록된 상품이 없습니다</p>';return;}
+  const catLabels={rental:'🛵 렌탈',lease:'📋 리스',credit:'💳 신용할부',sale:'🛒 판매'};
+  el.innerHTML=`<table class="tbl" style="width:100%">
+    <thead><tr><th>이미지</th><th>상품명</th><th>카테고리</th><th>가격</th><th>태그</th><th>상태</th><th>관리</th></tr></thead>
+    <tbody>${filtered.map(p=>{
+      let imgs=[];try{imgs=typeof p.images==='string'?JSON.parse(p.images):p.images||[];}catch(e){}
+      const img=imgs[0];
+      return `<tr>
+        <td>${img?`<img src="${img}" style="width:48px;height:36px;object-fit:cover;border-radius:6px">`:'-'}</td>
+        <td style="font-weight:700">${p.name}</td>
+        <td><span style="font-size:11px">${catLabels[p.category]||p.category}</span></td>
+        <td style="color:var(--teal);font-weight:700">${p.price||'-'}</td>
+        <td>${p.badge?`<span style="background:rgba(163,230,53,.15);color:var(--teal);padding:2px 8px;border-radius:980px;font-size:10px;font-weight:700">${p.badge}</span>`:'-'}</td>
+        <td><span style="font-size:11px;color:${p.is_active?'var(--green)':'var(--sub)'}">${p.is_active?'활성':'비활성'}</span></td>
+        <td style="display:flex;gap:6px">
+          <button class="bprimary" onclick="editProduct(${JSON.stringify(JSON.stringify(p)).slice(1,-1)})">수정</button>
+          <button class="bdanger" onclick="deleteProduct(${p.id})">삭제</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+async function loadProducts(){
+  try{
+    const{data,error}=await sba.from('products').select('*').order('sort_order',{ascending:true});
+    if(error)throw error;
+    allProducts=data||[];
+    renderProducts();
+  }catch(e){document.getElementById('prodList').innerHTML='<p style="color:var(--red);font-size:13px">불러오기 실패</p>';}
+}
+
+function showProdForm(){
+  prodImgs=[];
+  document.getElementById('prodForm').style.display='block';
+  document.getElementById('prod_edit_id').value='';
+  ['prod_name','prod_price','prod_original_price','prod_badge','prod_vehicle_id','prod_summary','prod_desc','prod_features'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prod_sort').value='0';
+  document.getElementById('prod_images').value='[]';
+  document.getElementById('prod_active').value='true';
+  document.getElementById('prodActiveTog').classList.add('on');
+  renderProdImgs();
+}
+function hideProdForm(){document.getElementById('prodForm').style.display='none';}
+
+function toggleProdActive(){
+  const tog=document.getElementById('prodActiveTog');
+  const inp=document.getElementById('prod_active');
+  tog.classList.toggle('on');
+  inp.value=tog.classList.contains('on')?'true':'false';
+}
+
+function renderProdImgs(){
+  const el=document.getElementById('prodImgList');
+  if(!el)return;
+  el.innerHTML=prodImgs.map((url,i)=>`
+    <div style="position:relative;width:80px;height:60px;border-radius:8px;overflow:hidden;border:0.5px solid var(--border2)">
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+      <button onclick="removeProdImg(${i})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>`).join('');
+  document.getElementById('prod_images').value=JSON.stringify(prodImgs);
+}
+
+function removeProdImg(i){prodImgs.splice(i,1);renderProdImgs();}
+
+async function uploadProdImgs(input){
+  const files=Array.from(input.files);
+  if(!files.length)return;
+  const status=document.getElementById('prodImgStatus');
+  status.textContent=`업로드 중...`;
+  for(const file of files){
+    const blob=await resizeKeepRatio(file,1200);
+    const path=`products/${Date.now()}-${Math.random().toString(36).substr(2,6)}.jpg`;
+    const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+    if(error)continue;
+    const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+    prodImgs.push(data.publicUrl);
+  }
+  renderProdImgs();
+  status.textContent='완료 ✓';
+  setTimeout(()=>status.textContent='',2000);
+  input.value='';
+}
+
+function editProduct(jsonStr){
+  try{
+    const p=JSON.parse(jsonStr);
+    showProdForm();
+    document.getElementById('prod_edit_id').value=p.id;
+    document.getElementById('prod_name').value=p.name||'';
+    document.getElementById('prod_cat').value=p.category||'rental';
+    document.getElementById('prod_price').value=p.price||'';
+    document.getElementById('prod_original_price').value=p.original_price||'';
+    document.getElementById('prod_badge').value=p.badge||'';
+    document.getElementById('prod_vehicle_id').value=p.vehicle_id||'';
+    document.getElementById('prod_summary').value=p.summary||'';
+    document.getElementById('prod_desc').value=p.description||'';
+    document.getElementById('prod_features').value=p.features||'';
+    document.getElementById('prod_sort').value=p.sort_order||0;
+    document.getElementById('prod_active').value=p.is_active?'true':'false';
+    const tog=document.getElementById('prodActiveTog');
+    p.is_active?tog.classList.add('on'):tog.classList.remove('on');
+    try{prodImgs=typeof p.images==='string'?JSON.parse(p.images):p.images||[];}catch(e){prodImgs=[];}
+    renderProdImgs();
+  }catch(e){}
+}
+
+async function saveProduct(){
+  const name=document.getElementById('prod_name').value.trim();
+  if(!name){toast('상품명을 입력해주세요','err');return;}
+  const payload={
+    name,
+    category:document.getElementById('prod_cat').value,
+    price:document.getElementById('prod_price').value.trim()||null,
+    original_price:document.getElementById('prod_original_price').value.trim()||null,
+    badge:document.getElementById('prod_badge').value.trim()||null,
+    vehicle_id:document.getElementById('prod_vehicle_id').value.trim()||null,
+    summary:document.getElementById('prod_summary').value.trim()||null,
+    description:document.getElementById('prod_desc').value.trim()||null,
+    features:document.getElementById('prod_features').value.trim()||null,
+    images:JSON.stringify(prodImgs),
+    sort_order:parseInt(document.getElementById('prod_sort').value)||0,
+    is_active:document.getElementById('prod_active').value==='true',
+  };
+  const editId=document.getElementById('prod_edit_id').value;
+  let error;
+  if(editId){({error}=await sba.from('products').update(payload).eq('id',editId));}
+  else{({error}=await sba.from('products').insert([payload]));}
+  if(error){toast('저장 실패: '+error.message,'err');}
+  else{toast('저장됐습니다','ok');hideProdForm();loadProducts();}
+}
+
+async function deleteProduct(id){
+  if(!confirm('이 상품을 삭제할까요?'))return;
+  const{error}=await sba.from('products').delete().eq('id',id);
+  if(error){toast('삭제 실패','err');return;}
+  toast('삭제됐습니다','ok');loadProducts();
+}
+
 // ── Partner Management ──
 async function loadPartners(){
   const el=document.getElementById('partnerList');
