@@ -233,7 +233,11 @@ function renderProds(){
   const filtered=curCat==='all'?allProds:allProds.filter(p=>p.category===curCat);
   const grid=document.getElementById('prodGrid');
   if(!filtered.length){
-    grid.innerHTML=`<div class="empty-msg"><p style="font-size:36px;margin-bottom:12px">${catIcons[curCat]||'📦'}</p><p style="font-size:14px">등록된 상품이 없습니다</p></div>`;
+    grid.innerHTML=`<div class="empty-msg">
+      <p style="font-size:36px;margin-bottom:12px">${catIcons[curCat]||'📦'}</p>
+      <p style="font-size:14px;margin-bottom:6px">등록된 상품이 없습니다</p>
+      <p style="font-size:12px;color:var(--text3)">어드민에서 상품을 추가해주세요</p>
+    </div>`;
     return;
   }
   grid.innerHTML=filtered.map((p,i)=>{
@@ -379,7 +383,12 @@ async function init(){
     }
     renderProds();
   }catch(e){
-    document.getElementById('prodGrid').innerHTML='<div class="empty-msg"><p style="font-size:14px;color:var(--text3)">상품을 불러올 수 없습니다</p></div>';
+    console.error('Products error:',e);
+    document.getElementById('prodGrid').innerHTML=`<div class="empty-msg">
+      <p style="font-size:36px;margin-bottom:12px">⚠️</p>
+      <p style="font-size:14px;color:var(--text3);margin-bottom:8px">상품을 불러올 수 없습니다</p>
+      <p style="font-size:12px;color:var(--text3)">Supabase products 테이블을 확인해주세요</p>
+    </div>`;
   }
 }
 init();
