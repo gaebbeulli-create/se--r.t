@@ -187,7 +187,7 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
           <div class="iupload" id="iuploadArea" onclick="document.getElementById('ifile').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor=''" ondrop="event.preventDefault();this.style.borderColor='';handleUploadFiles(event.dataTransfer.files)">
             <div style="font-size:32px;margin-bottom:8px">📷</div>
             <div style="font-size:14px;font-weight:700">클릭 또는 드래그로 업로드</div>
-            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG 여러 장 동시 선택 가능 · 자동 리사이즈 (최대 1200px) · JPEG 변환</div>
+            <div style="font-size:12px;color:#94A3B8;margin-top:4px">JPG, PNG 여러 장 동시 선택 가능 · 자동 리사이즈 (최대 1200px, 비율 유지) · JPEG 변환</div>
             <div style="font-size:11px;color:#94A3B8;margin-top:2px" id="uploadStatus"></div>
           </div>
           <input type="file" id="ifile" accept="image/*" multiple style="display:none" onchange="handleUploadFiles(this.files)">
@@ -240,7 +240,7 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
           <div class="fg" style="margin-bottom:10px"><label class="fl">상세 설명</label><textarea class="fi fta" id="prod_desc" placeholder="상품 상세 설명을 입력하세요"></textarea></div>
           <div class="fg" style="margin-bottom:10px"><label class="fl">특징 (줄바꿈으로 구분)</label><textarea class="fi fta" id="prod_features" placeholder="초기 비용 없음&#10;월 납입금만으로 시작&#10;전국 출고 가능"></textarea></div>
           <div class="fg" style="margin-bottom:14px">
-            <label class="fl">상품 이미지 (복수 선택 가능)</label>
+            <label class="fl">상품 이미지 (복수 선택 가능) <span style="font-size:10px;color:var(--sub);font-weight:400">· 자동 4:3 크롭 (1200×900px)</span></label>
             <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap" id="prodImgList"></div>
             <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
               <button onclick="document.getElementById('prodImgFile').click()" style="background:var(--teal);color:#0a0a0a;border:none;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit">이미지 추가</button>
@@ -284,6 +284,7 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
             <div style="display:flex;gap:8px;align-items:center">
               <button onclick="document.getElementById('optImgFile').click()" style="background:var(--teal);color:#0a0a0a;border:none;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit">이미지 업로드</button>
               <span style="font-size:11px;color:var(--sub)" id="optImgStatus"></span>
+              <span style="font-size:10px;color:var(--sub)">자동 4:3 크롭 (800×600px)</span>
             </div>
             <input type="file" id="optImgFile" accept="image/*" style="display:none" onchange="uploadOptImg(this)">
             <input type="hidden" id="oimg">
@@ -931,7 +932,7 @@ async function uploadProdImgs(input){
   const status=document.getElementById('prodImgStatus');
   status.textContent=`업로드 중...`;
   for(const file of files){
-    const blob=await resizeKeepRatio(file,1200);
+    const blob=await cropToRatio(file,1200,900); // 4:3 고정 크롭
     const path=`products/${Date.now()}-${Math.random().toString(36).substr(2,6)}.jpg`;
     const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
     if(error)continue;
@@ -1136,7 +1137,7 @@ async function uploadOptImg(input){
   if(!file)return;
   const status=document.getElementById('optImgStatus');
   status.textContent='업로드 중...';
-  const blob=await resizeKeepRatio(file,800);
+  const blob=await cropToRatio(file,800,600); // 4:3 고정 크롭
   const path=`options/opt-${Date.now()}.jpg`;
   const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
   if(error){status.textContent='실패';return;}
