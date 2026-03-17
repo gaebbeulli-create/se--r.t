@@ -405,6 +405,7 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
 .flogo .teambro{color:#00ffb3;font-weight:900;font-size:18px;letter-spacing:-0.5px}
 .finfo{font-size:13px;color:var(--text3);line-height:1.8;margin-bottom:18px}
 .fdisc{font-size:11px;color:var(--text3);line-height:1.6;border-top:0.5px solid var(--border);padding-top:14px;opacity:.5}
+.flinks{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
 
 /* Mobile CTA */
 .mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:10px 16px;z-index:200;grid-template-columns:1fr 1fr;gap:8px}
@@ -651,39 +652,26 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   <div class="hi">
     <a href="index.html" class="logo" style="text-decoration:none"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></a>
     <nav>
-      <div class="nav-item" style="cursor:pointer">
-        <div style="display:flex;align-items:center;gap:3px">모델 <span class="nav-arrow">▼</span></div>
-        <div class="dropdown" id="vehicleDropdown">
-          <div class="dd-item" onclick="location.href='models.html'">
-            <span class="dd-icon">🏍️</span>
-            <div><div class="dd-label">모델 라인업</div><div class="dd-sub">전체 차종 카드 보기</div></div>
-          </div>
+      <div class="nav-item">
+        <div style="display:flex;align-items:center;gap:3px;cursor:pointer">모델 <span class="nav-arrow">▼</span></div>
+        <div class="dropdown">
           <div class="dd-item" onclick="location.href='vehicles.html?type=electric'">
             <span class="dd-icon">⚡</span>
             <div><div class="dd-label">전기이륜차</div><div class="dd-sub">이누리 OK1 외</div></div>
           </div>
           <div class="dd-item" onclick="location.href='vehicles.html?type=gasoline'">
-            <span class="dd-icon">⛽</span>
-            <div><div class="dd-label">내연기관</div><div class="dd-sub">Honda PCX, NMAX 외</div></div>
+            <span class="dd-icon">🏍️</span>
+            <div><div class="dd-label">내연이륜차</div><div class="dd-sub">Honda PCX, NMAX 외</div></div>
           </div>
           <div class="dd-item" onclick="location.href='options.html'">
             <span class="dd-icon">⚙️</span>
-            <div><div class="dd-label">옵션 · 액세서리</div><div class="dd-sub">탑박스·헬멧 외</div></div>
-          </div>
-          <div class="dd-item" onclick="location.href='support.html'">
-            <span class="dd-icon">🏪</span>
-            <div><div class="dd-label">고객센터</div><div class="dd-sub">A/S·상담·FAQ</div></div>
-          </div>
-          <div class="dd-divider"></div>
-          <div class="dd-item" onclick="location.href='service.html'">
-            <span class="dd-icon">📋</span>
-            <div><div class="dd-label">서비스 안내</div><div class="dd-sub">렌탈·리스·할부·판매</div></div>
+            <div><div class="dd-label">이륜차 용품</div><div class="dd-sub">탑박스·헬멧·액세서리</div></div>
           </div>
         </div>
       </div>
-      <a href="#process">안내</a>
+      <a href="service.html">서비스안내</a>
+      <a href="support.html">고객센터</a>
       <a href="#consult">상담</a>
-      <a href="#faq">FAQ</a>
     </nav>
     <a href="#consult" class="hcta">상담 신청</a>
   </div>
@@ -928,6 +916,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   <div class="fi2">
     <div class="flogo"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></div>
     <div class="finfo" id="finfo">전국 출고 상담 가능 (섬·산간 제외)</div>
+    <div class="flinks"><a href="privacy.html" style="font-size:12px;color:var(--text2);font-weight:600">개인정보처리방침</a><a href="terms.html" style="font-size:12px;color:var(--text3)">이용약관</a></div>
     <div class="fdisc">본 사이트는 이륜차 렌탈·리스 중개 서비스를 제공하며, 특정 제조사의 공식 대리점·판매점이 아닙니다.<br>© 2025 SE글로벌 렌탈. All rights reserved.</div>
   </div>
 </footer>
