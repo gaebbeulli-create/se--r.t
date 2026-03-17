@@ -243,11 +243,10 @@ function renderProds(){
   grid.innerHTML=filtered.map((p,i)=>{
     let imgs=[];try{imgs=typeof p.images==='string'?JSON.parse(p.images):p.images||[];}catch(e){}
     const imgEl=imgs[0]
-      ?`<img src="${imgs[0]}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=pcard-img-ph>${catIcons[p.category]||'🛵'}</div>'">`
+      ?`<img src="${imgs[0]}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML=this.dataset.ph" data-ph="<div class=pcard-img-ph>🛵</div>">`
       :`<div class="pcard-img-ph">${catIcons[p.category]||'🛵'}</div>`;
 
-    const features=(p.features||'').split('
-').filter(Boolean).slice(0,3);
+    const features=(p.features||'').split('\n').filter(Boolean).slice(0,3);
     const featHtml=features.map(f=>`<div class="pcard-feature">${f}</div>`).join('');
 
     return `<div class="pcard anim" style="transition-delay:${i*0.05}s" onclick="openModal(${i},${filtered.indexOf(p)})">
@@ -315,8 +314,7 @@ function openModal(idx){
   document.getElementById('modalPrice').textContent=p.price||'문의';
 
   // Features
-  const features=(p.features||'').split('
-').filter(Boolean);
+  const features=(p.features||'').split('\n').filter(Boolean);
   if(features.length){
     document.getElementById('modalFeatures').style.display='block';
     document.getElementById('modalFeatureList').innerHTML=features.map(f=>`<div class="modal-feature-item">${f}</div>`).join('');
@@ -339,7 +337,7 @@ function updateModalImg(idx){
   curModalImgIdx=idx;
   const imgEl=document.getElementById('modalImg');
   if(curModalImgs[idx]){
-    imgEl.innerHTML=`<img src="${curModalImgs[idx]}" alt="" onerror="this.parentElement.innerHTML='<div class=modal-img-ph>🛵</div>'">`;
+    imgEl.innerHTML=`<img src="${curModalImgs[idx]}" alt="" onerror="this.parentElement.innerHTML=this.dataset.ph" data-ph="<div class=modal-img-ph>🛵</div>">`;
   } else {
     imgEl.innerHTML='<div class="modal-img-ph">🛵</div>';
   }
