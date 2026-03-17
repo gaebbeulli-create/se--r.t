@@ -264,6 +264,43 @@ nav a:hover{color:var(--text)}
 .vslider-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all .2s}
 .vslider-dot.on{background:var(--teal);width:18px;border-radius:3px}
 
+/* Services */
+.svc-section{background:var(--bg);padding:64px 22px}
+.svc-inner{max-width:980px;margin:0 auto}
+.svc-list{margin-top:28px;border:0.5px solid var(--border);border-radius:16px;overflow:hidden}
+.svc-item{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 20px;
+  border-bottom:0.5px solid var(--border);
+  cursor:pointer;
+  transition:background .15s;
+  background:var(--bg2);
+}
+.svc-item:last-child{border-bottom:none}
+.svc-item:hover{background:var(--bg3)}
+.svc-item-icon{
+  font-size:28px;flex-shrink:0;
+  width:52px;height:52px;
+  background:var(--bg3);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  border:0.5px solid var(--border2);
+}
+.svc-item-body{flex:1;min-width:0}
+.svc-item-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.svc-item-title{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.svc-item-badge{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--teal);
+  background:rgba(163,230,53,.1);border:0.5px solid rgba(163,230,53,.25);
+  padding:2px 8px;border-radius:980px;
+}
+.svc-item-desc{font-size:13px;color:var(--text2);line-height:1.5}
+.svc-item-arrow{
+  font-size:22px;color:var(--text3);flex-shrink:0;
+  transition:transform .2s,color .2s;
+}
+.svc-item:hover .svc-item-arrow{transform:translateX(3px);color:var(--teal)}
+
 /* Features */
 .fbg{background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border)}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);border-radius:16px;overflow:hidden;border:0.5px solid var(--border);margin-top:36px}
@@ -658,11 +695,67 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <div class="qnav">
   <div class="qnav-inner">
+    <div class="qni" onclick="document.querySelector('.svc-section').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">💳</div><div class="qni-label">서비스</div></div>
     <div class="qni" onclick="document.getElementById('vehicles').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">🛵</div><div class="qni-label">차종</div></div>
     <div class="qni" onclick="document.getElementById('process').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">📋</div><div class="qni-label">안내</div></div>
     <div class="qni" onclick="document.getElementById('shipping').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">🚚</div><div class="qni-label">전국출고</div></div>
     <div class="qni" onclick="document.getElementById('consult').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">📞</div><div class="qni-label">상담</div></div>
     <div class="qni" onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'})"><div class="qni-icon">❓</div><div class="qni-label">FAQ</div></div>
+  </div>
+</div>
+
+<div class="svc-section">
+  <div class="svc-inner">
+    <span class="sec-eye">서비스 안내</span>
+    <h2 class="sec-h">원하는 방식으로 이용하세요</h2>
+    <p class="sec-sub">구매부터 렌탈까지, 고객에게 맞는 최적의 방법을 제안합니다</p>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><a href="service.html" style="color:var(--teal);font-size:13px;font-weight:600;border-bottom:1px solid rgba(163,230,53,.3);padding-bottom:2px">서비스 전체 보기 →</a><a href="vehicles.html" style="color:var(--text2);font-size:13px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.15);padding-bottom:2px">차량 전체 보기 →</a></div>
+    <div class="svc-list">
+      <div class="svc-item" onclick="location.href='product.html?tab=credit'">
+        <div class="svc-item-icon">💳</div>
+        <div class="svc-item-body">
+          <div class="svc-item-top">
+            <span class="svc-item-title">신용할부</span>
+            <span class="svc-item-badge">Credit</span>
+          </div>
+          <div class="svc-item-desc">별도의 목돈 없이 신용을 통해 월 납입금 방식으로 이륜차를 이용하세요. 무이자 할부 가능.</div>
+        </div>
+        <div class="svc-item-arrow">›</div>
+      </div>
+      <div class="svc-item" onclick="location.href='product.html?tab=sale'">
+        <div class="svc-item-icon">🛒</div>
+        <div class="svc-item-body">
+          <div class="svc-item-top">
+            <span class="svc-item-title">판매</span>
+            <span class="svc-item-badge">Sale</span>
+          </div>
+          <div class="svc-item-desc">원하는 차량을 직접 구매하세요. 다양한 차종을 합리적인 가격에 제공합니다.</div>
+        </div>
+        <div class="svc-item-arrow">›</div>
+      </div>
+      <div class="svc-item" onclick="location.href='service.html#rental'">
+        <div class="svc-item-icon">🛵</div>
+        <div class="svc-item-body">
+          <div class="svc-item-top">
+            <span class="svc-item-title">렌탈</span>
+            <span class="svc-item-badge">Rental</span>
+          </div>
+          <div class="svc-item-desc">초기 비용 부담 없이 월 납입금만으로 바로 시작. 단기·월 단위 계약 가능.</div>
+        </div>
+        <div class="svc-item-arrow">›</div>
+      </div>
+      <div class="svc-item" onclick="location.href='service.html#lease'">
+        <div class="svc-item-icon">📋</div>
+        <div class="svc-item-body">
+          <div class="svc-item-top">
+            <span class="svc-item-title">리스</span>
+            <span class="svc-item-badge">Lease</span>
+          </div>
+          <div class="svc-item-desc">12~36개월 장기 계약. 계약 종료 후 인수 또는 반납을 자유롭게 선택.</div>
+        </div>
+        <div class="svc-item-arrow">›</div>
+      </div>
+    </div>
   </div>
 </div>
 
