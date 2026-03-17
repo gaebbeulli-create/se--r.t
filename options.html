@@ -110,6 +110,54 @@ nav a:hover,nav a.on{color:var(--text)}
 
 @media(max-width:768px){.options-grid{grid-template-columns:repeat(2,1fr);gap:10px}body{padding-bottom:72px}.mcta{display:grid}}
 @media(max-width:400px){.options-grid{grid-template-columns:1fr}}
+
+/* Hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+
+/* Mobile menu drawer */
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:300}
+.mobile-menu.open{display:block}
+.mobile-drawer{position:absolute;top:0;right:0;width:260px;height:100%;background:#111;border-left:0.5px solid var(--border);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s ease}
+.mobile-menu.open .mobile-drawer{transform:translateX(0)}
+.mobile-drawer-head{padding:16px 18px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mobile-drawer-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+.mobile-nav{flex:1;overflow-y:auto;padding:8px 0}
+.mobile-nav-item{display:flex;align-items:center;gap:10px;padding:13px 18px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;border-bottom:0.5px solid var(--border);transition:background .15s}
+.mobile-nav-item:hover{background:var(--bg3)}
+.mobile-nav-item .mni-icon{font-size:18px;width:28px}
+.mobile-nav-sub{padding:8px 18px 8px 56px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;display:block;border-bottom:0.5px solid var(--border);transition:background .15s}
+.mobile-nav-sub:hover{background:var(--bg3);color:var(--teal)}
+.mobile-nav-section{padding:10px 18px 4px;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--text3);text-transform:uppercase}
+
+@media(max-width:768px){nav{display:none}.hamburger{display:flex}}
+
+/* Option Detail Modal */
+.opt-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;align-items:flex-end;justify-content:center}
+.opt-overlay.show{display:flex}
+@media(min-width:600px){.opt-overlay{align-items:center;padding:20px}}
+.opt-modal{background:var(--bg2);border:0.5px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;position:relative}
+@media(min-width:600px){.opt-modal{border-radius:20px;animation:popIn .2s ease}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.opt-modal-img{width:100%;aspect-ratio:4/3;background:var(--bg3);overflow:hidden;border-radius:20px 20px 0 0;position:relative}
+@media(min-width:600px){.opt-modal-img{border-radius:20px 20px 0 0}}
+.opt-modal-img img{width:100%;height:100%;object-fit:cover}
+.opt-modal-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:80px}
+.opt-modal-body{padding:22px 22px 32px}
+.opt-modal-cat{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+.opt-modal-name{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px}
+.opt-modal-price{font-size:28px;font-weight:900;color:var(--teal);margin-bottom:16px}
+.opt-modal-price small{font-size:14px;font-weight:500;color:var(--text2);margin-left:4px}
+.opt-modal-divider{height:.5px;background:var(--border);margin-bottom:16px}
+.opt-modal-desc{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:24px;white-space:pre-line}
+.opt-modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt-modal-btn-phone{background:var(--teal);color:#0a0a0a;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.opt-modal-btn-kakao{background:#FEE500;color:#1a1a00;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.opt-modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;background:rgba(0,0,0,.55);border:none;border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1}
 </style>
 </head>
 <body>
@@ -119,16 +167,41 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY);
 </script>
 
+<div class="mobile-menu" id="mobileMenu" onclick="closeMobileMenuOutside(event)">
+  <div class="mobile-drawer">
+    <div class="mobile-drawer-head">
+      <div style="font-size:15px;font-weight:800"><span style="color:#ff2d2d;font-style:italic">SE</span><span style="color:#fff">GLOBAL</span><span style="color:rgba(255,255,255,.3);margin:0 6px">×</span><span style="color:#00ffb3">TEAMBRO</span></div>
+      <button class="mobile-drawer-close" onclick="closeMobileMenu()">✕</button>
+    </div>
+    <div class="mobile-nav">
+      <div class="mobile-nav-section">모델</div>
+      <div class="mobile-nav-item" onclick="location.href='models.html';closeMobileMenu()"><span class="mni-icon">🏍️</span>전체 모델</div>
+      <div class="mobile-nav-sub" onclick="location.href='models.html?type=electric';closeMobileMenu()">⚡ 전기이륜차</div>
+      <div class="mobile-nav-sub" onclick="location.href='models.html?type=gasoline';closeMobileMenu()">⛽ 내연이륜차</div>
+      <div class="mobile-nav-sub" onclick="location.href='options.html';closeMobileMenu()">⚙️ 이륜차 용품</div>
+      <div class="mobile-nav-section">서비스</div>
+      <div class="mobile-nav-item" onclick="location.href='product.html';closeMobileMenu()"><span class="mni-icon">🛍️</span>상품안내</div>
+      <div class="mobile-nav-item" onclick="location.href='service.html';closeMobileMenu()"><span class="mni-icon">📋</span>서비스안내</div>
+      <div class="mobile-nav-section">고객</div>
+      <div class="mobile-nav-item" onclick="location.href='support.html';closeMobileMenu()"><span class="mni-icon">🏪</span>협력업체</div>
+      <div class="mobile-nav-item" onclick="location.href='index.html#consult';closeMobileMenu()"><span class="mni-icon">💬</span>상담신청</div>
+      <div class="mobile-nav-item" onclick="location.href='index.html#faq';closeMobileMenu()"><span class="mni-icon">❓</span>FAQ</div>
+    </div>
+  </div>
+</div>
 <header>
   <div class="hi">
     <a href="index.html" class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></a>
     <nav>
       <a href="models.html">모델</a>
-      <a href="options.html" class="on">옵션</a>
-      <a href="service.html">서비스</a>
-      <a href="index.html#consult">상담</a>
+      <a href="product.html">상품안내</a>
+      <a href="service.html">서비스안내</a>
+      <a href="support.html">협력업체</a>
+      <a href="index.html#consult">상담신청</a>
+      <a href="index.html#faq">FAQ</a>
     </nav>
     <button class="hcta" id="headerPhone">📞 상담</button>
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
   </div>
 </header>
 
@@ -165,6 +238,25 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   </div>
 </div>
 
+<!-- 옵션 상세 모달 -->
+<div class="opt-overlay" id="optOverlay" onclick="closeOptModal(event)">
+  <div class="opt-modal" id="optModal">
+    <button class="opt-modal-close" onclick="closeOptModalDirect()">✕</button>
+    <div class="opt-modal-img" id="optModalImg"></div>
+    <div class="opt-modal-body">
+      <div class="opt-modal-cat" id="optModalCat"></div>
+      <div class="opt-modal-name" id="optModalName"></div>
+      <div class="opt-modal-price" id="optModalPrice"></div>
+      <div class="opt-modal-divider"></div>
+      <div class="opt-modal-desc" id="optModalDesc"></div>
+      <div class="opt-modal-btns">
+        <button class="opt-modal-btn-phone" id="optModalPhone">📞 전화 문의</button>
+        <button class="opt-modal-btn-kakao" id="optModalKakao">💬 카카오 문의</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="mcta">
   <button class="mb mp" id="mPhone">📞 전화 상담</button>
   <button class="mb mk" id="mKakao">💬 카카오톡</button>
@@ -174,6 +266,7 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 let allOptions=[];
 let curFilter='all';
 let sitePhone='';
+let siteKakao='';
 
 const catLabels={
   'battery':'배터리',
@@ -218,17 +311,17 @@ function renderOptions(){
   grid.innerHTML=filtered.map((o,i)=>{
     const price=o.price?o.price.toLocaleString()+'원':'문의';
     const imgHtml=o.image_url
-      ?`<img src="${o.image_url}" alt="${o.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=ocard-img-ph>${catIcons[o.category]||'🔧'}</div>'">`
+      ?`<img src="${o.image_url}" alt="${o.name}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=ocard-img-ph>'+(catIcons[o.category]||'🔧')+'</div>'">`
       :`<div class="ocard-img-ph">${catIcons[o.category||'other']||'🔧'}</div>`;
-    return `<div class="ocard anim" style="transition-delay:${i*0.04}s">
+    return `<div class="ocard anim" style="transition-delay:${i*0.04}s" onclick="openOptModal(${i})">
       <div class="ocard-img">${imgHtml}</div>
       <div class="ocard-body">
         <div class="ocard-cat">${catLabels[o.category||'other']||o.category||'액세서리'}</div>
         <div class="ocard-name">${o.name}</div>
         <div class="ocard-desc">${o.description||''}</div>
         <div class="ocard-price">
-          <span class="ocard-price-val">+ ${price}</span>
-          <button class="ocard-btn" onclick="consultOption('${o.name}')">문의하기</button>
+          <span class="ocard-price-val">${o.price?o.price.toLocaleString()+'원':'가격 문의'}</span>
+          <button class="ocard-btn" onclick="event.stopPropagation();openOptModal(${i})">상세 보기</button>
         </div>
       </div>
     </div>`;
@@ -240,8 +333,38 @@ function renderOptions(){
   },50);
 }
 
+function openOptModal(idx){
+  const filtered=curFilter==='all'?allOptions:allOptions.filter(o=>o.category===curFilter);
+  const o=filtered[idx];
+  if(!o)return;
+  const imgEl=document.getElementById('optModalImg');
+  if(o.image_url){
+    imgEl.innerHTML=`<img src="${o.image_url}" alt="${o.name}" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=opt-modal-img-ph>${catIcons[o.category]||'🔧'}</div>'">`;
+  } else {
+    imgEl.innerHTML=`<div class="opt-modal-img-ph">${catIcons[o.category||'other']||'🔧'}</div>`;
+  }
+  document.getElementById('optModalCat').textContent=catLabels[o.category||'other']||o.category||'액세서리';
+  document.getElementById('optModalName').textContent=o.name;
+  document.getElementById('optModalPrice').innerHTML=o.price
+    ?`${o.price.toLocaleString()}원 <small>부가세 포함</small>`
+    :'<span style="font-size:18px">가격 문의</span>';
+  document.getElementById('optModalDesc').textContent=o.description||'상세 내용은 상담을 통해 안내드립니다.';
+  const phoneBtn=document.getElementById('optModalPhone');
+  const kakaoBtn=document.getElementById('optModalKakao');
+  phoneBtn.onclick=()=>{if(sitePhone)location.href='tel:'+sitePhone;};
+  kakaoBtn.onclick=()=>{if(siteKakao)window.open(siteKakao,'_blank');};
+  document.getElementById('optOverlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeOptModal(e){
+  if(e.target===document.getElementById('optOverlay'))closeOptModalDirect();
+}
+function closeOptModalDirect(){
+  document.getElementById('optOverlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
 function consultOption(name){
-  const msg=encodeURIComponent(`${name} 옵션 문의드립니다.`);
   if(sitePhone)location.href='tel:'+sitePhone;
 }
 
@@ -256,6 +379,7 @@ async function init(){
         document.getElementById('mPhone').textContent='📞 '+s.phone;
       }
       if(s.kakao_url){
+        siteKakao=s.kakao_url;
         ['ctaKakao','mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});
       }
     }
