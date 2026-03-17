@@ -48,8 +48,8 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text)
 }
 @keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 @keyframes noticeBg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-.popup-img{width:100%;aspect-ratio:1;overflow:hidden;background:#111;position:relative}
-.popup-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.popup-img{width:100%;overflow:hidden;background:#111;position:relative;max-height:60vh}
+.popup-img img{width:100%;height:auto;display:block;object-fit:contain;max-height:60vh}
 .popup-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px;background:linear-gradient(135deg,#1a1a2e,#16213e)}
 .popup-body{padding:22px}
 .popup-title{font-size:19px;font-weight:800;margin-bottom:8px;letter-spacing:-.3px}
@@ -571,7 +571,8 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <!-- 팝업 -->
 <div class="popup-overlay" id="popupOverlay" onclick="closePopupOutside(event)">
-  <div class="popup-box" id="popupBox">
+  <div class="popup-box" id="popupBox" style="position:relative">
+    <button onclick="closePopup()" style="position:absolute;top:10px;right:10px;z-index:10;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.2);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
     <div class="popup-img" id="popupImg"><div class="popup-img-ph">🎉</div></div>
     <div class="popup-body">
       <div class="popup-title" id="popupTitle">공지사항</div>
