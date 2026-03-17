@@ -1073,6 +1073,30 @@ function closePopupOutside(e){
   draw();
 })();
 
+// 드롭다운 클릭 토글
+(function(){
+  function initDropdown(){
+    document.querySelectorAll('.nav-item').forEach(item=>{
+      item.addEventListener('click',function(e){
+        e.stopPropagation();
+        const dd=item.querySelector('.dropdown');
+        if(!dd)return;
+        const isOpen=dd.classList.contains('open');
+        document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
+        if(!isOpen)dd.classList.add('open');
+      });
+    });
+    document.addEventListener('click',function(){
+      document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initDropdown);
+  } else {
+    initDropdown();
+  }
+})();
+
 // 한국 시간 실시간 시계
 (function(){
   function updateTime(){
