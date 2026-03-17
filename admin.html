@@ -719,6 +719,90 @@ function removePopupImg(){
   document.getElementById('popupImgStatus').textContent='';
 }
 
+// ── Options Management ──
+async function loadOptions(){
+  const el=document.getElementById('optList');
+  if(!el)return;
+  try{
+    const{data,error}=await sba.from('options').select('*').order('sort_order',{ascending:true});
+    if(error)throw error;
+    if(!data||!data.length){el.innerHTML='<p style="color:var(--sub);font-size:13px;padding:20px 0">등록된 옵션이 없습니다</p>';return;}
+    el.innerHTML=`<table class="tbl" style="width:100%"><thead><tr><th>이미지</th><th>옵션명</th><th>카테고리</th><th>가격</th><th>정렬</th><th>관리</th></tr></thead><tbody>${data.map(o=>`<tr>
+      <td>${o.image_url?`<img src="${o.image_url}" style="width:48px;height:36px;object-fit:cover;border-radius:6px;background:var(--bg3)">`:'-'}</td>
+      <td style="font-weight:700">${o.name}</td>
+      <td><span style="font-size:11px;color:var(--sub)">${o.category||'-'}</span></td>
+      <td style="color:var(--teal);font-weight:700">${o.price?o.price.toLocaleString()+'원':'문의'}</td>
+      <td>${o.sort_order}</td>
+      <td style="display:flex;gap:6px">
+        <button class="bprimary" onclick="editOption(${JSON.stringify(JSON.stringify(o)).slice(1,-1)})">수정</button>
+        <button class="bdanger" onclick="deleteOption(${o.id})">삭제</button>
+      </td>
+    </tr>`).join('')}</tbody></table>`;
+  }catch(e){el.innerHTML='<p style="color:var(--red);font-size:13px">불러오기 실패</p>';}
+}
+
+function showOptForm(){document.getElementById('optForm').style.display='block';document.getElementById('oedit').value='';document.getElementById('oname').value='';document.getElementById('odesc').value='';document.getElementById('oprice').value='';document.getElementById('osort').value='0';document.getElementById('oimg').value='';document.getElementById('optImgPreview').innerHTML='🔧';}
+function hideOptForm(){document.getElementById('optForm').style.display='none';}
+
+function editOption(jsonStr){
+  try{
+    const o=JSON.parse(jsonStr);
+    document.getElementById('optForm').style.display='block';
+    document.getElementById('oedit').value=o.id;
+    document.getElementById('oname').value=o.name||'';
+    document.getElementById('ocat').value=o.category||'accessory';
+    document.getElementById('odesc').value=o.description||'';
+    document.getElementById('oprice').value=o.price||'';
+    document.getElementById('osort').value=o.sort_order||0;
+    document.getElementById('oimg').value=o.image_url||'';
+    document.getElementById('optImgPreview').innerHTML=o.image_url?`<img src="${o.image_url}" style="width:100%;height:100%;object-fit:cover">`:'🔧';
+  }catch(e){}
+}
+
+async function saveOption(){
+  const name=document.getElementById('oname').value.trim();
+  if(!name){toast('옵션명을 입력해주세요','err');return;}
+  const payload={
+    name,
+    category:document.getElementById('ocat').value,
+    description:document.getElementById('odesc').value.trim()||null,
+    price:parseInt(document.getElementById('oprice').value)||null,
+    sort_order:parseInt(document.getElementById('osort').value)||0,
+    image_url:document.getElementById('oimg').value||null,
+    is_active:true,
+  };
+  const editId=document.getElementById('oedit').value;
+  let error;
+  if(editId){({error}=await sba.from('options').update(payload).eq('id',editId));}
+  else{({error}=await sba.from('options').insert([payload]));}
+  if(error){toast('저장 실패: '+error.message,'err');}
+  else{toast('저장됐습니다','ok');hideOptForm();loadOptions();}
+}
+
+async function deleteOption(id){
+  if(!confirm('이 옵션을 삭제할까요?'))return;
+  const{error}=await sba.from('options').delete().eq('id',id);
+  if(error){toast('삭제 실패','err');return;}
+  toast('삭제됐습니다','ok');
+  loadOptions();
+}
+
+async function uploadOptImg(input){
+  const file=input.files[0];
+  if(!file)return;
+  const status=document.getElementById('optImgStatus');
+  status.textContent='업로드 중...';
+  const blob=await resizeKeepRatio(file,800);
+  const path=`options/opt-${Date.now()}.jpg`;
+  const{error}=await sba.storage.from('vehicle-images').upload(path,blob,{contentType:'image/jpeg',upsert:true});
+  if(error){status.textContent='실패';return;}
+  const{data}=sba.storage.from('vehicle-images').getPublicUrl(path);
+  document.getElementById('oimg').value=data.publicUrl;
+  document.getElementById('optImgPreview').innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover">`;
+  status.textContent='완료 ✓';
+  input.value='';
+}
+
 function toast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className=`toast on ${type}`;
