@@ -7,10 +7,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1e;--bg4:#2c2c2e;--border:#2c2c2e;--border2:#3a3a3c;--text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;--teal:#a3e635;--accent:#0a84ff;--accent2:#30d158}
+:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1e;--border:#2c2c2e;--border2:#3a3a3c;--text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;--teal:#a3e635;--accent:#0a84ff}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding-bottom:80px}
 a{text-decoration:none;color:inherit}
+
+/* Header */
 header{background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
 .hi{max-width:1100px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;height:52px}
 .logo{display:flex;align-items:center}
@@ -18,40 +20,30 @@ header{background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:0.5
 .logo .gl{color:#fff;font-weight:900;font-size:17px}
 .logo .x{color:rgba(255,255,255,.3);font-weight:300;font-size:13px;margin:0 6px}
 .logo .tb{color:#00ffb3;font-weight:900;font-size:17px}
-nav{display:flex;gap:20px}
-nav a{font-size:13px;color:var(--text2);transition:color .15s}
+nav{display:flex;gap:16px;align-items:center}
+nav a{font-size:13px;color:var(--text2);white-space:nowrap}
 nav a:hover,nav a.on{color:var(--text)}
 .hcta{background:var(--teal);color:#0a0a0a;padding:7px 16px;border-radius:980px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
 
 /* Hero */
-.page-hero{text-align:center;padding:52px 22px 36px;position:relative;overflow:hidden}
-.page-hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(163,230,53,.06) 0%,transparent 60%);pointer-events:none}
+.page-hero{text-align:center;padding:48px 22px 32px;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(163,230,53,.05) 0%,transparent 60%);pointer-events:none}
 .hero-eye{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;display:block}
 .page-hero h1{font-size:clamp(24px,5vw,44px);font-weight:900;letter-spacing:-1.5px;margin-bottom:10px}
 .page-hero p{font-size:14px;color:var(--text2);max-width:460px;margin:0 auto}
 
 /* Category tabs */
 .cat-tabs{max-width:1100px;margin:0 auto;padding:20px 22px 0;display:flex;gap:8px;flex-wrap:wrap}
-.cat-tab{
-  padding:10px 22px;border-radius:980px;font-size:13px;font-weight:700;
-  cursor:pointer;border:0.5px solid var(--border2);background:var(--bg2);
-  color:var(--text2);transition:all .2s;flex-shrink:0;
-}
-.cat-tab:hover{border-color:var(--teal);color:var(--teal)}
+.cat-tab{padding:9px 20px;border-radius:980px;font-size:13px;font-weight:700;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);transition:all .2s;flex-shrink:0}
 .cat-tab.on{background:var(--teal);color:#0a0a0a;border-color:var(--teal)}
 
 /* Products grid */
 .products-wrap{max-width:1100px;margin:0 auto;padding:24px 22px}
-.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 
 /* Product card */
-.pcard{
-  background:var(--bg2);border:0.5px solid var(--border);
-  border-radius:18px;overflow:hidden;
-  transition:transform .25s,box-shadow .25s,border-color .25s;
-  cursor:pointer;
-}
-.pcard:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.5);border-color:rgba(163,230,53,.3)}
+.pcard{background:var(--bg2);border:0.5px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;cursor:pointer}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.5);border-color:rgba(163,230,53,.3)}
 .pcard-img{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--bg3);position:relative}
 .pcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .4s}
 .pcard:hover .pcard-img img{transform:scale(1.04)}
@@ -62,64 +54,65 @@ nav a:hover,nav a.on{color:var(--text)}
 .cat-lease{background:rgba(191,0,255,.15);border:0.5px solid rgba(191,0,255,.3);color:#bf00ff}
 .cat-credit{background:rgba(10,132,255,.15);border:0.5px solid rgba(10,132,255,.3);color:var(--accent)}
 .cat-sale{background:rgba(255,159,10,.15);border:0.5px solid rgba(255,159,10,.3);color:#ff9f0a}
-.pcard-body{padding:18px 20px 20px}
-.pcard-name{font-size:18px;font-weight:800;margin-bottom:5px;letter-spacing:-.3px}
-.pcard-summary{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5}
-.pcard-features{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
-.pcard-feature{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
+.pcard-body{padding:16px 18px 18px}
+.pcard-name{font-size:17px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.pcard-summary{font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.pcard-features{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.pcard-feature{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
 .pcard-feature::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0}
-.pcard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:0.5px solid var(--border2)}
-.pcard-price-wrap{}
+.pcard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:0.5px solid var(--border2)}
 .pcard-original{font-size:11px;color:var(--text3);text-decoration:line-through;margin-bottom:2px}
-.pcard-price{font-size:22px;font-weight:900;color:var(--teal);letter-spacing:-.5px}
-.pcard-btn{background:var(--teal);color:#0a0a0a;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:opacity .2s}
-.pcard-btn:hover{opacity:.85}
+.pcard-price{font-size:20px;font-weight:900;color:var(--teal)}
+.pcard-btn{background:var(--teal);color:#0a0a0a;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 
 /* Empty */
 .empty-msg{text-align:center;padding:80px 20px;color:var(--text3);grid-column:1/-1}
 .spin{width:24px;height:24px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Product Detail Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.show{display:flex}
+/* Modal */
+.modal-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  z-index:500;overflow-y:auto;padding:20px;
+}
+.modal-overlay.show{display:flex;align-items:flex-start;justify-content:center}
 .modal-box{
   background:var(--bg2);border:0.5px solid var(--border2);
-  border-radius:20px;max-width:680px;width:100%;max-height:90vh;
-  overflow-y:auto;scrollbar-width:thin;
-  animation:modalIn .3s ease;
+  border-radius:20px;max-width:640px;width:100%;
+  margin:auto;position:relative;
+  animation:modalIn .25s ease;
 }
-@keyframes modalIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-.modal-box::-webkit-scrollbar{width:4px}
-.modal-box::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-.modal-close{position:sticky;top:0;display:flex;justify-content:flex-end;padding:16px 16px 0;background:var(--bg2);z-index:10}
-.modal-close button{background:var(--bg3);border:0.5px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.modal-img{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--bg3);position:relative}
-.modal-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.modal-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px}
-.modal-body{padding:24px}
-.modal-cat{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
-.modal-name{font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
-.modal-summary{font-size:15px;color:var(--text2);line-height:1.6;margin-bottom:20px}
-.modal-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:20px}
-.modal-original{font-size:14px;color:var(--text3);text-decoration:line-through}
-.modal-price{font-size:28px;font-weight:900;color:var(--teal);letter-spacing:-.5px}
-.modal-features{margin-bottom:20px}
-.modal-features-title{font-size:13px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
-.modal-feature-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text2)}
-.modal-feature-item:last-child{border-bottom:none}
-.modal-feature-item::before{content:'✓';color:var(--teal);font-weight:800;flex-shrink:0}
-.modal-desc{font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-line;margin-bottom:24px}
-.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.modal-btn-phone{background:var(--teal);color:#0a0a0a;padding:14px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
-.modal-btn-kakao{background:#FEE500;color:#1a1a00;padding:14px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
-
-/* Thumbnails */
-.modal-thumbs{display:flex;gap:6px;overflow-x:auto;padding:0 24px 16px;scrollbar-width:none}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-close-btn{
+  position:absolute;top:14px;right:14px;z-index:10;
+  background:rgba(0,0,0,.5);border:0.5px solid rgba(255,255,255,.15);
+  color:#fff;width:32px;height:32px;border-radius:50%;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.modal-imgs{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--bg3);border-radius:20px 20px 0 0}
+.modal-imgs img{width:100%;height:100%;object-fit:cover}
+.modal-imgs-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px}
+.modal-thumbs{display:flex;gap:6px;overflow-x:auto;padding:12px 20px 0;scrollbar-width:none}
 .modal-thumbs::-webkit-scrollbar{display:none}
-.modal-thumb{width:60px;height:45px;flex-shrink:0;border-radius:8px;overflow:hidden;cursor:pointer;opacity:.5;border:1.5px solid transparent;transition:all .2s}
+.modal-thumb{width:56px;height:42px;flex-shrink:0;border-radius:8px;overflow:hidden;cursor:pointer;opacity:.5;border:1.5px solid transparent;transition:all .2s}
 .modal-thumb.on{opacity:1;border-color:var(--teal)}
 .modal-thumb img{width:100%;height:100%;object-fit:cover}
+.modal-body{padding:20px}
+.modal-cat{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.modal-name{font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:8px}
+.modal-summary{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.modal-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:16px}
+.modal-original{font-size:13px;color:var(--text3);text-decoration:line-through}
+.modal-price{font-size:26px;font-weight:900;color:var(--teal)}
+.modal-feats-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.modal-feat{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:14px;color:var(--text2)}
+.modal-feat:last-child{border-bottom:none}
+.modal-feat::before{content:'✓';color:var(--teal);font-weight:800}
+.modal-desc{font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-line;margin:16px 0}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.modal-btn-p{background:var(--teal);color:#0a0a0a;padding:14px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
+.modal-btn-k{background:#FEE500;color:#1a1a00;padding:14px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit}
 
 /* Mobile CTA */
 .mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:10px 16px;z-index:200;grid-template-columns:1fr 1fr;gap:8px}
@@ -127,12 +120,9 @@ nav a:hover,nav a.on{color:var(--text)}
 .mp{background:var(--teal);color:#0a0a0a}
 .mk{background:#FEE500;color:#1d1d1f}
 
-/* Anim */
-.anim{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
-.anim.in{opacity:1;transform:translateY(0)}
-
 @media(max-width:768px){
-  .products-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  nav{display:none}
+  .products-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   body{padding-bottom:72px}
   .mcta{display:grid}
   .modal-btns{grid-template-columns:1fr 1fr}
@@ -143,10 +133,11 @@ nav a:hover,nav a.on{color:var(--text)}
 </style>
 </head>
 <body>
+
 <script>
 const SB_URL='https://ogjrhphhpqpzlzlbugdp.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
-const sb=supabase.createClient(SB_URL,SB_KEY);
+const sb = supabase.createClient(SB_URL, SB_KEY);
 </script>
 
 <header>
@@ -154,9 +145,10 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
     <a href="index.html" class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></a>
     <nav>
       <a href="models.html">모델</a>
-      <a href="product.html" class="on">상품</a>
-      <a href="service.html">서비스</a>
-      <a href="support.html">고객센터</a>
+      <a href="product.html" class="on">상품안내</a>
+      <a href="service.html">서비스안내</a>
+      <a href="support.html">협력업체</a>
+      <a href="index.html#consult">상담신청</a>
     </nav>
     <button class="hcta" id="headerPhone">📞 상담</button>
   </div>
@@ -165,15 +157,15 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 <div class="page-hero">
   <span class="hero-eye">Products</span>
   <h1>상품 안내</h1>
-  <p>신용할부·판매·렌탈·리스<br>원하는 방식으로 이륜차를 이용하세요</p>
+  <p>렌탈·리스·신용할부·판매<br>원하는 방식으로 이용하세요</p>
 </div>
 
 <div class="cat-tabs">
-  <div class="cat-tab on" onclick="filterCat('all',this)">전체</div>
-  <div class="cat-tab" onclick="filterCat('rental',this)">🛵 렌탈</div>
-  <div class="cat-tab" onclick="filterCat('lease',this)">📋 리스</div>
-  <div class="cat-tab" onclick="filterCat('credit',this)">💳 신용할부</div>
-  <div class="cat-tab" onclick="filterCat('sale',this)">🛒 판매</div>
+  <div class="cat-tab on" data-cat="all">전체</div>
+  <div class="cat-tab" data-cat="rental">🛵 렌탈</div>
+  <div class="cat-tab" data-cat="lease">📋 리스</div>
+  <div class="cat-tab" data-cat="credit">💳 신용할부</div>
+  <div class="cat-tab" data-cat="sale">🛒 판매</div>
 </div>
 
 <div class="products-wrap">
@@ -182,28 +174,25 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
   </div>
 </div>
 
-<!-- 상품 상세 모달 -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
-  <div class="modal-box" id="modalBox" onclick="event.stopPropagation()">
-    <div class="modal-close"><button onclick="closeModal()">✕</button></div>
-    <div class="modal-img" id="modalImg"><div class="modal-img-ph">🛵</div></div>
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close-btn" id="modalCloseBtn">✕</button>
+    <div class="modal-imgs" id="modalImgs"><div class="modal-imgs-ph">🛵</div></div>
     <div class="modal-thumbs" id="modalThumbs"></div>
     <div class="modal-body">
       <div class="modal-cat" id="modalCat"></div>
       <div class="modal-name" id="modalName"></div>
       <div class="modal-summary" id="modalSummary"></div>
       <div class="modal-price-row">
-        <span class="modal-original" id="modalOriginal" style="display:none"></span>
+        <span class="modal-original" id="modalOriginal"></span>
         <span class="modal-price" id="modalPrice"></span>
       </div>
-      <div class="modal-features" id="modalFeatures" style="display:none">
-        <div class="modal-features-title">포함 혜택</div>
-        <div id="modalFeatureList"></div>
-      </div>
-      <div class="modal-desc" id="modalDesc" style="display:none"></div>
+      <div id="modalFeats"></div>
+      <div class="modal-desc" id="modalDesc"></div>
       <div class="modal-btns">
-        <button class="modal-btn-phone" id="modalPhone">📞 전화 상담</button>
-        <button class="modal-btn-kakao" id="modalKakao">💬 카카오톡</button>
+        <button class="modal-btn-p" id="modalPhone">📞 전화 상담</button>
+        <button class="modal-btn-k" id="modalKakao">💬 카카오톡</button>
       </div>
     </div>
   </div>
@@ -215,184 +204,220 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 </div>
 
 <script>
-let allProds=[];
-let curCat='all';
-let sitePhone='';
-let siteKakao='';
-const catLabels={rental:'🛵 렌탈',lease:'📋 리스',credit:'💳 신용할부',sale:'🛒 판매'};
-const catIcons={rental:'🛵',lease:'📋',credit:'💳',sale:'🛒'};
+const catLabels = {rental:'🛵 렌탈', lease:'📋 리스', credit:'💳 신용할부', sale:'🛒 판매'};
+const catIcons  = {rental:'🛵', lease:'📋', credit:'💳', sale:'🛒'};
 
-function filterCat(cat,el){
-  curCat=cat;
-  document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  renderProds();
-}
+let allProds = [];
+let curCat   = 'all';
+let sitePhone = '';
+let siteKakao = '';
+let curModalImgs = [];
+let modalOpen = false;
 
-function renderProds(){
-  const filtered=curCat==='all'?allProds:allProds.filter(p=>p.category===curCat);
-  const grid=document.getElementById('prodGrid');
-  if(!filtered.length){
-    grid.innerHTML=`<div class="empty-msg">
-      <p style="font-size:36px;margin-bottom:12px">${catIcons[curCat]||'📦'}</p>
-      <p style="font-size:14px;margin-bottom:6px">등록된 상품이 없습니다</p>
-      <p style="font-size:12px;color:var(--text3)">어드민에서 상품을 추가해주세요</p>
-    </div>`;
+// ── Category tabs ──
+document.querySelectorAll('.cat-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('on'));
+    this.classList.add('on');
+    curCat = this.dataset.cat;
+    renderProds();
+  });
+});
+
+// ── Render products ──
+function renderProds() {
+  const filtered = curCat === 'all' ? allProds : allProds.filter(p => p.category === curCat);
+  const grid = document.getElementById('prodGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-msg"><p style="font-size:36px;margin-bottom:10px">' +
+      (catIcons[curCat] || '📦') + '</p><p style="font-size:14px">등록된 상품이 없습니다</p><p style="font-size:12px;color:var(--text3);margin-top:6px">어드민에서 상품을 추가해주세요</p></div>';
     return;
   }
-  grid.innerHTML=filtered.map((p,i)=>{
-    let imgs=[];try{imgs=typeof p.images==='string'?JSON.parse(p.images):p.images||[];}catch(e){}
-    const imgEl=imgs[0]
-      ?`<img src="${imgs[0]}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML=this.dataset.ph" data-ph="<div class=pcard-img-ph>🛵</div>">`
-      :`<div class="pcard-img-ph">${catIcons[p.category]||'🛵'}</div>`;
+  grid.innerHTML = '';
+  filtered.forEach(function(p, idx) {
+    let imgs = [];
+    try { imgs = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []); } catch(e) {}
+    const imgUrl = imgs[0] || '';
 
-    const features=(p.features||'').split('\n').filter(Boolean).slice(0,3);
-    const featHtml=features.map(f=>`<div class="pcard-feature">${f}</div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'pcard';
 
-    return `<div class="pcard anim" style="transition-delay:${i*0.05}s" onclick="event.stopPropagation();openModal(${filtered.indexOf(p)})">
-      <div class="pcard-img">
-        ${imgEl}
-        ${p.badge?`<div class="pcard-badge">${p.badge}</div>`:''}
-        <div class="pcard-cat-badge cat-${p.category||'rental'}">${catLabels[p.category||'rental']}</div>
-      </div>
-      <div class="pcard-body">
-        <div class="pcard-name">${p.name}</div>
-        <div class="pcard-summary">${p.summary||''}</div>
-        ${featHtml?`<div class="pcard-features">${featHtml}</div>`:''}
-        <div class="pcard-footer">
-          <div class="pcard-price-wrap">
-            ${p.original_price?`<div class="pcard-original">${p.original_price}</div>`:''}
-            <div class="pcard-price">${p.price||'문의'}</div>
-          </div>
-          <button class="pcard-btn" onclick="event.stopPropagation();openModal(${filtered.indexOf(p)})">자세히 →</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+    const features = (p.features || '').split('\n').filter(Boolean).slice(0,3);
+    const featHtml = features.map(f => '<div class="pcard-feature">' + f + '</div>').join('');
 
-  // animate
-  setTimeout(()=>{
-    const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in');});},{threshold:.1});
-    document.querySelectorAll('.anim:not(.in)').forEach(el=>obs.observe(el));
-  },50);
+    card.innerHTML =
+      '<div class="pcard-img">' +
+        (imgUrl ? '<img src="' + imgUrl + '" alt="' + (p.name||'') + '" loading="lazy">' : '<div class="pcard-img-ph">' + (catIcons[p.category]||'🛵') + '</div>') +
+        (p.badge ? '<div class="pcard-badge">' + p.badge + '</div>' : '') +
+        '<div class="pcard-cat-badge cat-' + (p.category||'rental') + '">' + (catLabels[p.category||'rental']) + '</div>' +
+      '</div>' +
+      '<div class="pcard-body">' +
+        '<div class="pcard-name">' + (p.name||'') + '</div>' +
+        '<div class="pcard-summary">' + (p.summary||'') + '</div>' +
+        (featHtml ? '<div class="pcard-features">' + featHtml + '</div>' : '') +
+        '<div class="pcard-footer">' +
+          '<div>' +
+            (p.original_price ? '<div class="pcard-original">' + p.original_price + '</div>' : '') +
+            '<div class="pcard-price">' + (p.price||'문의') + '</div>' +
+          '</div>' +
+          '<button class="pcard-btn" type="button">자세히 →</button>' +
+        '</div>' +
+      '</div>';
+
+    // Click handlers - addEventListener (no inline onclick)
+    card.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openModal(idx);
+    });
+    card.querySelector('.pcard-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openModal(idx);
+    });
+
+    grid.appendChild(card);
+  });
 }
 
-let curModalImgs=[];
-let curModalImgIdx=0;
+// ── Modal ──
+function openModal(idx) {
+  const filtered = curCat === 'all' ? allProds : allProds.filter(p => p.category === curCat);
+  const p = filtered[idx];
+  if (!p) return;
 
-function openModal(idx,e){if(e)e.stopPropagation();
-  const filtered=curCat==='all'?allProds:allProds.filter(p=>p.category===curCat);
-  const p=filtered[idx];
-  if(!p)return;
+  let imgs = [];
+  try { imgs = typeof p.images === 'string' ? JSON.parse(p.images) : (p.images || []); } catch(e) {}
 
-  // Images
-  let imgs=[];try{imgs=typeof p.images==='string'?JSON.parse(p.images):p.images||[];}catch(e){}
-  curModalImgs=imgs;
-  curModalImgIdx=0;
-  updateModalImg(0);
+  // Main image
+  const imgEl = document.getElementById('modalImgs');
+  if (imgs[0]) {
+    imgEl.innerHTML = '<img src="' + imgs[0] + '" alt="' + (p.name||'') + '" id="modalMainImg">';
+  } else {
+    imgEl.innerHTML = '<div class="modal-imgs-ph">' + (catIcons[p.category]||'🛵') + '</div>';
+  }
 
   // Thumbnails
-  const thumbs=document.getElementById('modalThumbs');
-  if(imgs.length>1){
-    thumbs.innerHTML=imgs.map((url,i)=>`<div class="modal-thumb ${i===0?'on':''}" onclick="updateModalImg(${i})"><img src="${url}" alt=""></div>`).join('');
-    thumbs.style.display='flex';
+  const thumbEl = document.getElementById('modalThumbs');
+  if (imgs.length > 1) {
+    thumbEl.innerHTML = imgs.map(function(url, i) {
+      return '<div class="modal-thumb' + (i===0?' on':'') + '" data-idx="' + i + '" data-url="' + url + '"><img src="' + url + '" alt=""></div>';
+    }).join('');
+    thumbEl.querySelectorAll('.modal-thumb').forEach(function(t) {
+      t.addEventListener('click', function() {
+        document.getElementById('modalMainImg') && (document.getElementById('modalMainImg').src = this.dataset.url);
+        thumbEl.querySelectorAll('.modal-thumb').forEach(function(x){x.classList.remove('on');});
+        this.classList.add('on');
+      });
+    });
+    thumbEl.style.display = 'flex';
   } else {
-    thumbs.style.display='none';
+    thumbEl.style.display = 'none';
   }
 
-  // Info
-  const catEl=document.getElementById('modalCat');
-  catEl.textContent=catLabels[p.category||'rental'];
-  catEl.style.color=getComputedStyle(document.documentElement).getPropertyValue('--teal');
+  document.getElementById('modalCat').textContent = catLabels[p.category||'rental'] || '';
+  document.getElementById('modalName').textContent = p.name || '';
+  document.getElementById('modalSummary').textContent = p.summary || '';
 
-  document.getElementById('modalName').textContent=p.name;
-  document.getElementById('modalSummary').textContent=p.summary||'';
+  const origEl = document.getElementById('modalOriginal');
+  origEl.textContent = p.original_price || '';
+  origEl.style.display = p.original_price ? 'inline' : 'none';
+  document.getElementById('modalPrice').textContent = p.price || '문의';
 
-  const origEl=document.getElementById('modalOriginal');
-  if(p.original_price){origEl.textContent=p.original_price;origEl.style.display='inline';}
-  else origEl.style.display='none';
-  document.getElementById('modalPrice').textContent=p.price||'문의';
+  const feats = (p.features || '').split('\n').filter(Boolean);
+  const featsEl = document.getElementById('modalFeats');
+  if (feats.length) {
+    featsEl.innerHTML = '<div class="modal-feats-title">포함 혜택</div>' +
+      feats.map(function(f){ return '<div class="modal-feat">' + f + '</div>'; }).join('');
+  } else {
+    featsEl.innerHTML = '';
+  }
 
-  // Features
-  const features=(p.features||'').split('\n').filter(Boolean);
-  if(features.length){
-    document.getElementById('modalFeatures').style.display='block';
-    document.getElementById('modalFeatureList').innerHTML=features.map(f=>`<div class="modal-feature-item">${f}</div>`).join('');
-  } else document.getElementById('modalFeatures').style.display='none';
+  const descEl = document.getElementById('modalDesc');
+  descEl.textContent = p.description || '';
+  descEl.style.display = p.description ? 'block' : 'none';
 
-  // Desc
-  const descEl=document.getElementById('modalDesc');
-  if(p.description){descEl.textContent=p.description;descEl.style.display='block';}
-  else descEl.style.display='none';
-
-  // CTA
-  document.getElementById('modalPhone').onclick=()=>{if(sitePhone)location.href='tel:'+sitePhone;};
-  document.getElementById('modalKakao').onclick=()=>{if(siteKakao)window.open(siteKakao,'_blank');};
+  document.getElementById('modalPhone').onclick = function() {
+    if (sitePhone) location.href = 'tel:' + sitePhone;
+  };
+  document.getElementById('modalKakao').onclick = function() {
+    if (siteKakao) window.open(siteKakao, '_blank');
+  };
 
   document.getElementById('modalOverlay').classList.add('show');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
+  modalOpen = true;
 }
 
-function updateModalImg(idx){
-  curModalImgIdx=idx;
-  const imgEl=document.getElementById('modalImg');
-  if(curModalImgs[idx]){
-    imgEl.innerHTML=`<img src="${curModalImgs[idx]}" alt="" onerror="this.parentElement.innerHTML=this.dataset.ph" data-ph="<div class=modal-img-ph>🛵</div>">`;
-  } else {
-    imgEl.innerHTML='<div class="modal-img-ph">🛵</div>';
-  }
-  document.querySelectorAll('.modal-thumb').forEach((t,i)=>t.classList.toggle('on',i===idx));
-}
-
-function closeModal(e){
-  if(e&&e.type==='click'){
-    if(e.target!==document.getElementById('modalOverlay'))return;
-  }
+function closeModal() {
   document.getElementById('modalOverlay').classList.remove('show');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
+  modalOpen = false;
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
-async function init(){
-  try{
-    const{data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
-    const s=rows&&rows.length?rows[0]:null;
-    if(s){
-      if(s.phone){
-        sitePhone=s.phone;
-        ['headerPhone','mPhone'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>location.href='tel:'+s.phone;});
-        document.getElementById('mPhone').textContent='📞 '+s.phone;
+// Close button
+document.getElementById('modalCloseBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  closeModal();
+});
+
+// Click overlay background to close
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Prevent modal box clicks from closing
+document.getElementById('modalBox').addEventListener('click', function(e) {
+  e.stopPropagation();
+});
+
+// ESC key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── Init ──
+async function init() {
+  try {
+    const { data: rows } = await sb.from('site_config').select('phone,kakao_url').eq('id', 1).limit(1);
+    const s = rows && rows.length ? rows[0] : null;
+    if (s) {
+      if (s.phone) {
+        sitePhone = s.phone;
+        ['headerPhone','mPhone'].forEach(function(id) {
+          const el = document.getElementById(id);
+          if (el) el.onclick = function() { location.href = 'tel:' + s.phone; };
+        });
+        document.getElementById('mPhone').textContent = '📞 ' + s.phone;
       }
-      if(s.kakao_url){
-        siteKakao=s.kakao_url;
-        ['mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});
+      if (s.kakao_url) {
+        siteKakao = s.kakao_url;
+        const mk = document.getElementById('mKakao');
+        if (mk) mk.onclick = function() { window.open(s.kakao_url, '_blank'); };
       }
     }
-  }catch(e){}
+  } catch(e) {}
 
-  try{
-    const{data,error}=await sb.from('products').select('*').eq('is_active',true).order('sort_order',{ascending:true});
-    console.log('Products result:', {data, error});
-    if(error)throw error;
-    allProds=data||[];
-
-    // URL tab 파라미터
-    const tab=new URLSearchParams(location.search).get('tab');
-    if(tab){
-      const tabEl=document.querySelector(`.cat-tab[onclick*="${tab}"]`);
-      if(tabEl){document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('on'));tabEl.classList.add('on');curCat=tab;}
+  try {
+    const urlTab = new URLSearchParams(location.search).get('tab');
+    if (urlTab) {
+      document.querySelectorAll('.cat-tab').forEach(function(t) { t.classList.remove('on'); });
+      const tabEl = document.querySelector('.cat-tab[data-cat="' + urlTab + '"]');
+      if (tabEl) { tabEl.classList.add('on'); curCat = urlTab; }
     }
+
+    const { data, error } = await sb.from('products').select('*').eq('is_active', true).order('sort_order', { ascending: true });
+    if (error) throw error;
+    allProds = data || [];
     renderProds();
-  }catch(e){
-    console.error('Products error:',e);
-    const errMsg = e?.message || e?.toString() || '알 수 없는 오류';
-    document.getElementById('prodGrid').innerHTML=`<div class="empty-msg">
-      <p style="font-size:36px;margin-bottom:12px">⚠️</p>
-      <p style="font-size:14px;color:var(--text3);margin-bottom:8px">상품을 불러올 수 없습니다</p>
-      <p style="font-size:11px;color:#ff453a;background:rgba(255,69,58,.1);padding:8px 12px;border-radius:8px;margin-top:8px;max-width:400px;word-break:break-all">${errMsg}</p>
-    </div>`;
+  } catch(e) {
+    document.getElementById('prodGrid').innerHTML =
+      '<div class="empty-msg"><p style="font-size:32px;margin-bottom:10px">⚠️</p>' +
+      '<p style="font-size:14px;margin-bottom:6px">상품을 불러올 수 없습니다</p>' +
+      '<p style="font-size:11px;color:#ff453a">' + (e.message||'') + '</p></div>';
   }
 }
+
 init();
 </script>
 </body>
