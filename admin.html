@@ -334,8 +334,11 @@ const sba=supabase.createClient(SB_URL,SB_SVC);
           <div class="fg"><label class="fl">대표 전화번호</label><input type="text" class="fi" id="sphone" placeholder="010-0000-0000"></div>
           <div class="fg full"><label class="fl">카카오톡 오픈채팅 URL</label><input type="text" class="fi" id="skakao" placeholder="https://open.kakao.com/o/..."></div>
           <div class="fg"><label class="fl">상호명</label><input type="text" class="fi" id="sbizname"></div>
+          <div class="fg"><label class="fl">대표자명</label><input type="text" class="fi" id="sceoname" placeholder="홍길동"></div>
           <div class="fg"><label class="fl">사업자등록번호</label><input type="text" class="fi" id="sbiznum" placeholder="000-00-00000"></div>
-          <div class="fg full"><label class="fl">주소</label><input type="text" class="fi" id="saddr"></div>
+          <div class="fg"><label class="fl">통신판매업신고번호</label><input type="text" class="fi" id="secommerce" placeholder="제2025-서울강남-0000호"></div>
+          <div class="fg"><label class="fl">이메일</label><input type="text" class="fi" id="semail" placeholder="info@example.com"></div>
+          <div class="fg full"><label class="fl">사업장 주소</label><input type="text" class="fi" id="saddr"></div>
           <div class="fg full"><label class="fl">공지사항</label><textarea class="fi fta" id="snotice"></textarea></div>
           <div class="fg full"><label class="fl">폰 목업 캡션 텍스트</label><input type="text" class="fi" id="smockuptext" placeholder="배달 라이더를 위한 최적의 이륜차 🛵"></div>
           <!-- 상단 공지 배너 -->
@@ -685,7 +688,10 @@ async function loadSite(){
     document.getElementById('sphone').value=s.phone||'';
     document.getElementById('skakao').value=s.kakao_url||'';
     document.getElementById('sbizname').value=s.business_name||'';
+    document.getElementById('sceoname').value=s.ceo_name||'';
     document.getElementById('sbiznum').value=s.business_number||'';
+    document.getElementById('secommerce').value=s.ecommerce_number||'';
+    document.getElementById('semail').value=s.email||'';
     document.getElementById('saddr').value=s.address||'';
     document.getElementById('snotice').value=s.notice||'';
     document.getElementById('sheroimg').value=s.hero_image||'';
@@ -711,7 +717,10 @@ async function saveSite(){
     phone:document.getElementById('sphone').value||null,
     kakao_url:document.getElementById('skakao').value||null,
     business_name:document.getElementById('sbizname').value||null,
+    ceo_name:document.getElementById('sceoname').value||null,
     business_number:document.getElementById('sbiznum').value||null,
+    ecommerce_number:document.getElementById('secommerce').value||null,
+    email:document.getElementById('semail').value||null,
     address:document.getElementById('saddr').value||null,
     notice:document.getElementById('snotice').value||null,
     hero_image:document.getElementById('sheroimg').value||null,

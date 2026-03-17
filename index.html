@@ -457,16 +457,26 @@ nav a:hover{color:var(--text)}
 .notice{background:rgba(255,214,10,.05);border:0.5px solid rgba(255,214,10,.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--text3);line-height:1.6;margin-top:32px}
 
 /* Footer */
-footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--bg)}
+footer{border-top:0.5px solid var(--border);padding:48px 22px 40px;background:var(--bg)}
 .fi2{max-width:980px;margin:0 auto}
-.flogo{display:flex;align-items:center;gap:0;margin-bottom:8px;line-height:1}
+.footer-top{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;margin-bottom:28px;flex-wrap:wrap}
+.flogo{display:flex;align-items:center;gap:0;margin-bottom:6px;line-height:1}
 .flogo .se{color:#ff2d2d;font-weight:900;font-size:18px;letter-spacing:-0.5px}
 .flogo .global{color:#fff;font-weight:900;font-size:18px;letter-spacing:-0.5px}
 .flogo .x{color:rgba(255,255,255,.35);font-weight:300;font-size:14px;margin:0 8px}
 .flogo .teambro{color:#00ffb3;font-weight:900;font-size:18px;letter-spacing:-0.5px}
-.finfo{font-size:13px;color:var(--text3);line-height:1.8;margin-bottom:18px}
-.fdisc{font-size:11px;color:var(--text3);line-height:1.6;border-top:0.5px solid var(--border);padding-top:14px;opacity:.5}
-.flinks{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.ftagline{font-size:12px;color:var(--text3);margin-top:4px}
+.flinks{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.flinks a{font-size:12px;color:var(--text2);font-weight:600;transition:color .15s}
+.flinks a:hover{color:var(--teal)}
+.flinks a.strong{color:var(--text);font-weight:700}
+.fcompany{font-size:12px;color:var(--text3);line-height:2;text-align:right}
+.fcompany-row{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.fcompany-label{color:var(--text3);flex-shrink:0}
+.fcompany-val{color:var(--text2)}
+.fdivider{height:.5px;background:var(--border);margin-bottom:16px}
+.fdisc{font-size:11px;color:var(--text3);line-height:1.7;opacity:.55}
+@media(max-width:640px){.footer-top{flex-direction:column;gap:20px}.fcompany{text-align:left}.fcompany-row{justify-content:flex-start}}
 
 /* Mobile CTA */
 .mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:10px 16px;z-index:200;grid-template-columns:1fr 1fr;gap:8px}
@@ -1001,9 +1011,22 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 
 <footer>
   <div class="fi2">
-    <div class="flogo"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></div>
-    <div class="finfo" id="finfo">전국 출고 상담 가능 (섬·산간 제외)</div>
-    <div class="flinks"><a href="privacy.html" style="font-size:12px;color:var(--text2);font-weight:600">개인정보처리방침</a><a href="terms.html" style="font-size:12px;color:var(--text3)">이용약관</a></div>
+    <div class="footer-top">
+      <div>
+        <div class="flogo"><span class="se">SE</span><span class="global">GLOBAL</span><span class="x">×</span><span class="teambro">TEAMBRO</span></div>
+        <div class="ftagline">이륜차 렌탈·리스 전문 플랫폼</div>
+        <div class="flinks">
+          <a href="privacy.html" class="strong">개인정보처리방침</a>
+          <a href="terms.html">이용약관</a>
+          <a href="service.html">서비스안내</a>
+          <a href="support.html">협력업체</a>
+        </div>
+      </div>
+      <div class="fcompany" id="footerCompany">
+        <!-- JS로 채워짐 -->
+      </div>
+    </div>
+    <div class="fdivider"></div>
     <div class="fdisc">본 사이트는 이륜차 렌탈·리스 중개 서비스를 제공하며, 특정 제조사의 공식 대리점·판매점이 아닙니다.<br>© 2025 SE글로벌 렌탈. All rights reserved.</div>
   </div>
 </footer>
@@ -1191,10 +1214,22 @@ async function init(){
     const s=rows&&rows.length?rows[0]:null;
     if(s){
       if(s.phone){
-        document.getElementById('finfo').innerHTML=`대표전화: <a href="tel:${s.phone}" style="color:var(--teal)">${s.phone}</a>&nbsp;|&nbsp;전국 출고 상담 가능`;
         ['ctaPhone','mPhone'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>location.href='tel:'+s.phone;});
       }
       if(s.kakao_url){['heroKakao','ctaKakao','mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});}
+      // 푸터 회사 정보
+      const fc=document.getElementById('footerCompany');
+      if(fc){
+        const rows=[];
+        if(s.business_name) rows.push(`<div class="fcompany-row"><span class="fcompany-label">상호명</span><span class="fcompany-val">${s.business_name}</span></div>`);
+        if(s.ceo_name)       rows.push(`<div class="fcompany-row"><span class="fcompany-label">대표자</span><span class="fcompany-val">${s.ceo_name}</span></div>`);
+        if(s.business_number)rows.push(`<div class="fcompany-row"><span class="fcompany-label">사업자등록번호</span><span class="fcompany-val">${s.business_number}</span></div>`);
+        if(s.ecommerce_number)rows.push(`<div class="fcompany-row"><span class="fcompany-label">통신판매업</span><span class="fcompany-val">${s.ecommerce_number}</span></div>`);
+        if(s.address)        rows.push(`<div class="fcompany-row"><span class="fcompany-label">주소</span><span class="fcompany-val">${s.address}</span></div>`);
+        if(s.phone)          rows.push(`<div class="fcompany-row"><span class="fcompany-label">전화</span><span class="fcompany-val"><a href="tel:${s.phone}" style="color:var(--teal)">${s.phone}</a></span></div>`);
+        if(s.email)          rows.push(`<div class="fcompany-row"><span class="fcompany-label">이메일</span><span class="fcompany-val">${s.email}</span></div>`);
+        fc.innerHTML=rows.join('');
+      }
       if(s.hero_image){
         const el=document.getElementById('phoneMockImg');
         if(el){el.innerHTML=`<img src="${s.hero_image}" alt="대문이미지" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentElement.innerHTML='<div style=font-size:64px>🏍️</div>'">`;}
