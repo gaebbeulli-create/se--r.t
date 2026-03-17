@@ -133,9 +133,13 @@ a{text-decoration:none;color:inherit}
   display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);
   background:rgba(15,15,15,.97);backdrop-filter:blur(20px);
   border:0.5px solid var(--border2);border-radius:14px;
-  padding:8px;min-width:200px;margin-top:8px;
+  padding:8px;min-width:200px;
+  padding-top:16px;margin-top:0;
   box-shadow:0 16px 40px rgba(0,0,0,.6);
   z-index:200;
+}
+.dropdown::after{
+  content:'';position:absolute;top:-12px;left:0;right:0;height:12px;
 }
 .dropdown::before{
   content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);
@@ -712,6 +716,10 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
       <div class="nav-item">
         <div style="display:flex;align-items:center;gap:3px;cursor:pointer">모델 <span class="nav-arrow">▼</span></div>
         <div class="dropdown">
+          <div class="dd-item" onclick="location.href='models.html'">
+            <span class="dd-icon">🏍️</span>
+            <div><div class="dd-label">전체 모델</div><div class="dd-sub">모든 차종 보기</div></div>
+          </div>
           <div class="dd-item" onclick="location.href='models.html?type=electric'">
             <span class="dd-icon">⚡</span>
             <div><div class="dd-label">전기이륜차</div><div class="dd-sub">이누리 OK1 외</div></div>
@@ -726,9 +734,11 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
           </div>
         </div>
       </div>
+      <a href="product.html">상품안내</a>
       <a href="service.html">서비스안내</a>
-      <a href="support.html">고객센터</a>
-      <a href="#consult">상담</a>
+      <a href="support.html">협력업체</a>
+      <a href="index.html#consult">상담신청</a>
+      <a href="index.html#faq">FAQ</a>
     </nav>
     <a href="#consult" class="hcta">상담 신청</a>
   </div>
