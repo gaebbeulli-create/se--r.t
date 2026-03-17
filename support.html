@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객센터 | SE글로벌 렌탈 TEAMBRO</title>
+<meta name="description" content="SE글로벌 렌탈 고객센터 - A/S 협력업체, 전화 상담, 카카오톡 상담">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1e;--bg4:#2c2c2e;--border:#2c2c2e;--border2:#3a3a3c;--text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;--teal:#a3e635;--accent:#0a84ff}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding-bottom:80px}
+a{text-decoration:none;color:inherit}
+
+/* Header */
+header{background:rgba(10,10,10,.9);backdrop-filter:blur(20px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100}
+.hi{max-width:1100px;margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;height:52px}
+.logo{display:flex;align-items:center}
+.logo .se{color:#ff2d2d;font-weight:900;font-size:17px;font-style:italic}
+.logo .gl{color:#fff;font-weight:900;font-size:17px}
+.logo .x{color:rgba(255,255,255,.3);font-weight:300;font-size:13px;margin:0 6px}
+.logo .tb{color:#00ffb3;font-weight:900;font-size:17px}
+nav{display:flex;gap:20px}
+nav a{font-size:13px;color:var(--text2);transition:color .15s}
+nav a:hover,nav a.on{color:var(--text)}
+.hcta{background:var(--teal);color:#0a0a0a;padding:7px 16px;border-radius:980px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+
+/* Page Hero */
+.page-hero{text-align:center;padding:56px 22px 40px;background:var(--bg);position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(10,132,255,.07) 0%,transparent 60%);pointer-events:none}
+.hero-eye{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:block}
+.page-hero h1{font-size:clamp(26px,5vw,48px);font-weight:900;letter-spacing:-1.5px;margin-bottom:12px}
+.page-hero p{font-size:14px;color:var(--text2);max-width:500px;margin:0 auto 28px;line-height:1.6}
+
+/* Contact cards */
+.contact-wrap{max-width:1100px;margin:0 auto;padding:0 22px 40px}
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.contact-card{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:16px;padding:24px 20px;text-align:center;
+  cursor:pointer;transition:all .2s;
+}
+.contact-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.contact-icon{font-size:32px;margin-bottom:12px}
+.contact-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.contact-info{font-size:20px;font-weight:900;color:var(--teal);margin-bottom:4px;letter-spacing:-.5px}
+.contact-sub{font-size:12px;color:var(--text3)}
+
+/* Tabs */
+.tabs-wrap{max-width:1100px;margin:0 auto;padding:0 22px 24px}
+.tabs{display:flex;border-bottom:0.5px solid var(--border);gap:0}
+.tab-btn{padding:12px 20px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab-btn.on{color:var(--teal);border-bottom-color:var(--teal)}
+.tab-btn:hover{color:var(--text)}
+
+/* Partner section */
+.partner-wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+.partner-panel{display:none}
+.partner-panel.on{display:block}
+
+/* Region filter */
+.region-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;padding-top:20px}
+.rtag{padding:6px 14px;border-radius:980px;font-size:12px;font-weight:600;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);transition:all .2s;flex-shrink:0}
+.rtag:hover{border-color:var(--teal);color:var(--teal)}
+.rtag.on{background:var(--teal);color:#0a0a0a;border-color:var(--teal)}
+
+/* Partner cards */
+.partner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pcard{
+  background:var(--bg2);border:0.5px solid var(--border);
+  border-radius:14px;padding:20px;
+  transition:border-color .2s,background .2s;
+}
+.pcard:hover{border-color:rgba(163,230,53,.3);background:var(--bg3)}
+.pcard-name{font-size:17px;font-weight:700;margin-bottom:10px;letter-spacing:-.3px}
+.pcard-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:13px}
+.pcard-label{color:var(--text3);flex-shrink:0;width:40px;font-size:12px;margin-top:1px}
+.pcard-val{color:var(--text2);line-height:1.4}
+.pcard-btns{display:flex;gap:8px;margin-top:14px}
+.pcard-btn{
+  flex:1;padding:9px;border-radius:8px;font-size:12px;font-weight:700;
+  border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);
+  cursor:pointer;transition:all .2s;font-family:inherit;text-align:center;
+}
+.pcard-btn.phone{background:rgba(163,230,53,.1);border-color:rgba(163,230,53,.3);color:var(--teal)}
+.pcard-btn.phone:hover{background:var(--teal);color:#0a0a0a}
+.pcard-btn.map:hover{background:var(--bg4);border-color:var(--border2)}
+
+/* FAQ section */
+.faq-wrap{max-width:1100px;margin:0 auto;padding:20px 22px 0}
+.faqlist{border:0.5px solid var(--border);border-radius:14px;overflow:hidden}
+.faqitem{border-bottom:0.5px solid var(--border)}
+.faqitem:last-child{border-bottom:none}
+.faqq{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;font-size:14px;font-weight:600;background:var(--bg2);transition:background .15s}
+.faqq:hover{background:var(--bg3)}
+.faqi{transition:transform .2s;color:var(--text3)}
+.faqitem.open .faqi{transform:rotate(45deg)}
+.faqa{display:none;padding:14px 18px;font-size:13px;color:var(--text2);line-height:1.7;background:var(--bg3)}
+.faqitem.open .faqa{display:block}
+
+/* Empty / Loading */
+.loading{text-align:center;padding:60px;color:var(--text3);grid-column:1/-1}
+.spin{width:24px;height:24px;border:1.5px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Mobile CTA */
+.mcta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.92);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);padding:10px 16px;z-index:200;grid-template-columns:1fr 1fr;gap:8px}
+.mb{padding:13px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;border:none;cursor:pointer;font-family:inherit}
+.mp{background:var(--teal);color:#0a0a0a}
+.mk{background:#FEE500;color:#1d1d1f}
+
+@media(max-width:768px){
+  .contact-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .partner-grid{grid-template-columns:1fr}
+  body{padding-bottom:72px}
+  .mcta{display:grid}
+}
+@media(max-width:480px){
+  .contact-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<script>
+const SB_URL='https://ogjrhphhpqpzlzlbugdp.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nanJocGhocHFwemx6bGJ1Z2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2Mjc4MzUsImV4cCI6MjA4OTIwMzgzNX0.tdVzi9swRk_sKbNqFvIMg30q5XcgDXRfVJitPNCFRA8';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+</script>
+
+<header>
+  <div class="hi">
+    <a href="index.html" class="logo"><span class="se">SE</span><span class="gl">GLOBAL</span><span class="x">×</span><span class="tb">TEAMBRO</span></a>
+    <nav>
+      <a href="models.html">모델</a>
+      <a href="options.html">옵션</a>
+      <a href="support.html" class="on">고객센터</a>
+    </nav>
+    <button class="hcta" id="headerPhone">📞 전화 상담</button>
+  </div>
+</header>
+
+<div class="page-hero">
+  <span class="hero-eye">Customer Support</span>
+  <h1>고객센터</h1>
+  <p>언제든지 편하게 연락주세요<br>전문 상담사가 빠르게 도와드립니다</p>
+</div>
+
+<!-- Contact Cards -->
+<div class="contact-wrap">
+  <div class="contact-grid">
+    <div class="contact-card" id="phoneCard">
+      <div class="contact-icon">📞</div>
+      <div class="contact-title">전화 상담</div>
+      <div class="contact-info" id="phoneNum">번호 로딩중...</div>
+      <div class="contact-sub">평일 09:00 ~ 18:00</div>
+    </div>
+    <div class="contact-card" id="kakaoCard">
+      <div class="contact-icon">💬</div>
+      <div class="contact-title">카카오톡 상담</div>
+      <div class="contact-info" style="font-size:16px">카카오톡 문의</div>
+      <div class="contact-sub">평일 10:00 ~ 22:00</div>
+    </div>
+    <div class="contact-card" onclick="document.getElementById('tab-consult-btn').click()">
+      <div class="contact-icon">📝</div>
+      <div class="contact-title">온라인 상담</div>
+      <div class="contact-info" style="font-size:16px">상담 신청서</div>
+      <div class="contact-sub">1~2일 내 연락</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn on" onclick="switchSTab('partner',this)">🔧 A/S 협력업체</button>
+    <button class="tab-btn" id="tab-consult-btn" onclick="switchSTab('consult',this)">📝 온라인 상담</button>
+    <button class="tab-btn" onclick="switchSTab('faq',this)">❓ FAQ</button>
+  </div>
+</div>
+
+<!-- A/S 협력업체 -->
+<div class="partner-wrap">
+  <div class="partner-panel on" id="panel-partner">
+    <div class="region-wrap" id="regionWrap">
+      <div class="rtag on" onclick="filterRegion('all',this)">전체</div>
+    </div>
+    <div class="partner-grid" id="partnerGrid">
+      <div class="loading"><div class="spin"></div>불러오는 중...</div>
+    </div>
+  </div>
+
+  <!-- 온라인 상담 -->
+  <div class="partner-panel" id="panel-consult">
+    <div style="max-width:600px;margin:24px auto 0;background:var(--bg2);border:0.5px solid var(--border);border-radius:18px;padding:28px">
+      <div style="font-size:18px;font-weight:700;margin-bottom:4px">온라인 상담 신청</div>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:20px">영업일 기준 1~2일 이내 연락드립니다</div>
+      <div id="cform">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div style="display:flex;flex-direction:column;gap:5px"><label style="font-size:12px;font-weight:600;color:var(--text2)">이름 *</label><input type="text" class="fi" id="fn" placeholder="홍길동" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%"></div>
+          <div style="display:flex;flex-direction:column;gap:5px"><label style="font-size:12px;font-weight:600;color:var(--text2)">연락처 *</label><input type="tel" class="fi" id="fp" placeholder="010-0000-0000" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div style="display:flex;flex-direction:column;gap:5px"><label style="font-size:12px;font-weight:600;color:var(--text2)">문의 유형</label>
+            <select id="ftype" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%">
+              <option value="rental">렌탈 문의</option>
+              <option value="lease">리스 문의</option>
+              <option value="as">A/S 문의</option>
+              <option value="other">기타</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px"><label style="font-size:12px;font-weight:600;color:var(--text2)">지역</label>
+            <select id="fregion" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%">
+              <option value="">선택하세요</option>
+              <option>서울</option><option>경기</option><option>인천</option>
+              <option>부산</option><option>대구</option><option>광주</option>
+              <option>대전</option><option>울산</option><option>강원도</option>
+              <option>충청북도</option><option>충청남도</option><option>전라북도</option>
+              <option>전라남도</option><option>경상북도</option><option>경상남도</option><option>제주도</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+          <label style="font-size:12px;font-weight:600;color:var(--text2)">문의 내용</label>
+          <textarea id="fmsg" placeholder="궁금하신 내용을 입력해주세요" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:10px 13px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%;min-height:100px;resize:none"></textarea>
+        </div>
+        <button onclick="submitSupport()" style="width:100%;background:var(--teal);color:#0a0a0a;padding:13px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit" id="sbtn">상담 신청하기</button>
+      </div>
+      <div id="csuccess" style="display:none;text-align:center;padding:28px 0">
+        <div style="font-size:48px;margin-bottom:10px">✅</div>
+        <div style="font-size:17px;font-weight:700;color:#30d158;margin-bottom:6px">신청 완료!</div>
+        <div style="font-size:14px;color:var(--text3)">영업일 기준 1~2일 이내 연락드립니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="partner-panel" id="panel-faq">
+    <div style="padding-top:20px">
+      <div class="faqlist">
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">A/S는 어떻게 신청하나요?<span class="faqi">+</span></div><div class="faqa">전화, 카카오톡, 또는 온라인 상담 신청을 통해 A/S를 접수하실 수 있습니다. 접수 후 담당자가 연락드려 일정을 조율합니다.</div></div>
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">렌탈 차량 고장 시 어떻게 하나요?<span class="faqi">+</span></div><div class="faqa">렌탈 계약 기간 중 고장이 발생하면 즉시 고객센터로 연락주세요. 계약 조건에 따라 무상 수리 또는 대차 서비스를 제공합니다.</div></div>
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">중도 반납은 가능한가요?<span class="faqi">+</span></div><div class="faqa">렌탈의 경우 계약 조건에 따라 중도 반납이 가능합니다. 리스의 경우 위약금이 발생할 수 있으니 계약 내용을 확인하거나 상담을 통해 안내받으세요.</div></div>
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">타 지역으로 이사해도 이용 가능한가요?<span class="faqi">+</span></div><div class="faqa">가능합니다. 이사 후 주소 변경 신고가 필요하며, 해당 지역 A/S 협력업체를 통해 서비스를 이용하실 수 있습니다.</div></div>
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">소모품 교체는 누가 부담하나요?<span class="faqi">+</span></div><div class="faqa">기본 점검은 포함되나, 타이어·브레이크 패드 등 소모품 교체는 별도 옵션으로 운영됩니다. 계약 시 소모품 옵션 추가를 권장합니다.</div></div>
+        <div class="faqitem"><div class="faqq" onclick="this.parentElement.classList.toggle('open')">사고 발생 시 처리 절차는?<span class="faqi">+</span></div><div class="faqa">계약 시 보험이 포함되어 있으며, 사고 발생 즉시 고객센터로 연락주세요. 보험 처리 절차를 안내해 드립니다.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mcta">
+  <button class="mb mp" id="mPhone">📞 전화 상담</button>
+  <button class="mb mk" id="mKakao">💬 카카오톡</button>
+</div>
+
+<script>
+let allPartners=[];
+let curRegion='all';
+
+function switchSTab(id,el){
+  document.querySelectorAll('.partner-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+}
+
+function filterRegion(region,el){
+  curRegion=region;
+  document.querySelectorAll('.rtag').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderPartners();
+}
+
+function renderPartners(){
+  const filtered=curRegion==='all'?allPartners:allPartners.filter(p=>p.region===curRegion);
+  const grid=document.getElementById('partnerGrid');
+  if(!filtered.length){
+    grid.innerHTML='<p style="color:var(--text3);font-size:14px;padding:40px 0;text-align:center;grid-column:1/-1">해당 지역의 협력업체가 없습니다</p>';
+    return;
+  }
+  grid.innerHTML=filtered.map(p=>`
+    <div class="pcard">
+      <div class="pcard-name">${p.name}</div>
+      <div class="pcard-row"><span class="pcard-label">📞 연락처</span><span class="pcard-val">${p.phone||'-'}</span></div>
+      <div class="pcard-row"><span class="pcard-label">📍 주소</span><span class="pcard-val">${p.address||'-'}</span></div>
+      ${p.description?`<div class="pcard-row"><span class="pcard-label">📝 안내</span><span class="pcard-val">${p.description}</span></div>`:''}
+      <div class="pcard-btns">
+        ${p.phone?`<button class="pcard-btn phone" onclick="location.href='tel:${p.phone.replace(/[^0-9]/g,'')}'" >📞 전화걸기</button>`:''}
+        ${p.address?`<button class="pcard-btn map" onclick="window.open('https://map.kakao.com/link/search/${encodeURIComponent(p.address)}','_blank')">🗺️ 지도보기</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function buildRegions(partners){
+  const regions=[...new Set(partners.map(p=>p.region).filter(Boolean))];
+  const wrap=document.getElementById('regionWrap');
+  regions.forEach(r=>{
+    const btn=document.createElement('div');
+    btn.className='rtag';
+    btn.textContent=r;
+    btn.onclick=()=>filterRegion(r,btn);
+    wrap.appendChild(btn);
+  });
+}
+
+async function submitSupport(){
+  const name=document.getElementById('fn').value.trim();
+  const phone=document.getElementById('fp').value.trim();
+  if(!name||!phone){alert('이름과 연락처는 필수입니다');return;}
+  const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='접수 중...';
+  const{error}=await sb.from('consult_requests').insert([{
+    name,phone,
+    region:document.getElementById('fregion').value||null,
+    consult_type:document.getElementById('ftype').value,
+    message:document.getElementById('fmsg').value.trim()||null,
+    status:'pending'
+  }]);
+  if(error){alert('오류가 발생했습니다');btn.disabled=false;btn.textContent='상담 신청하기';}
+  else{document.getElementById('cform').style.display='none';document.getElementById('csuccess').style.display='block';}
+}
+
+async function init(){
+  try{
+    const{data:rows}=await sb.from('site_config').select('phone,kakao_url').eq('id',1).limit(1);
+    const s=rows&&rows.length?rows[0]:null;
+    if(s){
+      if(s.phone){
+        ['headerPhone','mPhone','phoneCard'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>location.href='tel:'+s.phone;});
+        document.getElementById('mPhone').textContent='📞 '+s.phone;
+        document.getElementById('phoneNum').textContent=s.phone;
+      }
+      if(s.kakao_url){
+        ['kakaoCard','mKakao'].forEach(id=>{const el=document.getElementById(id);if(el)el.onclick=()=>window.open(s.kakao_url,'_blank');});
+      }
+    }
+  }catch(e){}
+
+  try{
+    const{data,error}=await sb.from('partners').select('*').eq('is_active',true).order('sort_order',{ascending:true});
+    if(error)throw error;
+    allPartners=data||[];
+    if(allPartners.length){
+      buildRegions(allPartners);
+      renderPartners();
+    } else {
+      document.getElementById('partnerGrid').innerHTML='<p style="color:var(--text3);font-size:14px;padding:60px 0;text-align:center;grid-column:1/-1">등록된 협력업체가 없습니다<br><span style="font-size:12px;margin-top:8px;display:block">어드민에서 협력업체를 추가해주세요</span></p>';
+    }
+  }catch(e){
+    document.getElementById('partnerGrid').innerHTML='<p style="color:var(--text3);font-size:14px;padding:60px 0;text-align:center;grid-column:1/-1">정보를 불러올 수 없습니다</p>';
+  }
+}
+init();
+</script>
+</body>
+</html>
