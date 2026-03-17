@@ -194,6 +194,7 @@ nav a:hover{color:var(--text)}
 .phone-rgb-wrap{
   position:relative;border-radius:30px;padding:3px;width:fit-content;
   box-shadow:0 0 24px rgba(163,230,53,.2),0 0 48px rgba(0,212,255,.15);
+  overflow:hidden;
 }
 
 .phone-rgb-wrap .phone-frame{
@@ -596,7 +597,12 @@ footer{border-top:0.5px solid var(--border);padding:48px 22px;background:var(--b
   .phone-av{width:20px;height:20px;font-size:7px}
   .phone-follow{display:none}
   .phone-acts{padding:4px 8px 2px;font-size:12px}
-  .phone-likes,.phone-cap,.phone-tags,.phone-comments,.phone-input-bar{display:none}
+  .phone-likes{font-size:9px;padding:0 8px 2px}
+  .phone-cap{font-size:9px;padding:0 8px 4px;line-height:1.4}
+  .phone-tags{padding:0 8px 4px;gap:3px}
+  .phone-tag{font-size:8px}
+  .phone-comments{font-size:8px;padding:0 8px 4px}
+  .phone-input-bar{display:none}
 
   .vcard-name{font-size:20px}
   .vcard-pv{font-size:22px}
@@ -743,6 +749,30 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
     <a href="#consult" class="hcta">상담 신청</a>
   </div>
 </header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu" onclick="closeMobileMenuOutside(event)">
+  <div class="mobile-drawer">
+    <div class="mobile-drawer-head">
+      <div style="font-size:14px;font-weight:800"><span style="color:#ff2d2d;font-style:italic">SE</span><span>GLOBAL</span><span style="color:rgba(255,255,255,.3);margin:0 5px">×</span><span style="color:#00ffb3">TEAMBRO</span></div>
+      <button class="mobile-drawer-close" onclick="closeMobileMenu()">✕</button>
+    </div>
+    <div class="mobile-nav">
+      <div class="mobile-nav-section">모델</div>
+      <div class="mobile-nav-item" onclick="location.href='models.html';closeMobileMenu()"><span class="mni-icon">🏍️</span>전체 모델</div>
+      <div class="mobile-nav-sub" onclick="location.href='models.html?type=electric';closeMobileMenu()">⚡ 전기이륜차</div>
+      <div class="mobile-nav-sub" onclick="location.href='models.html?type=gasoline';closeMobileMenu()">⛽ 내연이륜차</div>
+      <div class="mobile-nav-sub" onclick="location.href='options.html';closeMobileMenu()">⚙️ 이륜차 용품</div>
+      <div class="mobile-nav-section">서비스</div>
+      <div class="mobile-nav-item" onclick="location.href='product.html';closeMobileMenu()"><span class="mni-icon">🛍️</span>상품안내</div>
+      <div class="mobile-nav-item" onclick="location.href='service.html';closeMobileMenu()"><span class="mni-icon">📋</span>서비스안내</div>
+      <div class="mobile-nav-section">고객</div>
+      <div class="mobile-nav-item" onclick="location.href='support.html';closeMobileMenu()"><span class="mni-icon">🏪</span>협력업체</div>
+      <div class="mobile-nav-item" onclick="document.getElementById('consult').scrollIntoView({behavior:'smooth'});closeMobileMenu()"><span class="mni-icon">💬</span>상담신청</div>
+      <div class="mobile-nav-item" onclick="document.getElementById('faq').scrollIntoView({behavior:'smooth'});closeMobileMenu()"><span class="mni-icon">❓</span>FAQ</div>
+    </div>
+  </div>
+</div>
 
 <section class="hero">
   <div class="hero-glow1"></div>
@@ -1084,51 +1114,21 @@ function closePopupOutside(e){
 }
 
 // RGB 테두리 시계방향 흐름 - canvas
+// 폰 목업 RGB 테두리 - CSS hue-rotate 방식
 (function(){
-  const wrap=document.querySelector('.phone-rgb-wrap');
-  if(!wrap)return;
-  const canvas=document.createElement('canvas');
-  canvas.style.cssText='position:absolute;inset:0;width:100%;height:100%;border-radius:30px;z-index:0;pointer-events:none';
-  wrap.insertBefore(canvas,wrap.firstChild);
-
-  const colors=['#ff0000','#ff6600','#ffff00','#00ff88','#00d4ff','#0055ff','#8800ff','#ff00ff','#ff0000'];
-  let angle=0;
-
-  function resize(){
-    canvas.width=wrap.offsetWidth;
-    canvas.height=wrap.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize',resize);
-
-  function draw(){
-    const w=canvas.width,h=canvas.height;
-    const ctx=canvas.getContext('2d');
-    ctx.clearRect(0,0,w,h);
-
-    // 테두리 path
-    const r=28,bw=3;
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(0,0,w,h,r);
-    ctx.roundRect(bw,bw,w-bw*2,h-bw*2,r-bw);
-    ctx.closePath();
-    ctx.clip('evenodd');
-
-    // 시계방향 흐르는 그라데이션 - 중심 기준 코닉
-    const cx=w/2,cy=h/2;
-    const grad=ctx.createConicGradient(angle,cx,cy);
-    colors.forEach((c,i)=>grad.addColorStop(i/(colors.length-1),c));
-    ctx.fillStyle=grad;
-    ctx.fillRect(0,0,w,h);
-    ctx.restore();
-
-    angle+=0.015; // 시계방향 속도
-    requestAnimationFrame(draw);
-  }
-  draw();
+  const style=document.createElement('style');
+  style.textContent=`
+    .phone-rgb-wrap::before{
+      content:'';position:absolute;inset:0;border-radius:30px;
+      background:linear-gradient(90deg,#ff0000,#ff6600,#ffff00,#00ff88,#00d4ff,#0055ff,#8800ff,#ff00ff,#ff0000);
+      animation:rgbHue 2.5s linear infinite;z-index:0;
+    }
+    @keyframes rgbHue{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+  `;
+  document.head.appendChild(style);
 })();
 
+// 드롭다운
 // 드롭다운 클릭 토글
 (function(){
   function initDropdown(){
